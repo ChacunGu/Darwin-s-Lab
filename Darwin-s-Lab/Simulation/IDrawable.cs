@@ -11,6 +11,9 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     interface IDrawable
     {
-        void Draw();
+        /// <summary>
+        /// Updates element's graphical state before drawing.
+        /// </summary>
+        void Update();
     }
 }

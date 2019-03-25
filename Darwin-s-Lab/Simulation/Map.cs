@@ -9,9 +9,16 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents simulation's map.
     /// </summary>
-    class Map
+    class Map : IDrawable
     {
-        public int Radius { get; set; }
         public int SafeZoneRadius { get; set; }
+
+        /// <summary>
+        /// Updates element's graphical state before drawing.
+        /// </summary>
+        public void Update()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
