@@ -9,9 +9,16 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents simulation's food.
     /// </summary>
-    class Food
+    class Food : IDrawable
     {
-        public System.Windows.Point Position { get; set; }
         public int Energy { get; set; }
+
+        /// <summary>
+        /// Updates element's graphical state before drawing.
+        /// </summary>
+        public void Update()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

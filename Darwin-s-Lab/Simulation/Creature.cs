@@ -11,7 +11,6 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     class Creature : IDrawable
     {
-        public System.Windows.Point Position { get; set; }
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
 
@@ -73,9 +72,9 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Draws creature.
+        /// Updates element's graphical state before drawing.
         /// </summary>
-        public void Draw()
+        public void Update()
         {
             throw new NotImplementedException();
         }
