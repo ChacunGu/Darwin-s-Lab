@@ -21,5 +21,14 @@ namespace Darwin_s_Lab.Simulation
             this.Value = value;
             this.Mask = mask;
         }
+
+        /// <summary>
+        /// Returns gene's representation as a string.
+        /// </summary>
+        /// <returns>gene's representation</returns>
+        public override string ToString()
+        {
+            return Name + ": " + Value.ToString();
+        }
     }
 }
