@@ -14,16 +14,23 @@ namespace Darwin_s_Lab
             InitializeComponent();
 
             Creature jack = new Creature()
-                            .WithEnergy(10)
-                            .WithSpeed(10)
-                            .WithDetectionRange(10)
-                            .WithForce(10)
-                            .WithColorH(10)
-                            .WithColorS(10)
-                            .WithColorV(10);
+                            .WithEnergy(6, 15)
+                            .WithSpeed(6, 15)
+                            .WithDetectionRange(6, 15)
+                            .WithForce(6, 15)
+                            .WithColorH(6, 15)
+                            .WithColorS(6, 15)
+                            .WithColorV(6, 15);
             Creature bobby = new Creature();
             Console.WriteLine("Jack:\n" + jack);
-            Console.WriteLine("Bobby:\n" + bobby);
+            //Console.WriteLine("Bobby:\n" + bobby);
+
+            jack.Mutate();
+            //bobby.Mutate();
+
+            Console.WriteLine("\nMutations !");
+            Console.WriteLine("Jack:\n" + jack);
+            //Console.WriteLine("Bobby:\n" + bobby);
         }
     }
 }
