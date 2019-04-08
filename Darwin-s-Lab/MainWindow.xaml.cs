@@ -14,23 +14,35 @@ namespace Darwin_s_Lab
             InitializeComponent();
 
             Creature jack = new Creature()
-                            .WithEnergy(6, 15)
-                            .WithSpeed(6, 15)
-                            .WithDetectionRange(6, 15)
-                            .WithForce(6, 15)
-                            .WithColorH(6, 15)
-                            .WithColorS(6, 15)
-                            .WithColorV(6, 15);
-            Creature bobby = new Creature();
+                            .WithEnergy(128, null)
+                            .WithSpeed(128, null)
+                            .WithDetectionRange(128, null)
+                            .WithForce(128, null)
+                            .WithColorH(128, null)
+                            .WithColorS(128, null)
+                            .WithColorV(128, null);
+            Creature bobby = new Creature()
+                            .WithEnergy(1, null)
+                            .WithSpeed(1, null)
+                            .WithDetectionRange(1, null)
+                            .WithForce(1, null)
+                            .WithColorH(1, null)
+                            .WithColorS(1, null)
+                            .WithColorV(1, null);
             Console.WriteLine("Jack:\n" + jack);
-            //Console.WriteLine("Bobby:\n" + bobby);
+            Console.WriteLine("Bobby:\n" + bobby);
 
-            jack.Mutate();
+            //jack.Mutate();
             //bobby.Mutate();
 
-            Console.WriteLine("\nMutations !");
-            Console.WriteLine("Jack:\n" + jack);
+            Creature newborn = jack.Cross(bobby);
+
+            //Console.WriteLine("\nMutations !");
+            //Console.WriteLine("Jack:\n" + jack);
             //Console.WriteLine("Bobby:\n" + bobby);
+
+            Console.WriteLine("\nCrossover !");
+            Console.WriteLine("Newborn:\n" + newborn);
         }
     }
 }

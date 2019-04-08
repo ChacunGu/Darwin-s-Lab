@@ -11,15 +11,17 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     class Creature : IDrawable
     {
+        static double CrossoverKeepAverageProbability = 0.75;
+        static double CrossoverKeepOtherProbability = 0.5;
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
         {
-            {"energy", new uint[]{1, 31}},
-            {"speed", new uint[]{1, 31}},
-            {"detectionRange", new uint[]{1, 31}},
-            {"force", new uint[]{1, 31}},
-            {"colorH", new uint[]{1, 31}},
-            {"colorS", new uint[]{1, 31}},
-            {"colorV", new uint[]{1, 31}}
+            {"energy", new uint[]{1, 255}},
+            {"speed", new uint[]{1, 255}},
+            {"detectionRange", new uint[]{1, 255}},
+            {"force", new uint[]{1, 255}},
+            {"colorH", new uint[]{1, 255}},
+            {"colorS", new uint[]{1, 255}},
+            {"colorV", new uint[]{1, 255}}
         };
 
         public System.Windows.Vector Direction { get; set; }
@@ -45,9 +47,10 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="energy">creature's energy</param>
         /// <param name="mask">energy mask (^2 - 1)</param>
         /// <returns>creature with energy's gene set</returns>
-        public Creature WithEnergy(uint energy, uint mask)
+        public Creature WithEnergy(uint energy, uint? mask)
         {
-            this.AddGene("energy", energy, mask);
+
+            this.AddGene("energy", energy, mask==null ? DefaultGenesValues["energy"][1] : (uint)mask);
             return this;
         }
 
@@ -57,9 +60,9 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="speed">creature's speed</param>
         /// <param name="mask">speed mask (^2 - 1)</param>
         /// <returns>creature with speed's gene set</returns>
-        public Creature WithSpeed(uint speed, uint mask)
+        public Creature WithSpeed(uint speed, uint? mask)
         {
-            this.AddGene("speed", speed, mask);
+            this.AddGene("speed", speed, mask == null ? DefaultGenesValues["speed"][1] : (uint)mask);
             return this;
         }
 
@@ -69,9 +72,9 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="detectionRange">creature's detection range</param>
         /// <param name="mask">detection range mask (^2 - 1)</param>
         /// <returns>creature with detection range's gene set</returns>
-        public Creature WithDetectionRange(uint detectionRange, uint mask)
+        public Creature WithDetectionRange(uint detectionRange, uint? mask)
         {
-            this.AddGene("detectionRange", detectionRange, mask);
+            this.AddGene("detectionRange", detectionRange, mask == null ? DefaultGenesValues["detectionRange"][1] : (uint)mask);
             return this;
         }
 
@@ -81,9 +84,9 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="force">creature's force</param>
         /// <param name="mask">force mask (^2 - 1)</param>
         /// <returns>creature with force's gene set</returns>
-        public Creature WithForce(uint force, uint mask)
+        public Creature WithForce(uint force, uint? mask)
         {
-            this.AddGene("force", force, mask);
+            this.AddGene("force", force, mask == null ? DefaultGenesValues["force"][1] : (uint)mask);
             return this;
         }
 
@@ -93,9 +96,9 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="colorH">creature's color H</param>
         /// <param name="mask">color H mask (^2 - 1)</param>
         /// <returns>creature with color H gene set</returns>
-        public Creature WithColorH(uint colorH, uint mask)
+        public Creature WithColorH(uint colorH, uint? mask)
         {
-            this.AddGene("colorH", colorH, mask);
+            this.AddGene("colorH", colorH, mask == null ? DefaultGenesValues["colorH"][1] : (uint)mask);
             return this;
         }
 
@@ -105,9 +108,9 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="colorS">creature's color S</param>
         /// <param name="mask">color S mask (^2 - 1)</param>
         /// <returns>creature with color S gene set</returns>
-        public Creature WithColorS(uint colorS, uint mask)
+        public Creature WithColorS(uint colorS, uint? mask)
         {
-            this.AddGene("colorS", colorS, mask);
+            this.AddGene("colorS", colorS, mask == null ? DefaultGenesValues["colorS"][1] : (uint)mask);
             return this;
         }
 
@@ -117,9 +120,9 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="colorV">creature's color V</param>
         /// <param name="mask">color V mask (^2 - 1)</param>
         /// <returns>creature with color V gene set</returns>
-        public Creature WithColorV(uint colorV, uint mask)
+        public Creature WithColorV(uint colorV, uint? mask)
         {
-            this.AddGene("colorV", colorV, mask);
+            this.AddGene("colorV", colorV, mask == null ? DefaultGenesValues["colorV"][1] : (uint)mask);
             return this;
         }
         #endregion
@@ -209,9 +212,38 @@ namespace Darwin_s_Lab.Simulation
         /// Reproduces this creature with other. Creates a newborn creature with genes from its parents.
         /// </summary>
         /// <param name="other">significant other</param>
-        public void Cross(Creature other)
+        public Creature Cross(Creature other)
         {
-            throw new NotImplementedException();
+            Creature newborn = new Creature();
+            for (int i = 0; i < Genes.Count(); i++) // for each gene
+            {
+                Gene selfGene = Genes.ElementAt(i).Value;
+                Gene otherGene = other.Genes.ElementAt(i).Value;
+
+                String name = selfGene.Name;
+                uint mask = selfGene.Mask;
+                uint value = 0;
+
+                if (rdm.NextDouble() < CrossoverKeepAverageProbability) // average between self and other
+                {
+                    uint avg = (selfGene.Value - otherGene.Value) / 2;
+                    double rdmOffset = rdm.NextDouble() - 0.5; // random between -0.5 and 0.5
+                    rdmOffset *= Math.Floor((double) Math.Abs(selfGene.Value - otherGene.Value) / 2); // multiply random by difference to get the offset from avg's value
+                    value = avg + (uint) Math.Floor(rdmOffset); // apply offset to average
+                } else
+                {
+                    if (rdm.NextDouble() < CrossoverKeepOtherProbability) // keep other
+                    {
+                        value = otherGene.Value;
+                    } else // keep self
+                    {
+                        value = selfGene.Value;
+                    }
+                }
+
+                newborn.AddGene(name, value, mask);
+            }
+            return newborn;
         }
 
         /// <summary>
