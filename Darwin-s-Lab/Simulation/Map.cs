@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents simulation's map.
     /// </summary>
-    class Map : IDrawable
+    class Map : Drawable
     {
         public int SafeZoneRadius { get; set; }
 

@@ -58,7 +58,7 @@
     <Compile Include="Simulation\Creature.cs" />
     <Compile Include="Simulation\Food.cs" />
     <Compile Include="Simulation\Gene.cs" />
-    <Compile Include="Simulation\IDrawable.cs" />
+    <Compile Include="Simulation\Drawable.cs" />
     <Compile Include="Simulation\Map.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

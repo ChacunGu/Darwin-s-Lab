@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Darwin_s_Lab.Simulation
 {
     /// <summary>
     /// Represents a simulation's creature.
     /// </summary>
-    class Creature : IDrawable
+    class Creature : Drawable
     {
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
@@ -23,6 +26,7 @@ namespace Darwin_s_Lab.Simulation
             this.AddGene("colorH", colorH, uint.MaxValue);
             this.AddGene("colorS", colorS, uint.MaxValue);
             this.AddGene("colorV", colorV, uint.MaxValue);
+
         }
 
         /// <summary>

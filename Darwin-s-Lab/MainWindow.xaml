@@ -20,6 +20,7 @@
         <Rectangle Fill="#26000000" Grid.ColumnSpan="3" Grid.RowSpan="3"/>
         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1">
             <Canvas x:Name="canvas" Width="1000" Height="1000">
+
                 <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
             </Canvas>
         </Viewbox>
