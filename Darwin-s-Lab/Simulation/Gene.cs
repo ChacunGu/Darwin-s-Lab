@@ -27,6 +27,48 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Mutates gene.
+        /// </summary>
+        public void Mutate()
+        {
+            int numberOnesBitInGene = (int)CountNumberOnesBit(Value);
+            int indexBitOneToFlip = Tools.rdm.Next(0, numberOnesBitInGene);
+            int indexBitZeroToFlip = Tools.rdm.Next(0, (int)NumberOnesBitInMask - numberOnesBitInGene);
+
+            bool bitOneFlipped = false;
+            bool bitZeroFlipped = false;
+
+            int counterOnes = 0;
+            int counterZeroes = 0;
+            int counterTotal = 0;
+
+            // go through gene to find the bits to flip
+            while (!bitOneFlipped || !bitZeroFlipped)
+            {
+                bool isOne = (Value & (1 << counterTotal)) != 0;
+                if (isOne)
+                {
+                    if (counterOnes == indexBitOneToFlip) // this bit should be flipped
+                    {
+                        Value ^= (uint)(1 << counterTotal);
+                        bitOneFlipped = true;
+                    }
+                    counterOnes++;
+                }
+                else
+                {
+                    if (counterZeroes == indexBitZeroToFlip) // this bit should be flipped
+                    {
+                        Value ^= (uint)(1 << counterTotal);
+                        bitZeroFlipped = true;
+                    }
+                    counterZeroes++;
+                }
+                counterTotal++;
+            }
+        }
+
+        /// <summary>
         /// Returns gene's representation as a string.
         /// </summary>
         /// <returns>gene's representation</returns>

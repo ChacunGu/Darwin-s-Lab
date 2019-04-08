@@ -26,7 +26,6 @@ namespace Darwin_s_Lab.Simulation
 
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
-        private Random rdm = new Random();
 
         #region Constructor
         public Creature()
@@ -166,44 +165,9 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i=0; i<Genes.Count(); i++) // for each gene
             {
-                if (rdm.NextDouble() < Gene.MutationProbability) // if gene has to mutate
+                if (Tools.rdm.NextDouble() < Gene.MutationProbability) // if gene has to mutate
                 {
-                    Gene gene = Genes.ElementAt(i).Value;
-
-                    int numberOnesBitInGene = (int)Gene.CountNumberOnesBit(gene.Value);
-                    int indexBitOneToFlip = rdm.Next(0, numberOnesBitInGene);
-                    int indexBitZeroToFlip = rdm.Next(0, (int)gene.NumberOnesBitInMask-numberOnesBitInGene);
-
-                    bool bitOneFlipped = false;
-                    bool bitZeroFlipped = false;
-
-                    int counterOnes = 0;
-                    int counterZeroes = 0;
-                    int counterTotal = 0;
-
-                    // go through gene to find the bits to flip
-                    while (!bitOneFlipped || !bitZeroFlipped)
-                    {
-                        bool isOne = (gene.Value & (1 << counterTotal)) != 0;
-                        if (isOne)
-                        {
-                            if (counterOnes == indexBitOneToFlip) // this bit should be flipped
-                            {
-                                gene.Value ^= (uint)(1 << counterTotal);
-                                bitOneFlipped = true;
-                            }
-                            counterOnes++;
-                        } else
-                        {
-                            if (counterZeroes == indexBitZeroToFlip) // this bit should be flipped
-                            {
-                                gene.Value ^= (uint)(1 << counterTotal);
-                                bitZeroFlipped = true;
-                            }
-                            counterZeroes++;
-                        }
-                        counterTotal++;
-                    }
+                    Genes.ElementAt(i).Value.Mutate();
                 }
             }
         }
@@ -224,15 +188,15 @@ namespace Darwin_s_Lab.Simulation
                 uint mask = selfGene.Mask;
                 uint value = 0;
 
-                if (rdm.NextDouble() < CrossoverKeepAverageProbability) // average between self and other
+                if (Tools.rdm.NextDouble() < CrossoverKeepAverageProbability) // average between self and other
                 {
-                    uint avg = (selfGene.Value - otherGene.Value) / 2;
-                    double rdmOffset = rdm.NextDouble() - 0.5; // random between -0.5 and 0.5
-                    rdmOffset *= Math.Floor((double) Math.Abs(selfGene.Value - otherGene.Value) / 2); // multiply random by difference to get the offset from avg's value
+                    uint avg = selfGene.Value / 2 + otherGene.Value / 2;
+                    double rdmOffset = Tools.rdm.NextDouble() - 0.5; // random between -0.5 and 0.5
+                    rdmOffset *= Math.Floor((double) Math.Abs((int)selfGene.Value - (int)otherGene.Value) / 2); // multiply random by difference to get the offset from avg's value
                     value = avg + (uint) Math.Floor(rdmOffset); // apply offset to average
                 } else
                 {
-                    if (rdm.NextDouble() < CrossoverKeepOtherProbability) // keep other
+                    if (Tools.rdm.NextDouble() < CrossoverKeepOtherProbability) // keep other
                     {
                         value = otherGene.Value;
                     } else // keep self

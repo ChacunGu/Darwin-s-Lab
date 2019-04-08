@@ -60,6 +60,7 @@
     <Compile Include="Simulation\Gene.cs" />
     <Compile Include="Simulation\IDrawable.cs" />
     <Compile Include="Simulation\Map.cs" />
+    <Compile Include="Tools.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
