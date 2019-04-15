@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents a simulation's creature.
     /// </summary>
-    class Creature : IDrawable
+    class Creature : Drawable
     {
         public static uint DefaultEnergy = 1;
         public static uint DefaultSpeed = 1;
@@ -126,6 +126,15 @@ namespace Darwin_s_Lab.Simulation
                 this.Genes[name] = new Gene(name, value, mask);
             else
                 this.Genes.Add(name, new Gene(name, value, mask));
+        }
+
+        /// <summary>
+        /// Take a step in a direction
+        /// </summary>
+        /// <param name="dt">time in milliseconds</param>
+        public void TakeStep(long dt)
+        {
+
         }
 
         /// <summary>

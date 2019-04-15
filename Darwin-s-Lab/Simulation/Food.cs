@@ -9,9 +9,19 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents simulation's food.
     /// </summary>
-    class Food : IDrawable
+    public class Food : Drawable
     {
         public int Energy { get; set; }
+        private Random rnd;
+        public Food(Map map)
+        {
+            Random rnd = new Random();
+
+            this.position = Map.PolarToCartesian(
+                rnd.NextDouble() * Math.PI * 2,
+                rnd.NextDouble() * map.SafeZoneRadius
+                );
+        }
 
         /// <summary>
         /// Updates element's graphical state before drawing.
