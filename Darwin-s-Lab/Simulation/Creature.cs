@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -11,6 +12,11 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     class Creature : Drawable
     {
+        public static double MinimalDistanceToSearchMate = Map.MapSize / 8;
+        static double MinimalDistanceToJoinMate = 30;
+        static double MinimalDistanceToMate = 5;
+        static double MinimalEnergyToMate = 0.5;
+        static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
@@ -26,6 +32,7 @@ namespace Darwin_s_Lab.Simulation
 
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
+        public Creature Mate { get; set; }
 
         #region Constructor
         public Creature()
@@ -76,7 +83,7 @@ namespace Darwin_s_Lab.Simulation
             this.AddGene("detectionRange", detectionRange, mask == null ? DefaultGenesValues["detectionRange"][1] : (uint)mask);
             return this;
         }
-
+        
         /// <summary>
         /// Sets creature's force and returns the creature object.
         /// </summary>
@@ -141,12 +148,65 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Take a step in a direction
+        /// Takes a step in a direction.
         /// </summary>
         /// <param name="dt">time in milliseconds</param>
         public void TakeStep(long dt)
         {
+            Position += Direction * Genes["speed"].Value * (dt / Manager.FramesPerSec);
+        }
 
+        /// <summary>
+        /// Completes the whole mating process. Moves towards the mate and if in range reproduces and returns the newborn.
+        /// </summary>
+        /// <param name="dt">time elapsed since last call in milliseconds</param>
+        /// <param name="map">simulation's map</param>
+        /// <returns>newborn creature or null if the creatures didn't found each other</returns>
+        public Creature MatingProcess(long dt, Map map)
+        {
+            // search best direction to move towards the creature's mate
+            FindDirectionTowardsMate(map);
+
+            // move
+            TakeStep(dt);
+
+            // mate if in range
+            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= MinimalDistanceToMate)
+            {
+                Mate.Mate = null;
+                Mate = null;
+                return Cross(Mate);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the direction towards the creature's mate.
+        /// </summary>
+        /// <param name="map">simulation's map</param>
+        public void FindDirectionTowardsMate(Map map)
+        {
+            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > MinimalDistanceToJoinMate*MinimalDistanceToJoinMate)
+            {
+                // find safe zone circle's tangent
+                Vector myPosToCenter = map.Position - Position;
+                Vector tangentToSafeZoneCircle = new Vector(myPosToCenter.Y, -myPosToCenter.X);
+
+                // negate if shorter path is counter clockwise
+                // formula: https://stackoverflow.com/a/25927775
+                if (((map.Position.X - Position.X) * (Mate.Position.Y - map.Position.Y)) - 
+                    ((map.Position.Y - Position.Y) * (Mate.Position.X - map.Position.X)) >= 0.0)
+                {
+                    tangentToSafeZoneCircle.Negate();
+                    tangentToSafeZoneCircle.Normalize();
+                    Direction = tangentToSafeZoneCircle;
+                }
+            } else
+            {
+                // move directly towards mate
+                Direction = Mate.Position - Position;
+                Direction.Normalize();
+            }
         }
 
         /// <summary>
@@ -217,6 +277,69 @@ namespace Darwin_s_Lab.Simulation
                 newborn.AddGene(name, value, mask);
             }
             return newborn;
+        }
+
+        /// <summary>
+        /// Returns true if the creature is still alive false otherwise.
+        /// </summary>
+        /// <returns>creature's state alive (true) or dead (false)</returns>
+        public bool IsAlive()
+        {
+            return GetEnergy() > 0;
+        }
+
+        /// <summary>
+        /// Kills creature.
+        /// </summary>
+        public void Kill()
+        {
+            // TODO
+        }
+
+        /// <summary>
+        /// Returns true if the creature can mutate false otherwise.
+        /// </summary>
+        /// <returns>true if the creature can mutate false otherwise</returns>
+        public bool CanMutate()
+        {
+            return Tools.rdm.NextDouble() < MutationProbability;
+        }
+
+        /// <summary>
+        /// Returns true if the creature has enough energy to mate false otherwise.
+        /// </summary>
+        /// <returns>true if the creature can mate false otherwise</returns>
+        public bool CanMate()
+        {
+            return GetEnergy() >= MinimalEnergyToMate;
+        }
+        
+        /// <summary>
+        /// Sets each other's mate.
+        /// </summary>
+        /// <param name="mate">creature's new mate</param>
+        public void SetMate(Creature mate)
+        {
+            this.Mate = mate;
+            mate.Mate = this;
+        }
+
+        /// <summary>
+        /// Returns the creature's speed.
+        /// </summary>
+        /// <returns>creature's speed</returns>
+        public int GetSpeed()
+        {
+            return (int)Genes["speed"].Value;
+        }
+
+        /// <summary>
+        /// Returns the creature's energy.
+        /// </summary>
+        /// <returns>creature's energy</returns>
+        public int GetEnergy()
+        {
+            return (int)Genes["energy"].Value;
         }
 
         /// <summary>

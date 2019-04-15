@@ -15,13 +15,13 @@ namespace Darwin_s_Lab.Simulation
         private double safeZoneRadiusPourcent;
         public double SafeZoneRadius {
             get {
-                return this.safeZoneRadiusPourcent * mapSize;
+                return this.safeZoneRadiusPourcent * MapSize;
             }
             set {
                 safeZoneRadiusPourcent = value;
             }
         }
-        private const int mapSize = 1000;
+        public static int MapSize = 1000;
 
         public Map(double safeZoneRadiusPourcent)
         {
@@ -41,9 +41,26 @@ namespace Darwin_s_Lab.Simulation
             return new Point(radius * Math.Cos(alpha), radius * Math.Sin(alpha));
         }
 
+        /// <summary>
+        /// Computes the euclidean distance between two points.
+        /// </summary>
+        /// <param name="p1">First point</param>
+        /// <param name="p2">Second point</param>
+        /// <returns>Distance between the two points</returns>
         static public double DistanceBetweenTwoPoints(Point p1, Point p2)
         {
             return Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
+        }
+
+        /// <summary>
+        /// Computes the euclidean distance between two points (without computing the square root).
+        /// </summary>
+        /// <param name="p1">First point</param>
+        /// <param name="p2">Second point</param>
+        /// <returns>Distance between the two points</returns>
+        static public double DistanceBetweenTwoPointsOpti(Point p1, Point p2)
+        {
+            return (p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y);
         }
     }
 }
