@@ -8,8 +8,9 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateBackHome : State
     {
-        public override void DoAction()
+        public override void DoAction(Manager manager)
         {
+            // make creatures go back home
             throw new NotImplementedException();
         }
 

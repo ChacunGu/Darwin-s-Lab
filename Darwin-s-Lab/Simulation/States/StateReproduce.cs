@@ -8,8 +8,11 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateReproduce : State
     {
-        public override void DoAction()
+        public override void DoAction(Manager manager)
         {
+            // mutation
+            // crossing over
+            // replace creatures
             throw new NotImplementedException();
         }
 

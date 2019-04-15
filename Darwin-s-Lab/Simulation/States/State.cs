@@ -17,6 +17,6 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">the manager that need to change state</param>
         public abstract void GoNext(Manager manager);
 
-        public abstract void DoAction();
+        public abstract void DoAction(Manager manager);
     }
 }

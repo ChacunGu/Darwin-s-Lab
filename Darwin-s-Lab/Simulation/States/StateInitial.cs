@@ -8,9 +8,9 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateInitial : State
     {
-        public override void DoAction()
+        public override void DoAction(Manager manager)
         {
-            //Do nothing...
+            //Create initial creatures
         }
 
         public override void GoNext(Manager manager)

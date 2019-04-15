@@ -20,6 +20,8 @@ namespace Darwin_s_Lab.Simulation
         private Canvas canvas;
         private State state;
 
+        private int foodNumber;
+
         private Stopwatch stopwatch;
         private DispatcherTimer timer;
         private long dt;
@@ -28,6 +30,8 @@ namespace Darwin_s_Lab.Simulation
         {
             this.canvas = canvas;
             this.state = state;
+
+            this.FoodNumber = 20;
 
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(SimulationTick);
@@ -38,9 +42,10 @@ namespace Darwin_s_Lab.Simulation
 
             dt = stopwatch.ElapsedMilliseconds;
         }
-
-        // Gets or sets the state
-
+        
+        /// <summary>
+        /// Gets or sets the state 
+        /// </summary>
         public State State
         {
             get
@@ -55,6 +60,21 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Gets or sets the number of food generated at start
+        /// </summary>
+        public int FoodNumber
+        {
+            get
+            {
+                return foodNumber;
+            }
+            set
+            {
+                foodNumber = value;
+            }
+        }
+
+        /// <summary>
         /// Start the simulation
         /// </summary>
         public void StartSimulation()
@@ -65,7 +85,7 @@ namespace Darwin_s_Lab.Simulation
 
         private void SimulationLoop()
         {
-            State.DoAction();
+            State.DoAction(this);
             State.GoNext(this);
         }
 
@@ -80,6 +100,14 @@ namespace Darwin_s_Lab.Simulation
             
 
 
+        }
+
+        public void generateFood()
+        {
+            for (int i = 0 ; i < FoodNumber ; i++)
+            {
+                foods.Add(new Food(map));
+            }
         }
     }
 }
