@@ -67,6 +67,7 @@
     <Compile Include="Simulation\States\StateInitial.cs" />
     <Compile Include="Simulation\States\State.cs" />
     <Compile Include="Simulation\States\StateReproduce.cs" />
+    <Compile Include="Tools.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
