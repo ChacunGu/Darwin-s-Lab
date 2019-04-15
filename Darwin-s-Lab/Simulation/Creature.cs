@@ -37,6 +37,7 @@ namespace Darwin_s_Lab.Simulation
         #region Constructor
         public Creature()
         {
+            Position = new Point(0, 0);
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
             this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
@@ -129,6 +130,17 @@ namespace Darwin_s_Lab.Simulation
         public Creature WithColorV(uint colorV, uint? mask)
         {
             this.AddGene("colorV", colorV, mask == null ? DefaultGenesValues["colorV"][1] : (uint)mask);
+            return this;
+        }
+
+        /// <summary>
+        /// Sets creature's position and returns creature object.
+        /// </summary>
+        /// <param name="position">creature's position</param>
+        /// <returns>creature with position set</returns>
+        public Creature WithPosition(Point position)
+        {
+            this.Position = position;
             return this;
         }
         #endregion

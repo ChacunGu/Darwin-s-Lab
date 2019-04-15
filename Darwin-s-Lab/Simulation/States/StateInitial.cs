@@ -8,11 +8,19 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateInitial : State
     {
+        /// <summary>
+        /// Creates initial population.
+        /// </summary>
+        /// <param name="manager">simulation's manager</param>
         public override void DoAction(Manager manager)
         {
-            //Create initial creatures
+            manager.CreateInitialPopulation();
         }
 
+        /// <summary>
+        /// Switch to state "grow food"
+        /// </summary>
+        /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
             manager.State = new StateGrowFood();

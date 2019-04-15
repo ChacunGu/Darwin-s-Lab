@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Windows;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -15,6 +16,7 @@ namespace Darwin_s_Lab.Simulation
     public class Manager
     {
         public static int FramesPerSec = 17;
+        static int defaultNumberCreatures = 200;
         private List<Creature> creatures;
         private List<Creature> matingCreatures;
         private List<Creature> newbornCreatures;
@@ -101,6 +103,27 @@ namespace Darwin_s_Lab.Simulation
             
 
 
+        }
+
+        /// <summary>
+        /// Creates initial creatures population.
+        /// </summary>
+        public void CreateInitialPopulation()
+        {
+            for (int i = 0; i < defaultNumberCreatures; i++)
+            {
+                Point rdmPosition = Map.PolarToCartesian(Tools.rdm.NextDouble() * Math.PI * 2,
+                                                         Tools.rdm.NextDouble() * 10 + map.SafeZoneRadius);
+                creatures.Add(new Creature()
+                              .WithPosition(rdmPosition)
+                              .WithEnergy(2, null)
+                              .WithSpeed(2, null)
+                              .WithDetectionRange(2, null)
+                              .WithForce(2, null)
+                              .WithColorH(2, null)
+                              .WithColorS(2, null)
+                              .WithColorV(2, null));
+            }
         }
 
         public void generateFood()

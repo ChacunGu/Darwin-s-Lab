@@ -12,14 +12,11 @@ namespace Darwin_s_Lab.Simulation
     public class Food : Drawable
     {
         public int Energy { get; set; }
-        private Random rnd;
         public Food(Map map)
         {
-            Random rnd = new Random();
-
             this.position = Map.PolarToCartesian(
-                rnd.NextDouble() * Math.PI * 2,
-                rnd.NextDouble() * map.SafeZoneRadius
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                Tools.rdm.NextDouble() * map.SafeZoneRadius
                 );
         }
 
