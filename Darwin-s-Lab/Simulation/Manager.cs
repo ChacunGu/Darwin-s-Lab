@@ -83,6 +83,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void StartSimulation()
         {
+            // just for testing, simulate passing of states
             DispatcherTimer timer2 = new DispatcherTimer();
             timer2.Tick += new EventHandler((sender, e) => {
                 SimulationStep();
@@ -132,7 +133,7 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i = 0; i < CreatureNumber; i++)
             {
-                creatures.Add(new Creature());
+                creatures.Add(new Creature(canvas, map));
             }
         }
     }

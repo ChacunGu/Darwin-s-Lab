@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -27,8 +30,11 @@ namespace Darwin_s_Lab.Simulation
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
 
+        private Canvas canvas;
+        private Map map;
+
         #region Constructor
-        public Creature()
+        public Creature(Canvas canvas, Map map)
         {
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
@@ -38,6 +44,24 @@ namespace Darwin_s_Lab.Simulation
             this.AddGene("colorH", Creature.DefaultGenesValues["colorH"][0], Creature.DefaultGenesValues["colorH"][1]);
             this.AddGene("colorS", Creature.DefaultGenesValues["colorS"][0], Creature.DefaultGenesValues["colorS"][1]);
             this.AddGene("colorV", Creature.DefaultGenesValues["colorV"][0], Creature.DefaultGenesValues["colorV"][1]);
+
+            this.canvas = canvas;
+            this.map = map;
+
+            Position = Map.PolarToCartesian(
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                (Tools.rdm.NextDouble() * map.SafeZoneRadius / 4 + map.SafeZoneRadius) / 2
+            );
+            
+            Ellipse = new Ellipse();
+            Ellipse.Width = 50;
+            Ellipse.Height = 50;
+
+            Ellipse.Fill = Brushes.Blue;
+
+            canvas.Children.Add(Ellipse);
+            Canvas.SetLeft(Ellipse, Position.X);
+            Canvas.SetTop(Ellipse, Position.Y);
         }
 
         /// <summary>
@@ -187,7 +211,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="other">significant other</param>
         public Creature Cross(Creature other)
         {
-            Creature newborn = new Creature();
+            Creature newborn = new Creature(this.canvas, this.map);
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;

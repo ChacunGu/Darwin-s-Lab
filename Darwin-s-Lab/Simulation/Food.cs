@@ -23,8 +23,9 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                Tools.rdm.NextDouble() * map.SafeZoneRadius
+                Tools.rdm.NextDouble() * map.SafeZoneRadius/2
             );
+            
 
             Ellipse = new Ellipse();
             Ellipse.Width = 30;

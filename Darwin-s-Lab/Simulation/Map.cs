@@ -14,11 +14,24 @@ namespace Darwin_s_Lab.Simulation
     {
         private double safeZoneRadiusPourcent;
         public double SafeZoneRadius {
-            get {
+            get
+            {
                 return this.safeZoneRadiusPourcent * mapSize;
             }
-            set {
+            set
+            {
                 safeZoneRadiusPourcent = value;
+            }
+        }
+        public double HomeRadius
+        {
+            get
+            {
+                return mapSize - SafeZoneRadius;
+            }
+            set
+            {
+                safeZoneRadiusPourcent = 1 - value;
             }
         }
         private const int mapSize = 1000;
@@ -38,7 +51,7 @@ namespace Darwin_s_Lab.Simulation
 
         static public Point PolarToCartesian(double alpha, double radius)
         {
-            return new Point(radius * Math.Cos(alpha), radius * Math.Sin(alpha));
+            return new Point(radius * Math.Cos(alpha) + 500, radius * Math.Sin(alpha) + 500);
         }
 
         static public double DistanceBetweenTwoPoints(Point p1, Point p2)
