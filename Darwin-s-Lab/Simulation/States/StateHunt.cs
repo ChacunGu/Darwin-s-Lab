@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Darwin_s_Lab.Simulation
 {
-    class StateHunt : State
+    public class StateHunt : State
     {
         public override void DoAction(Manager manager)
         {

@@ -50,7 +50,7 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                (Tools.rdm.NextDouble() * map.SafeZoneRadius / 4 + map.SafeZoneRadius) / 2
+                (Tools.rdm.NextDouble() * map.middleAreaRadius / 4 + map.middleAreaRadius) / 2
             );
             
             Ellipse = new Ellipse();

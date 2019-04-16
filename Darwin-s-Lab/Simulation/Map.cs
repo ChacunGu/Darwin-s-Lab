@@ -12,33 +12,33 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Map : Drawable
     {
-        private double safeZoneRadiusPourcent;
-        public double SafeZoneRadius {
+        private double middleAreaRadiusPourcent;
+        public double middleAreaRadius {
             get
             {
-                return this.safeZoneRadiusPourcent * mapSize;
+                return this.middleAreaRadiusPourcent * mapSize;
             }
             set
             {
-                safeZoneRadiusPourcent = value;
+                middleAreaRadiusPourcent = value;
             }
         }
         public double HomeRadius
         {
             get
             {
-                return mapSize - SafeZoneRadius;
+                return mapSize - middleAreaRadius;
             }
             set
             {
-                safeZoneRadiusPourcent = 1 - value;
+                middleAreaRadiusPourcent = 1 - value;
             }
         }
         private const int mapSize = 1000;
 
         public Map(double safeZoneRadiusPourcent)
         {
-            this.safeZoneRadiusPourcent = safeZoneRadiusPourcent;
+            this.middleAreaRadiusPourcent = safeZoneRadiusPourcent;
         }
 
         /// <summary>
