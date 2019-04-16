@@ -13,6 +13,11 @@ namespace Darwin_s_Lab
         {
             InitializeComponent();
 
+            Manager manager = new Manager(canvas);
+
+            manager.StartSimulation();
+
+            /*
             Creature jack = new Creature()
                             .WithEnergy(2, null)
                             .WithSpeed(2, null)
@@ -45,6 +50,7 @@ namespace Darwin_s_Lab
             Console.WriteLine();
             Console.WriteLine("\nCrossover !");
             Console.WriteLine("\nNewborn:\n" + newborn);
+            */
         }
     }
 }

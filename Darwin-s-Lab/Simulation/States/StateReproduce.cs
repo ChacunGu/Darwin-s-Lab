@@ -13,7 +13,6 @@ namespace Darwin_s_Lab.Simulation
             // mutation
             // crossing over
             // replace creatures
-            throw new NotImplementedException();
         }
 
         public override void GoNext(Manager manager)

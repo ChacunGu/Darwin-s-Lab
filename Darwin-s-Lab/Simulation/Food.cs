@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -12,15 +17,26 @@ namespace Darwin_s_Lab.Simulation
     public class Food : Drawable
     {
         public int Energy { get; set; }
-        private Random rnd;
-        public Food(Map map)
+        
+        public Food(Canvas canvas, Map map)
         {
-            Random rnd = new Random();
 
-            this.position = Map.PolarToCartesian(
-                rnd.NextDouble() * Math.PI * 2,
-                rnd.NextDouble() * map.SafeZoneRadius
-                );
+            Position = Map.PolarToCartesian(
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                Tools.rdm.NextDouble() * map.SafeZoneRadius
+            );
+
+            Ellipse = new Ellipse();
+            Ellipse.Width = 30;
+            Ellipse.Height = 30;
+
+            Ellipse.Fill = Brushes.Red;
+            
+            canvas.Children.Add(Ellipse);
+            Canvas.SetLeft(Ellipse, Position.X);
+            Canvas.SetTop(Ellipse, Position.Y);
+            
+
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace Darwin_s_Lab.Simulation
         {
             //delete old food ?
             //generate new foods
-            manager.generateFood();
+            manager.GenerateFood();
         }
 
         public override void GoNext(Manager manager)

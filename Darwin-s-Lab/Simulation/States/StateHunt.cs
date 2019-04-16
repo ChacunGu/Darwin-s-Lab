@@ -11,7 +11,6 @@ namespace Darwin_s_Lab.Simulation
         public override void DoAction(Manager manager)
         {
             //make creatures moves toward food
-            throw new NotImplementedException();
         }
 
         public override void GoNext(Manager manager)

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Diagnostics;
+using System.Threading;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -19,19 +22,21 @@ namespace Darwin_s_Lab.Simulation
         private Map map;
         private Canvas canvas;
         private State state;
-
-        private int foodNumber;
-
         private Stopwatch stopwatch;
         private DispatcherTimer timer;
         private long dt;
 
-        public Manager(State state, Canvas canvas)
+        public Manager(Canvas canvas)
         {
             this.canvas = canvas;
-            this.state = state;
+            this.state = new StateInitial();
+            this.map = new Map(0.8);
+
+            this.foods = new List<Food>();
+            this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
+            this.CreatureNumber = 100;
 
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(SimulationTick);
@@ -41,6 +46,10 @@ namespace Darwin_s_Lab.Simulation
             stopwatch.Start();
 
             dt = stopwatch.ElapsedMilliseconds;
+
+            timer.Start();
+
+            //this.GenerateFood();
         }
         
         /// <summary>
@@ -62,32 +71,40 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Gets or sets the number of food generated at start
         /// </summary>
-        public int FoodNumber
-        {
-            get
-            {
-                return foodNumber;
-            }
-            set
-            {
-                foodNumber = value;
-            }
-        }
+        public int FoodNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of creatures generated at start
+        /// </summary>
+        public int CreatureNumber { get; set; }
 
         /// <summary>
         /// Start the simulation
         /// </summary>
         public void StartSimulation()
         {
-            
-
+            DispatcherTimer timer2 = new DispatcherTimer();
+            timer2.Tick += new EventHandler((sender, e) => {
+                SimulationStep();
+            });
+            timer2.Interval = new TimeSpan(0, 0, 0, 2);
+            timer2.Start();
         }
 
-        private void SimulationLoop()
+        private void SimulationStep()
         {
             State.DoAction(this);
             State.GoNext(this);
         }
+        
+        private void SimulationLoop()
+        {
+            for (int i = 0 ; i < 10 ; i++)
+            {
+                SimulationStep();
+            }
+        }
+        
 
         /// <summary>
         /// Simulate the passage of time
@@ -97,16 +114,25 @@ namespace Darwin_s_Lab.Simulation
         private void SimulationTick(object sender, EventArgs e)
         {
             dt = stopwatch.ElapsedMilliseconds - dt;
-            
 
+            //Console.WriteLine(dt);
 
         }
 
-        public void generateFood()
+        internal void GenerateFood()
         {
+            foods.Clear();
             for (int i = 0 ; i < FoodNumber ; i++)
             {
-                foods.Add(new Food(map));
+                foods.Add(new Food(canvas, map));
+            }
+        }
+
+        internal void CreateCreatures()
+        {
+            for (int i = 0; i < CreatureNumber; i++)
+            {
+                creatures.Add(new Creature());
             }
         }
     }
