@@ -20,24 +20,17 @@ namespace Darwin_s_Lab.Simulation
         
         public Food(Canvas canvas, Map map)
         {
+            this.canvas = canvas;
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                Tools.rdm.NextDouble() * map.middleAreaRadius/2
+                Tools.rdm.NextDouble() * map.MiddleAreaRadius/2
             );
-            
 
-            Ellipse = new Ellipse();
-            Ellipse.Width = 30;
-            Ellipse.Height = 30;
-
-            Ellipse.Fill = Brushes.Red;
+            CreateEllipse(Brushes.Red);
             
-            canvas.Children.Add(Ellipse);
-            Canvas.SetLeft(Ellipse, Position.X);
-            Canvas.SetTop(Ellipse, Position.Y);
+            Move();
             
-
         }
 
         /// <summary>

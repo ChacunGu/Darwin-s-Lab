@@ -29,8 +29,7 @@ namespace Darwin_s_Lab.Simulation
 
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
-
-        private Canvas canvas;
+        
         private Map map;
 
         #region Constructor
@@ -50,18 +49,15 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                (Tools.rdm.NextDouble() * map.middleAreaRadius / 4 + map.middleAreaRadius) / 2
+                (Tools.rdm.NextDouble() * map.MiddleAreaRadius / 4 + map.MiddleAreaRadius) / 2
             );
-            
-            Ellipse = new Ellipse();
-            Ellipse.Width = 50;
-            Ellipse.Height = 50;
 
-            Ellipse.Fill = Brushes.Blue;
+            this.width = 50;
+            this.height = 50;
 
-            canvas.Children.Add(Ellipse);
-            Canvas.SetLeft(Ellipse, Position.X);
-            Canvas.SetTop(Ellipse, Position.Y);
+            CreateEllipse(Brushes.Blue);
+
+            Move();
         }
 
         /// <summary>

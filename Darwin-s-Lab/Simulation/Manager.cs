@@ -30,13 +30,13 @@ namespace Darwin_s_Lab.Simulation
         {
             this.canvas = canvas;
             this.state = new StateInitial();
-            this.map = new Map(0.8);
+            this.map = new Map(0.8, canvas);
 
             this.foods = new List<Food>();
             this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
-            this.CreatureNumber = 100;
+            this.CreatureNumber = 10;
 
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(SimulationTick);
@@ -48,8 +48,7 @@ namespace Darwin_s_Lab.Simulation
             dt = stopwatch.ElapsedMilliseconds;
 
             timer.Start();
-
-            //this.GenerateFood();
+            
         }
         
         /// <summary>
@@ -122,6 +121,10 @@ namespace Darwin_s_Lab.Simulation
 
         internal void GenerateFood()
         {
+            foreach (Food food in foods)
+            {
+                food.Destroy();
+            }
             foods.Clear();
             for (int i = 0 ; i < FoodNumber ; i++)
             {

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -13,7 +16,7 @@ namespace Darwin_s_Lab.Simulation
     public class Map : Drawable
     {
         private double middleAreaRadiusPourcent;
-        public double middleAreaRadius {
+        public double MiddleAreaRadius {
             get
             {
                 return this.middleAreaRadiusPourcent * mapSize;
@@ -27,7 +30,7 @@ namespace Darwin_s_Lab.Simulation
         {
             get
             {
-                return mapSize - middleAreaRadius;
+                return mapSize - MiddleAreaRadius;
             }
             set
             {
@@ -36,9 +39,18 @@ namespace Darwin_s_Lab.Simulation
         }
         private const int mapSize = 1000;
 
-        public Map(double safeZoneRadiusPourcent)
+        public Map(double safeZoneRadiusPourcent, Canvas canvas)
         {
             this.middleAreaRadiusPourcent = safeZoneRadiusPourcent;
+
+            this.canvas = canvas;
+
+            this.width = MiddleAreaRadius;
+            this.height = MiddleAreaRadius;
+
+            CreateEllipse(Brushes.Green);
+            Position = new Point(mapSize / 2, mapSize / 2);
+            Move();
         }
 
         /// <summary>

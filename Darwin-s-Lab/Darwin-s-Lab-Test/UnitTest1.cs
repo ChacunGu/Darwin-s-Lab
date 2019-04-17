@@ -11,10 +11,11 @@ namespace Darwin_s_Lab.Simulation
         [TestMethod]
         public void TestFoodGeneration()
         {
-            Map map = new Map(0.8);
             Canvas canvas = new Canvas();
             canvas.Width = 1000;
             canvas.Height = 1000;
+
+            Map map = new Map(0.8, canvas);
 
             for (int i=0 ; i < 100 ; i++)
             {
@@ -23,7 +24,7 @@ namespace Darwin_s_Lab.Simulation
                     Map.DistanceBetweenTwoPoints(
                         newFood.Position,
                         new Point(500, 500)
-                    ) < map.middleAreaRadius
+                    ) < map.MiddleAreaRadius
                 );
             }
         }
