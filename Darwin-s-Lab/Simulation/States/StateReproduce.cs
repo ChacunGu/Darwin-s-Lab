@@ -11,7 +11,7 @@ namespace Darwin_s_Lab.Simulation
         public StateReproduce()
         {
             Name = "Reproduce";
-            Duration = 25000;
+            Duration = 15000;
         }
 
         /// <summary>

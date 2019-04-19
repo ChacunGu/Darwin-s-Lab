@@ -14,10 +14,10 @@ namespace Darwin_s_Lab.Simulation
     {
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
-        public static double MinimalDistanceToSearchMate = Math.Sqrt(CreatureDim.X*CreatureDim.X + CreatureDim.Y*CreatureDim.Y);
-        static double MinimalDistanceToJoinMate = 30;
-        static double MinimalDistanceToMate = 5;
-        static double MinimalEnergyToMate = 0.5;
+        public static double MinimalDistanceToSearchMate = 600*600; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToJoinMate = 100*100; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToMate = 25*25; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalEnergyToMate = 0.0;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
@@ -245,7 +245,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="map">simulation's map</param>
         public void FindDirectionTowardsMate(Map map)
         {
-            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > MinimalDistanceToJoinMate*MinimalDistanceToJoinMate)
+            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > MinimalDistanceToJoinMate)
             {
                 // find safe zone circle's tangent
                 Vector myPosToCenter = map.Position - Position;

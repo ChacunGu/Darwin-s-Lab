@@ -180,13 +180,13 @@ namespace Darwin_s_Lab.Simulation
             matingCreatures = new List<Creature>();
 
             // for each creature
-            for (int i = tmpMatingCreatures.Count - 1; i >= 1; i-=2)
+            for (int i = tmpMatingCreatures.Count - 1; i >= 0; i--)
             {
-                double smallestDistance = Map.DistanceBetweenTwoPointsOpti(tmpMatingCreatures[i].Position, tmpMatingCreatures[i-1].Position);
-                int nearestCreatureIndex = i-1;
+                double smallestDistance = Double.MaxValue;
+                int nearestCreatureIndex = -1;
             
                 // search the nearest creature
-                for (int j = i-2; j >= 0; j--)
+                for (int j = i-1; j >= 0; j--)
                 {
                     double distance = Map.DistanceBetweenTwoPointsOpti(tmpMatingCreatures[i].Position, tmpMatingCreatures[j].Position);
                     if (distance <= Creature.MinimalDistanceToSearchMate && distance < smallestDistance)
@@ -197,13 +197,17 @@ namespace Darwin_s_Lab.Simulation
                 }
 
                 // define the nearest creature as the new mate
-                tmpMatingCreatures[i].SetMate(tmpMatingCreatures[nearestCreatureIndex]);
+                if (nearestCreatureIndex != -1)
+                {
+                    tmpMatingCreatures[i].SetMate(tmpMatingCreatures[nearestCreatureIndex]);
 
-                matingCreatures.Add(tmpMatingCreatures[i]);
-                matingCreatures.Add(tmpMatingCreatures[nearestCreatureIndex]);
+                    matingCreatures.Add(tmpMatingCreatures[i]);
+                    matingCreatures.Add(tmpMatingCreatures[nearestCreatureIndex]);
 
-                tmpMatingCreatures.RemoveAt(i);
-                tmpMatingCreatures.RemoveAt(i < nearestCreatureIndex ? nearestCreatureIndex-1 : nearestCreatureIndex);
+                    tmpMatingCreatures.RemoveAt(i);
+                    tmpMatingCreatures.RemoveAt(i < nearestCreatureIndex ? nearestCreatureIndex-1 : nearestCreatureIndex);
+                    i--;
+                }
             }
             
             newbornCreatures = new List<Creature>();
