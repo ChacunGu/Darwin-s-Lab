@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents a simulation's creature.
     /// </summary>
-    class Creature : IDrawable
+    public class Creature : IDrawable
     {
         public static uint DefaultEnergy = 1;
         public static uint DefaultSpeed = 1;

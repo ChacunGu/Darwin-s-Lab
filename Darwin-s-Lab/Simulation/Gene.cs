@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents a creature's gene.
     /// </summary>
-    class Gene
+    public class Gene
     {
         public String Name { get; set; }
         public uint Value { get; set; }

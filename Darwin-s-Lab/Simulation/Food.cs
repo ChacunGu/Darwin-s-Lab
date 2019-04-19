@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents simulation's food.
     /// </summary>
-    class Food : IDrawable
+    public class Food : IDrawable
     {
         public int Energy { get; set; }
 

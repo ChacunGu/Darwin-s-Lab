@@ -24,6 +24,8 @@ namespace Darwin_s_Lab
             Creature bobby = new Creature();
             Console.WriteLine("Jack:\n" + jack);
             Console.WriteLine("Bobby:\n" + bobby);
+
+            creature_infos.SetCreature(jack);
         }
     }
 }
