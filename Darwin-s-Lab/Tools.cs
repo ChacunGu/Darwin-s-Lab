@@ -133,11 +133,11 @@ namespace Darwin_s_Lab
             g = Clamp((int)(G * 255.0));
             b = Clamp((int)(B * 255.0));
         }
-
+        
         /// <summary>
         /// Clamp a value to 0-255
         /// </summary>
-        static int Clamp(int i)
+        private static int Clamp(int i)
         {
             if (i < 0) return 0;
             if (i > 255) return 255;
@@ -157,6 +157,17 @@ namespace Darwin_s_Lab
         public static double Map(int value, int fromSource, int toSource, int fromTarget, int toTarget)
         {
             return (double)(value - fromSource) / (double)(toSource - fromSource) * (double)(toTarget - fromTarget) + fromTarget;
+        }
+
+        /// <summary>
+        /// Returns a random uint in given range (max included).
+        /// </summary>
+        /// <param name="min">lower bound</param>
+        /// <param name="max">upper bound</param>
+        /// <returns>random uint</returns>
+        public static uint RandomUintInRange(uint min, uint max)
+        {
+            return (uint) rdm.Next((int) min, (int) max+1);
         }
     }
 }

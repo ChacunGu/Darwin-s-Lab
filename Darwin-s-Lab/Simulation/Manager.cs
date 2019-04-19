@@ -35,7 +35,7 @@ namespace Darwin_s_Lab.Simulation
             this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
-            this.CreatureNumber = 2;
+            this.CreatureNumber = 10;
 
             timer = new DispatcherTimer
             {
@@ -113,13 +113,13 @@ namespace Darwin_s_Lab.Simulation
                                                          Tools.rdm.NextDouble() * 10 + (map.MiddleAreaRadius / 2));
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
-                              .WithEnergy(2, null)
-                              .WithSpeed(3, null)
-                              .WithDetectionRange(2, null)
-                              .WithForce(2, null)
-                              .WithColorH(120, null)
-                              .WithColorS(150, null)
-                              .WithColorV(250, null));
+                              .WithEnergy(null, null)
+                              .WithSpeed(null, null)
+                              .WithDetectionRange(null, null)
+                              .WithForce(null, null)
+                              .WithColorH(null, null)
+                              .WithColorS(null, null)
+                              .WithColorV(null, null));
             }
         }
 

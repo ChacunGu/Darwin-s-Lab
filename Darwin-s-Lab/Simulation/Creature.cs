@@ -72,10 +72,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="energy">creature's energy</param>
         /// <param name="mask">energy mask (^2 - 1)</param>
         /// <returns>creature with energy's gene set</returns>
-        public Creature WithEnergy(uint energy, uint? mask)
+        public Creature WithEnergy(uint? energy, uint? mask)
         {
-
-            this.AddGene("energy", energy, mask==null ? DefaultGenesValues["energy"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint) mask;
+            uint finalValue = energy == null ? Tools.RandomUintInRange(0, finalMask) : (uint) energy;
+            this.AddGene("energy", finalValue, finalMask);
             return this;
         }
 
@@ -85,9 +86,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="speed">creature's speed</param>
         /// <param name="mask">speed mask (^2 - 1)</param>
         /// <returns>creature with speed's gene set</returns>
-        public Creature WithSpeed(uint speed, uint? mask)
+        public Creature WithSpeed(uint? speed, uint? mask)
         {
-            this.AddGene("speed", speed, mask == null ? DefaultGenesValues["speed"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalValue = speed == null ? Tools.RandomUintInRange(0, finalMask) : (uint)speed;
+            this.AddGene("force", finalValue, finalMask);
             return this;
         }
 
@@ -97,9 +100,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="detectionRange">creature's detection range</param>
         /// <param name="mask">detection range mask (^2 - 1)</param>
         /// <returns>creature with detection range's gene set</returns>
-        public Creature WithDetectionRange(uint detectionRange, uint? mask)
+        public Creature WithDetectionRange(uint? detectionRange, uint? mask)
         {
-            this.AddGene("detectionRange", detectionRange, mask == null ? DefaultGenesValues["detectionRange"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalValue = detectionRange == null ? Tools.RandomUintInRange(0, finalMask) : (uint)detectionRange;
+            this.AddGene("force", finalValue, finalMask);
             return this;
         }
         
@@ -109,9 +114,12 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="force">creature's force</param>
         /// <param name="mask">force mask (^2 - 1)</param>
         /// <returns>creature with force's gene set</returns>
-        public Creature WithForce(uint force, uint? mask)
+        public Creature WithForce(uint? force, uint? mask)
         {
-            this.AddGene("force", force, mask == null ? DefaultGenesValues["force"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalValue = force == null ? Tools.RandomUintInRange(0, finalMask) : (uint)force;
+            this.AddGene("force", finalValue, finalMask);
+            UpdateColor();
             return this;
         }
 
@@ -121,9 +129,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="colorH">creature's color H</param>
         /// <param name="mask">color H mask (^2 - 1)</param>
         /// <returns>creature with color H gene set</returns>
-        public Creature WithColorH(uint colorH, uint? mask)
+        public Creature WithColorH(uint? colorH, uint? mask)
         {
-            this.AddGene("colorH", colorH, mask == null ? DefaultGenesValues["colorH"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalValue = colorH == null ? Tools.RandomUintInRange(0, finalMask) : (uint)colorH;
+            this.AddGene("colorH", finalValue, finalMask);
             UpdateColor();
             return this;
         }
@@ -134,9 +144,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="colorS">creature's color S</param>
         /// <param name="mask">color S mask (^2 - 1)</param>
         /// <returns>creature with color S gene set</returns>
-        public Creature WithColorS(uint colorS, uint? mask)
+        public Creature WithColorS(uint? colorS, uint? mask)
         {
-            this.AddGene("colorS", colorS, mask == null ? DefaultGenesValues["colorS"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalValue = colorS == null ? Tools.RandomUintInRange(0, finalMask) : (uint)colorS;
+            this.AddGene("colorS", finalValue, finalMask);
             UpdateColor();
             return this;
         }
@@ -147,9 +159,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="colorV">creature's color V</param>
         /// <param name="mask">color V mask (^2 - 1)</param>
         /// <returns>creature with color V gene set</returns>
-        public Creature WithColorV(uint colorV, uint? mask)
+        public Creature WithColorV(uint? colorV, uint? mask)
         {
-            this.AddGene("colorV", colorV, mask == null ? DefaultGenesValues["colorV"][1] : (uint)mask);
+            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalValue = colorV == null ? Tools.RandomUintInRange(0, finalMask) : (uint)colorV;
+            this.AddGene("colorV", finalValue, finalMask);
             UpdateColor();
             return this;
         }
@@ -208,7 +222,6 @@ namespace Darwin_s_Lab.Simulation
             // mate if in range
             if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= MinimalDistanceToMate)
             {
-                Console.WriteLine("### 3 -------------- COPULATE");
                 return Cross(Mate);
             }
             return null;
@@ -304,7 +317,8 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="other">significant other</param>
         public Creature Cross(Creature other)
         {
-            Creature newborn = new Creature(this.canvas, this.map); // .WithPosition(Position)
+            Creature newborn = new Creature(this.canvas, this.map)
+                                    .WithPosition(Position);
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;
@@ -411,9 +425,6 @@ namespace Darwin_s_Lab.Simulation
             double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0, 1);
             double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0, 1);
             Tools.HsvToRgb(h, s, v, out r, out g, out b);
-
-            Console.WriteLine((int)Genes["colorH"].Value + " " + (int)Genes["colorS"].Value + " " + (int)Genes["colorV"].Value);
-            Console.WriteLine(r + " " + g + " " + b);
 
             // RGB to hex
             return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
