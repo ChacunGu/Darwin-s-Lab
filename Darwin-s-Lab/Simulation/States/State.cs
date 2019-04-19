@@ -11,6 +11,9 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     abstract public class State
     {
+        public String Name { get; set; }
+        public int Duration { get; set; }
+
         /// <summary>
         /// Changes to the next State
         /// </summary>

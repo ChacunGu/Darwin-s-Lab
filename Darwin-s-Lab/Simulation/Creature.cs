@@ -182,7 +182,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="dt">time in milliseconds</param>
         public void TakeStep(long dt)
         {
-            Position += Direction * (Genes["speed"].Value / 100000) * (dt / Manager.FramesPerSec);
+            Position += Direction * (Genes["speed"].Value / 1000000) * (dt / Manager.FramesPerSec);
             Move();
         }
 

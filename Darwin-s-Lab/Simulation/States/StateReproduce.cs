@@ -8,6 +8,12 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateReproduce : State
     {
+        public StateReproduce()
+        {
+            Name = "Reproduce";
+            Duration = 10000;
+        }
+
         /// <summary>
         /// Mutates and reproduces creatures, removes dead corpes and rotten food from the map.
         /// </summary>
@@ -26,6 +32,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
+            manager.EndCreaturesMatingProcess();
             manager.State = new StateGrowFood();
         }
     }

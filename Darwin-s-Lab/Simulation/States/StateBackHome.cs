@@ -8,6 +8,12 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateBackHome : State
     {
+        public StateBackHome()
+        {
+            Name = "BackHome";
+            Duration = 5000;
+        }
+        
         /// <summary>
         /// Each creature tries to reach the safe zone before night.
         /// </summary>

@@ -3,6 +3,12 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateHunt : State
     {
+        public StateHunt()
+        {
+            Name = "Hunt";
+            Duration = 15000;
+        }
+
         /// <summary>
         /// Each creature starts searching food in the danger zone.
         /// </summary>

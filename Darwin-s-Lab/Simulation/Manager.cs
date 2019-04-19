@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -80,12 +81,12 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void StartSimulation()
         {
-            // just for testing, simulate passing of states
             DispatcherTimer timer2 = new DispatcherTimer();
             timer2.Tick += new EventHandler((sender, e) => {
                 SimulationStep();
+                timer2.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             });
-            timer2.Interval = new TimeSpan(0, 0, 0, 2);
+            timer2.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             timer2.Start();
         }
 
@@ -217,6 +218,7 @@ namespace Darwin_s_Lab.Simulation
                 tmpMatingCreatures.RemoveAt(i < nearestCreatureIndex ? nearestCreatureIndex-1 : nearestCreatureIndex);
             }
 
+            newbornCreatures = new List<Creature>();
             timer.Tick += new EventHandler(CreaturesMatingProcess);
         }
 
@@ -257,6 +259,24 @@ namespace Darwin_s_Lab.Simulation
                     creatures.RemoveAt(i);
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds newborn creatures to the simulation.
+        /// </summary>
+        internal void AddNewbornCreatures()
+        {
+            creatures.AddRange(newbornCreatures);
+            newbornCreatures.Clear();
+        }
+
+        /// <summary>
+        /// Ends creatures mating process and adds the newborns to the simulation.
+        /// </summary>
+        internal void EndCreaturesMatingProcess()
+        {
+            timer.Tick -= new EventHandler(CreaturesMatingProcess);
+            AddNewbornCreatures();
         }
     }
 }

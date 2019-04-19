@@ -3,6 +3,12 @@ namespace Darwin_s_Lab.Simulation
 {
     public class StateGrowFood : State
     {
+        public StateGrowFood()
+        {
+            Name = "GrowFood";
+            Duration = 500;
+        }
+
         /// <summary>
         /// Generates fresh food in the danger zone.
         /// </summary>
