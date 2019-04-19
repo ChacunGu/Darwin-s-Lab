@@ -18,7 +18,7 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Switch to state "grow food"
+        /// Switch to state "grow food".
         /// </summary>
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -12,12 +10,19 @@ namespace Darwin_s_Lab.Simulation
     public class Food : Drawable
     {
         public int Energy { get; set; }
-        public Food(Map map)
+        
+        public Food(Canvas canvas, Map map)
         {
-            this.position = Map.PolarToCartesian(
+            this.canvas = canvas;
+
+            Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                Tools.rdm.NextDouble() * map.SafeZoneRadius
-                );
+                Tools.rdm.NextDouble() * map.MiddleAreaRadius/2
+            );
+
+            CreateEllipse(Brushes.Red);
+            
+            Move();
         }
 
         /// <summary>

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -12,20 +15,42 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Map : Drawable
     {
-        private double safeZoneRadiusPourcent;
-        public double SafeZoneRadius {
-            get {
-                return this.safeZoneRadiusPourcent * MapSize;
+        private double middleAreaRadiusPourcent;
+        public double MiddleAreaRadius {
+            get
+            {
+                return this.middleAreaRadiusPourcent * mapSize;
             }
-            set {
-                safeZoneRadiusPourcent = value;
+            set
+            {
+                middleAreaRadiusPourcent = value;
             }
         }
-        public static int MapSize = 1000;
-
-        public Map(double safeZoneRadiusPourcent)
+        public double HomeRadius
         {
-            this.safeZoneRadiusPourcent = safeZoneRadiusPourcent;
+            get
+            {
+                return mapSize - MiddleAreaRadius;
+            }
+            set
+            {
+                middleAreaRadiusPourcent = 1 - value;
+            }
+        }
+        private const int mapSize = 1000;
+
+        public Map(double safeZoneRadiusPourcent, Canvas canvas)
+        {
+            this.middleAreaRadiusPourcent = safeZoneRadiusPourcent;
+
+            this.canvas = canvas;
+
+            this.Width = MiddleAreaRadius;
+            this.Height = MiddleAreaRadius;
+
+            CreateEllipse(Brushes.Green);
+            Position = new Point(mapSize / 2, mapSize / 2);
+            Move();
         }
 
         /// <summary>
@@ -36,9 +61,15 @@ namespace Darwin_s_Lab.Simulation
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Converts polar coordinates to cartesian coordinates.
+        /// </summary>
+        /// <param name="alpha">polar coordinates's angle</param>
+        /// <param name="radius">polar coordinates's radius</param>
+        /// <returns></returns>
         static public Point PolarToCartesian(double alpha, double radius)
         {
-            return new Point(radius * Math.Cos(alpha), radius * Math.Sin(alpha));
+            return new Point(radius * Math.Cos(alpha) + 500, radius * Math.Sin(alpha) + 500);
         }
 
         /// <summary>

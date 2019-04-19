@@ -12,6 +12,10 @@ namespace Darwin_s_Lab
         public MainWindow()
         {
             InitializeComponent();
+
+            Manager manager = new Manager(canvas);
+
+            manager.StartSimulation();
         }
     }
 }

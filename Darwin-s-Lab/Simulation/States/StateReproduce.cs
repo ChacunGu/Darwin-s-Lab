@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     public class StateReproduce : State
     {
         /// <summary>
-        /// Mutates, reproduces creatures and removes dead corpes.
+        /// Mutates and reproduces creatures, removes dead corpes and rotten food from the map.
         /// </summary>
         /// <param name="manager">simulation's manager</param>
         public override void DoAction(Manager manager)
@@ -17,10 +17,11 @@ namespace Darwin_s_Lab.Simulation
             manager.Mutate();
             manager.Cross();
             manager.RemoveDeadCreatures();
+            manager.RemoveRottenFood();
         }
 
         /// <summary>
-        /// Switch to state "grow food"
+        /// Switch to state "grow food".
         /// </summary>
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)

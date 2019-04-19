@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Darwin_s_Lab.Simulation
 {
     public class StateGrowFood : State
     {
+        /// <summary>
+        /// Generates fresh food in the danger zone.
+        /// </summary>
+        /// <param name="manager">simulation's manager</param>
         public override void DoAction(Manager manager)
         {
-            //delete old food ?
             //generate new foods
-            manager.generateFood();
+            manager.GenerateFood();
         }
 
+        /// <summary>
+        /// Switch to state "hunt".
+        /// </summary>
+        /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
             manager.State = new StateHunt();

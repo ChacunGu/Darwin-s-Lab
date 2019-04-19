@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -16,7 +13,6 @@ namespace Darwin_s_Lab.Simulation
     public class Manager
     {
         public static int FramesPerSec = 17;
-        static int defaultNumberCreatures = 200;
         private List<Creature> creatures;
         private List<Creature> matingCreatures;
         private List<Creature> newbornCreatures;
@@ -24,17 +20,21 @@ namespace Darwin_s_Lab.Simulation
         private Map map;
         private Canvas canvas;
         private State state;
-        private int foodNumber;
         private Stopwatch stopwatch;
         private DispatcherTimer timer;
         private long dt;
 
-        public Manager(State state, Canvas canvas)
+        public Manager(Canvas canvas)
         {
             this.canvas = canvas;
-            this.state = state;
+            this.state = new StateInitial();
+            this.map = new Map(0.8, canvas);
+
+            this.foods = new List<Food>();
+            this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
+            this.CreatureNumber = 10;
 
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(SimulationTick);
@@ -44,6 +44,9 @@ namespace Darwin_s_Lab.Simulation
             stopwatch.Start();
 
             dt = stopwatch.ElapsedMilliseconds;
+
+            timer.Start();
+            
         }
         
         /// <summary>
@@ -65,32 +68,41 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Gets or sets the number of food generated at start
         /// </summary>
-        public int FoodNumber
-        {
-            get
-            {
-                return foodNumber;
-            }
-            set
-            {
-                foodNumber = value;
-            }
-        }
+        public int FoodNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of creatures generated at start
+        /// </summary>
+        public int CreatureNumber { get; set; }
 
         /// <summary>
         /// Start the simulation
         /// </summary>
         public void StartSimulation()
         {
-            
-
+            // just for testing, simulate passing of states
+            DispatcherTimer timer2 = new DispatcherTimer();
+            timer2.Tick += new EventHandler((sender, e) => {
+                SimulationStep();
+            });
+            timer2.Interval = new TimeSpan(0, 0, 0, 2);
+            timer2.Start();
         }
 
-        private void SimulationLoop()
+        private void SimulationStep()
         {
             State.DoAction(this);
             State.GoNext(this);
         }
+        
+        private void SimulationLoop()
+        {
+            for (int i = 0 ; i < 10 ; i++)
+            {
+                SimulationStep();
+            }
+        }
+        
 
         /// <summary>
         /// Simulate the passage of time
@@ -100,8 +112,8 @@ namespace Darwin_s_Lab.Simulation
         private void SimulationTick(object sender, EventArgs e)
         {
             dt = stopwatch.ElapsedMilliseconds - dt;
-            
 
+            //Console.WriteLine(dt);
 
         }
 
@@ -110,14 +122,14 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void CreateInitialPopulation()
         {
-            for (int i = 0; i < defaultNumberCreatures; i++)
+            for (int i = 0; i < CreatureNumber; i++)
             {
                 Point rdmPosition = Map.PolarToCartesian(Tools.rdm.NextDouble() * Math.PI * 2,
-                                                         Tools.rdm.NextDouble() * 10 + map.SafeZoneRadius);
-                creatures.Add(new Creature()
+                                                         Tools.rdm.NextDouble() * 10 + (map.MiddleAreaRadius / 2));
+                creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(2, null)
-                              .WithSpeed(2, null)
+                              .WithSpeed(1, null)
                               .WithDetectionRange(2, null)
                               .WithForce(2, null)
                               .WithColorH(2, null)
@@ -126,11 +138,26 @@ namespace Darwin_s_Lab.Simulation
             }
         }
 
-        public void generateFood()
+        /// <summary>
+        /// Removes old food from the map.
+        /// </summary>
+        public void RemoveRottenFood()
         {
-            for (int i = 0 ; i < FoodNumber; i++)
+            foreach (Food food in foods)
             {
-                foods.Add(new Food(map));
+                food.Destroy();
+            }
+            foods.Clear();
+        }
+
+        /// <summary>
+        /// Generates new food on the map.
+        /// </summary>
+        public void GenerateFood()
+        {
+            for (int i = 0 ; i < FoodNumber ; i++)
+            {
+                foods.Add(new Food(canvas, map));
             }
         }
 
@@ -168,7 +195,7 @@ namespace Darwin_s_Lab.Simulation
             matingCreatures = new List<Creature>(tmpMatingCreatures);
 
             // for each creature
-            for (int i = tmpMatingCreatures.Count - 1; i >= 1; i--)
+            for (int i = tmpMatingCreatures.Count - 1; i >= 1; i-=2)
             {
                 double smallestDistance = Map.DistanceBetweenTwoPointsOpti(tmpMatingCreatures[i].Position, tmpMatingCreatures[i-1].Position);
                 int nearestCreatureIndex = i-1;

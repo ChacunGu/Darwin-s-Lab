@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -12,7 +12,8 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     class Creature : Drawable
     {
-        public static double MinimalDistanceToSearchMate = Map.MapSize / 8;
+        private static Vector CreatureDim = new Vector(50, 50);
+        public static double MinimalDistanceToSearchMate = Math.Sqrt(CreatureDim.X*CreatureDim.X + CreatureDim.Y*CreatureDim.Y);
         static double MinimalDistanceToJoinMate = 30;
         static double MinimalDistanceToMate = 5;
         static double MinimalEnergyToMate = 0.5;
@@ -33,9 +34,10 @@ namespace Darwin_s_Lab.Simulation
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
         public Creature Mate { get; set; }
+        private Map map;
 
         #region Constructor
-        public Creature()
+        public Creature(Canvas canvas, Map map)
         {
             Position = new Point(0, 0);
             this.Genes = new Dictionary<string, Gene>();
@@ -46,6 +48,21 @@ namespace Darwin_s_Lab.Simulation
             this.AddGene("colorH", Creature.DefaultGenesValues["colorH"][0], Creature.DefaultGenesValues["colorH"][1]);
             this.AddGene("colorS", Creature.DefaultGenesValues["colorS"][0], Creature.DefaultGenesValues["colorS"][1]);
             this.AddGene("colorV", Creature.DefaultGenesValues["colorV"][0], Creature.DefaultGenesValues["colorV"][1]);
+
+            this.canvas = canvas;
+            this.map = map;
+
+            Position = Map.PolarToCartesian(
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                (Tools.rdm.NextDouble() * map.MiddleAreaRadius / 4 + map.MiddleAreaRadius) / 2
+            );
+
+            this.Width = CreatureDim.X;
+            this.Height = CreatureDim.Y;
+
+            CreateEllipse(Brushes.Blue);
+
+            Move();
         }
 
         /// <summary>
@@ -165,7 +182,8 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="dt">time in milliseconds</param>
         public void TakeStep(long dt)
         {
-            Position += Direction * Genes["speed"].Value * (dt / Manager.FramesPerSec);
+            Position += Direction * (Genes["speed"].Value / 100000) * (dt / Manager.FramesPerSec);
+            Move();
         }
 
         /// <summary>
@@ -259,7 +277,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="other">significant other</param>
         public Creature Cross(Creature other)
         {
-            Creature newborn = new Creature();
+            Creature newborn = new Creature(this.canvas, this.map);
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;
