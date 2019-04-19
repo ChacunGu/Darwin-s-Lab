@@ -114,12 +114,12 @@ namespace Darwin_s_Lab.Simulation
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(2, null)
-                              .WithSpeed(1, null)
+                              .WithSpeed(3, null)
                               .WithDetectionRange(2, null)
                               .WithForce(2, null)
-                              .WithColorH(2, null)
-                              .WithColorS(2, null)
-                              .WithColorV(2, null));
+                              .WithColorH(120, null)
+                              .WithColorS(150, null)
+                              .WithColorV(250, null));
             }
         }
 
@@ -206,8 +206,6 @@ namespace Darwin_s_Lab.Simulation
                 tmpMatingCreatures.RemoveAt(i < nearestCreatureIndex ? nearestCreatureIndex-1 : nearestCreatureIndex);
             }
             
-            
-            Console.WriteLine("matingCreatures nb: " + matingCreatures.Count);
             newbornCreatures = new List<Creature>();
             dt = stopwatch.ElapsedMilliseconds;
             timer.Tick += new EventHandler(CreaturesMatingProcess);

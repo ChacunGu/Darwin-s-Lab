@@ -24,12 +24,12 @@ namespace Darwin_s_Lab.Simulation
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
         {
             {"energy", new uint[]{1, 255}},
-            {"speed", new uint[]{2, 7}},
+            {"speed", new uint[]{1, 3}},
             {"detectionRange", new uint[]{1, 255}},
             {"force", new uint[]{1, 255}},
-            {"colorH", new uint[]{1, 255}},
-            {"colorS", new uint[]{1, 255}},
-            {"colorV", new uint[]{1, 255}}
+            {"colorH", new uint[]{1, 1023}},
+            {"colorS", new uint[]{1, 1023}},
+            {"colorV", new uint[]{1, 1023}}
         };
 
         public System.Windows.Vector Direction { get; set; }
@@ -60,7 +60,7 @@ namespace Darwin_s_Lab.Simulation
 
             this.Width = CreatureDim.X;
             this.Height = CreatureDim.Y;
-
+            
             CreateEllipse(Brushes.Blue);
 
             Move();
@@ -124,6 +124,7 @@ namespace Darwin_s_Lab.Simulation
         public Creature WithColorH(uint colorH, uint? mask)
         {
             this.AddGene("colorH", colorH, mask == null ? DefaultGenesValues["colorH"][1] : (uint)mask);
+            UpdateColor();
             return this;
         }
 
@@ -136,6 +137,7 @@ namespace Darwin_s_Lab.Simulation
         public Creature WithColorS(uint colorS, uint? mask)
         {
             this.AddGene("colorS", colorS, mask == null ? DefaultGenesValues["colorS"][1] : (uint)mask);
+            UpdateColor();
             return this;
         }
 
@@ -148,6 +150,7 @@ namespace Darwin_s_Lab.Simulation
         public Creature WithColorV(uint colorV, uint? mask)
         {
             this.AddGene("colorV", colorV, mask == null ? DefaultGenesValues["colorV"][1] : (uint)mask);
+            UpdateColor();
             return this;
         }
 
@@ -281,6 +284,16 @@ namespace Darwin_s_Lab.Simulation
                 if (Tools.rdm.NextDouble() < Gene.MutationProbability) // if gene has to mutate
                 {
                     Genes.ElementAt(i).Value.Mutate();
+                    
+                    switch (Genes.ElementAt(i).Key)
+                    {
+                        case "force":
+                        case "colorH":
+                        case "colorS":
+                        case "colorV":
+                            UpdateColor();
+                            break;
+                    }
                 }
             }
         }
@@ -291,8 +304,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="other">significant other</param>
         public Creature Cross(Creature other)
         {
-            Creature newborn = new Creature(this.canvas, this.map)
-                                .WithPosition(Position);
+            Creature newborn = new Creature(this.canvas, this.map); // .WithPosition(Position)
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;
@@ -375,16 +387,46 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature's speed</returns>
         public int GetSpeed()
         {
-            return (int)Genes["speed"].Value;
+            return (int)Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1, (int)Genes["speed"].Mask+1);
         }
 
         /// <summary>
         /// Returns the creature's energy.
         /// </summary>
         /// <returns>creature's energy</returns>
-        public int GetEnergy()
+        public double GetEnergy()
         {
-            return (int)Genes["energy"].Value;
+            return Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, 0, 1);
+        }
+
+        /// <summary>
+        /// Returns the creature's HSV color in hexadecimal.
+        /// </summary>
+        /// <returns>creature's color in hexadecimal</returns>
+        public String GetHexColor()
+        {
+            // HSV to RGB
+            int r, g, b;
+            double h = Tools.Map((int)Genes["colorH"].Value, 0, (int)Genes["colorH"].Mask, 0, 360);
+            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0, 1);
+            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0, 1);
+            Tools.HsvToRgb(h, s, v, out r, out g, out b);
+
+            Console.WriteLine((int)Genes["colorH"].Value + " " + (int)Genes["colorS"].Value + " " + (int)Genes["colorV"].Value);
+            Console.WriteLine(r + " " + g + " " + b);
+
+            // RGB to hex
+            return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+        }
+
+        /// <summary>
+        /// Updates creature's color on the canvas.
+        /// </summary>
+        public void UpdateColor()
+        {
+            SolidColorBrush colorBrush = new SolidColorBrush();
+            colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
+            Ellipse.Fill = colorBrush;
         }
 
         /// <summary>
