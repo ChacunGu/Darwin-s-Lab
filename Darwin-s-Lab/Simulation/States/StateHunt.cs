@@ -6,7 +6,7 @@ namespace Darwin_s_Lab.Simulation
         public StateHunt()
         {
             Name = "Hunt";
-            Duration = 5000;
+            Duration = 2000;
         }
 
         /// <summary>

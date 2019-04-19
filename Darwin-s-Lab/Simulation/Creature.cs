@@ -12,6 +12,7 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     class Creature : Drawable
     {
+        private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
         public static double MinimalDistanceToSearchMate = Math.Sqrt(CreatureDim.X*CreatureDim.X + CreatureDim.Y*CreatureDim.Y);
         static double MinimalDistanceToJoinMate = 30;
@@ -23,7 +24,7 @@ namespace Darwin_s_Lab.Simulation
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
         {
             {"energy", new uint[]{1, 255}},
-            {"speed", new uint[]{1, 255}},
+            {"speed", new uint[]{2, 7}},
             {"detectionRange", new uint[]{1, 255}},
             {"force", new uint[]{1, 255}},
             {"colorH", new uint[]{1, 255}},
@@ -158,6 +159,7 @@ namespace Darwin_s_Lab.Simulation
         public Creature WithPosition(Point position)
         {
             this.Position = position;
+            Move();
             return this;
         }
         #endregion
@@ -180,9 +182,9 @@ namespace Darwin_s_Lab.Simulation
         /// Takes a step in a direction.
         /// </summary>
         /// <param name="dt">time in milliseconds</param>
-        public void TakeStep(long dt)
+        public void TakeStep(float dt)
         {
-            Position += Direction * (Genes["speed"].Value / 1000000) * (dt / Manager.FramesPerSec);
+            Position += Direction * Genes["speed"].Value * SpeedFactor * dt;
             Move();
         }
 
@@ -192,22 +194,33 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="dt">time elapsed since last call in milliseconds</param>
         /// <param name="map">simulation's map</param>
         /// <returns>newborn creature or null if the creatures didn't found each other</returns>
-        public Creature MatingProcess(long dt, Map map)
+        public Creature MatingProcess(float dt, Map map)
         {
             // search best direction to move towards the creature's mate
             FindDirectionTowardsMate(map);
-
+            
             // move
             TakeStep(dt);
 
             // mate if in range
             if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= MinimalDistanceToMate)
             {
-                Mate.Mate = null;
-                Mate = null;
+                Console.WriteLine("### 3 -------------- COPULATE");
                 return Cross(Mate);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Creature forgets its mate.
+        /// </summary>
+        public void ForgetMate()
+        {
+            if (Mate != null)
+            {
+                Mate.Mate = null;
+                Mate = null;
+            }
         }
 
         /// <summary>
@@ -228,14 +241,15 @@ namespace Darwin_s_Lab.Simulation
                     ((map.Position.Y - Position.Y) * (Mate.Position.X - map.Position.X)) >= 0.0)
                 {
                     tangentToSafeZoneCircle.Negate();
-                    tangentToSafeZoneCircle.Normalize();
-                    Direction = tangentToSafeZoneCircle;
                 }
+                tangentToSafeZoneCircle.Normalize();
+                Direction = tangentToSafeZoneCircle;
             } else
             {
                 // move directly towards mate
-                Direction = Mate.Position - Position;
-                Direction.Normalize();
+                Vector mateDirection = Mate.Position - Position;
+                mateDirection.Normalize();
+                Direction = mateDirection;
             }
         }
 
@@ -277,7 +291,8 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="other">significant other</param>
         public Creature Cross(Creature other)
         {
-            Creature newborn = new Creature(this.canvas, this.map);
+            Creature newborn = new Creature(this.canvas, this.map)
+                                .WithPosition(Position);
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;

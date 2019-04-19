@@ -35,16 +35,15 @@ namespace Darwin_s_Lab.Simulation
             this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
-            this.CreatureNumber = 10;
+            this.CreatureNumber = 2;
 
-            timer = new DispatcherTimer();
-            timer.Tick += new EventHandler(SimulationTick);
-            timer.Interval = new TimeSpan(0, 0, 0, 0, FramesPerSec);
+            timer = new DispatcherTimer
+            {
+                Interval = new TimeSpan(0, 0, 0, 0, FramesPerSec)
+            };
 
             stopwatch = new Stopwatch();
             stopwatch.Start();
-
-            dt = stopwatch.ElapsedMilliseconds;
 
             timer.Start();
             
@@ -101,19 +100,6 @@ namespace Darwin_s_Lab.Simulation
         {
             State.GoNext(this);
             State.DoAction(this);
-        }        
-
-        /// <summary>
-        /// Simulate the passage of time
-        /// </summary>
-        /// <param name="sender">the sender</param>
-        /// <param name="e">the arguments</param>
-        private void SimulationTick(object sender, EventArgs e)
-        {
-            dt = stopwatch.ElapsedMilliseconds - dt;
-
-            //Console.WriteLine(dt);
-
         }
 
         /// <summary>
@@ -191,7 +177,7 @@ namespace Darwin_s_Lab.Simulation
             }
 
             Tools.Shuffle(tmpMatingCreatures);
-            matingCreatures = new List<Creature>(tmpMatingCreatures);
+            matingCreatures = new List<Creature>();
 
             // for each creature
             for (int i = tmpMatingCreatures.Count - 1; i >= 1; i-=2)
@@ -212,11 +198,18 @@ namespace Darwin_s_Lab.Simulation
 
                 // define the nearest creature as the new mate
                 tmpMatingCreatures[i].SetMate(tmpMatingCreatures[nearestCreatureIndex]);
+
+                matingCreatures.Add(tmpMatingCreatures[i]);
+                matingCreatures.Add(tmpMatingCreatures[nearestCreatureIndex]);
+
                 tmpMatingCreatures.RemoveAt(i);
                 tmpMatingCreatures.RemoveAt(i < nearestCreatureIndex ? nearestCreatureIndex-1 : nearestCreatureIndex);
             }
-
+            
+            
+            Console.WriteLine("matingCreatures nb: " + matingCreatures.Count);
             newbornCreatures = new List<Creature>();
+            dt = stopwatch.ElapsedMilliseconds;
             timer.Tick += new EventHandler(CreaturesMatingProcess);
         }
 
@@ -227,22 +220,33 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="e">event's arguments</param>
         private void CreaturesMatingProcess(object sender, EventArgs e)
         {
-            dt = stopwatch.ElapsedMilliseconds - dt;
-            Console.WriteLine(".. ", dt);
             for (int i = matingCreatures.Count - 1; i >= 0; i--)
             {
-                Creature newborn = matingCreatures[i].MatingProcess(dt, map);
+                Creature newborn = matingCreatures[i].MatingProcess(GetTimeElapsedInSeconds(), map);
                 if (newborn != null)
                 {
                     // remove creatures from matingCreatures as they already reproduced
                     int indexOfMate = matingCreatures.IndexOf(matingCreatures[i].Mate);
+                    matingCreatures[i].ForgetMate();
                     matingCreatures.RemoveAt(i);
                     matingCreatures.RemoveAt(i < indexOfMate ? indexOfMate-1 : indexOfMate);
+                    i--;
 
                     // add the newborn to the creatures
                     newbornCreatures.Add(newborn);
                 }
             }
+            dt = stopwatch.ElapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// Returns time elapsed in seconds.
+        /// </summary>
+        /// <returns>time elapsed</returns>
+        internal float GetTimeElapsedInSeconds()
+        {
+            float localDt = (stopwatch.ElapsedMilliseconds - dt) / 1000f;
+            return localDt > 0.15f ? 0.15f : localDt;
         }
 
         /// <summary>
@@ -252,7 +256,7 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i = creatures.Count - 1; i >= 0; i--)
             {
-                if (creatures[i].IsAlive())
+                if (!creatures[i].IsAlive())
                 {
                     creatures[i].Kill();
                     creatures.RemoveAt(i);
@@ -276,6 +280,10 @@ namespace Darwin_s_Lab.Simulation
         {
             timer.Tick -= new EventHandler(CreaturesMatingProcess);
             AddNewbornCreatures();
+
+            for (int i = 0; i < matingCreatures.Count; i++)
+                matingCreatures[i].ForgetMate();
+            matingCreatures.Clear();
         }
     }
 }

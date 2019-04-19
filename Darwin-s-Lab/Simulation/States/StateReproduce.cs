@@ -11,7 +11,7 @@ namespace Darwin_s_Lab.Simulation
         public StateReproduce()
         {
             Name = "Reproduce";
-            Duration = 10000;
+            Duration = 25000;
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void DoAction(Manager manager)
         {
-            manager.Mutate();
+            //manager.Mutate();
             manager.Cross();
             manager.RemoveDeadCreatures();
             manager.RemoveRottenFood();
