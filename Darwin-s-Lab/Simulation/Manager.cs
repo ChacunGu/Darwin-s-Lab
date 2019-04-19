@@ -81,6 +81,10 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void StartSimulation()
         {
+            // initial state
+            State.DoAction(this);
+
+            // simulation's states loop
             DispatcherTimer timer2 = new DispatcherTimer();
             timer2.Tick += new EventHandler((sender, e) => {
                 SimulationStep();
@@ -90,20 +94,14 @@ namespace Darwin_s_Lab.Simulation
             timer2.Start();
         }
 
+        /// <summary>
+        /// Changes simulation's state and performs its action.
+        /// </summary>
         private void SimulationStep()
         {
-            State.DoAction(this);
             State.GoNext(this);
-        }
-        
-        private void SimulationLoop()
-        {
-            for (int i = 0 ; i < 10 ; i++)
-            {
-                SimulationStep();
-            }
-        }
-        
+            State.DoAction(this);
+        }        
 
         /// <summary>
         /// Simulate the passage of time
@@ -230,6 +228,7 @@ namespace Darwin_s_Lab.Simulation
         private void CreaturesMatingProcess(object sender, EventArgs e)
         {
             dt = stopwatch.ElapsedMilliseconds - dt;
+            Console.WriteLine(".. ", dt);
             for (int i = matingCreatures.Count - 1; i >= 0; i--)
             {
                 Creature newborn = matingCreatures[i].MatingProcess(dt, map);
