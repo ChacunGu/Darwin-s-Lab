@@ -10,7 +10,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents a simulation's creature.
     /// </summary>
-    class Creature : Drawable
+    public class Creature : Drawable
     {
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
