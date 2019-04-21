@@ -98,6 +98,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void SimulationStep()
         {
+            State.StopAction(this);
             State.GoNext(this);
             State.DoAction(this);
         }

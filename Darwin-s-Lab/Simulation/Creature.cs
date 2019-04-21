@@ -347,6 +347,7 @@ namespace Darwin_s_Lab.Simulation
 
                 newborn.AddGene(name, value, mask);
             }
+            newborn.UpdateColor();
             return newborn;
         }
 
@@ -422,8 +423,8 @@ namespace Darwin_s_Lab.Simulation
             // HSV to RGB
             int r, g, b;
             double h = Tools.Map((int)Genes["colorH"].Value, 0, (int)Genes["colorH"].Mask, 0, 360);
-            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0, 1);
-            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0, 1);
+            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0.2, 1.0);
+            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0.2, 1.0);
             Tools.HsvToRgb(h, s, v, out r, out g, out b);
 
             // RGB to hex
@@ -438,6 +439,7 @@ namespace Darwin_s_Lab.Simulation
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
             Ellipse.Fill = colorBrush;
+            Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }
 
         /// <summary>
