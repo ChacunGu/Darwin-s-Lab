@@ -111,7 +111,7 @@ namespace Darwin_s_Lab.Simulation
             for (int i = 0; i < CreatureNumber; i++)
             {
                 Point rdmPosition = Map.PolarToCartesian(Tools.rdm.NextDouble() * Math.PI * 2,
-                                                         Tools.rdm.NextDouble() * 10 + (map.MiddleAreaRadius / 2));
+                                                         map.HomeRadius / 2 + map.MiddleAreaRadius);
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(null, null)

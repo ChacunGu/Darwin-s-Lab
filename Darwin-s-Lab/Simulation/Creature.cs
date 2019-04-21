@@ -40,7 +40,7 @@ namespace Darwin_s_Lab.Simulation
         #region Constructor
         public Creature(Canvas canvas, Map map)
         {
-            Position = new Point(0, 0);
+            Position = new Point(0, 0); // TODO check si c'est pas là le problème
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
             this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
@@ -55,7 +55,7 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                (Tools.rdm.NextDouble() * map.MiddleAreaRadius / 4 + map.MiddleAreaRadius) / 2
+                map.MiddleAreaRadius + map.HomeRadius / 2
             );
 
             this.Width = CreatureDim.X;
@@ -202,6 +202,7 @@ namespace Darwin_s_Lab.Simulation
         public void TakeStep(float dt)
         {
             Position += Direction * Genes["speed"].Value * SpeedFactor * dt;
+            Position = findClosestPointHome();
             Move();
         }
 
@@ -443,14 +444,6 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Updates element's graphical state before drawing.
-        /// </summary>
-        public void Update()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Returns creature's representation as a string.
         /// </summary>
         /// <returns>creature's representation</returns>
@@ -463,6 +456,21 @@ namespace Darwin_s_Lab.Simulation
                     this.Genes["colorH"].ToString()         + "\n" +
                     this.Genes["colorS"].ToString()         + "\n" +
                     this.Genes["colorV"].ToString();
+        }
+
+        /// <summary>
+        /// Finds the closest point in the home area, to go back to.
+        /// </summary>
+        /// <returns>a Point in the safe area</returns>
+        private Point findClosestPointHome()
+        {
+            Tuple<double, double> polarCoord = Map.CartesianToPolar(this.Position);
+            double alpha = polarCoord.Item1;
+            double radius = polarCoord.Item2;
+
+            radius = map.MiddleAreaRadius + map.HomeRadius / 2;
+
+            return Map.PolarToCartesian(alpha, radius);
         }
     }
 }

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -19,7 +14,7 @@ namespace Darwin_s_Lab.Simulation
         public double MiddleAreaRadius {
             get
             {
-                return this.middleAreaRadiusPourcent * mapSize;
+                return this.middleAreaRadiusPourcent * Map.getMapSize() / 2;
             }
             set
             {
@@ -30,14 +25,22 @@ namespace Darwin_s_Lab.Simulation
         {
             get
             {
-                return mapSize - MiddleAreaRadius;
+                return Map.getMapSize() / 2 - MiddleAreaRadius;
             }
             set
             {
                 middleAreaRadiusPourcent = 1 - value;
             }
         }
-        private const int mapSize = 1000;
+
+        /// <summary>
+        /// static access to the size of the map
+        /// </summary>
+        /// <returns>the size of the canvas/map</returns>
+        static public int getMapSize()
+        {
+            return 1000;
+        }
 
         public Map(double safeZoneRadiusPourcent, Canvas canvas)
         {
@@ -45,20 +48,12 @@ namespace Darwin_s_Lab.Simulation
 
             this.canvas = canvas;
 
-            this.Width = MiddleAreaRadius;
-            this.Height = MiddleAreaRadius;
+            this.Width = MiddleAreaRadius*2;
+            this.Height = MiddleAreaRadius*2;
 
             CreateEllipse(Brushes.Green);
-            Position = new Point(mapSize / 2, mapSize / 2);
+            Position = new Point(Map.getMapSize() / 2, Map.getMapSize() / 2);
             Move();
-        }
-
-        /// <summary>
-        /// Updates element's graphical state before drawing.
-        /// </summary>
-        public void Update()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -69,7 +64,21 @@ namespace Darwin_s_Lab.Simulation
         /// <returns></returns>
         static public Point PolarToCartesian(double alpha, double radius)
         {
-            return new Point(radius * Math.Cos(alpha) + 500, radius * Math.Sin(alpha) + 500);
+            return new Point(radius * Math.Cos(alpha) + Map.getMapSize()/2, radius * Math.Sin(alpha) + Map.getMapSize()/2);
+        }
+
+        /// <summary>
+        /// Return the polar coordinates of the cartesian point given. (angle, radius)
+        /// </summary>
+        /// <param name="point">The point to convert</param>
+        /// <returns>two doubles</returns>
+        static public Tuple<double, double> CartesianToPolar(Point point)
+        {
+            Point center = new Point(Map.getMapSize() / 2, Map.getMapSize() / 2);
+            double alpha = Math.Atan2(point.Y-center.Y, point.X-center.X);
+            double radius = Map.DistanceBetweenTwoPoints(center, point);
+            
+            return new Tuple<double, double>(alpha, radius);
         }
 
         /// <summary>
