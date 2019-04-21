@@ -61,12 +61,20 @@
     <Compile Include="Simulation\Creature.cs" />
     <Compile Include="Simulation\Food.cs" />
     <Compile Include="Simulation\Gene.cs" />
-    <Compile Include="Simulation\IDrawable.cs" />
+    <Compile Include="Simulation\Drawable.cs" />
+    <Compile Include="Simulation\Manager.cs" />
     <Compile Include="Simulation\Map.cs" />
     <Page Include="Interface\CreatureInfos.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Compile Include="Simulation\States\StateBackHome.cs" />
+    <Compile Include="Simulation\States\StateGrowFood.cs" />
+    <Compile Include="Simulation\States\StateHunt.cs" />
+    <Compile Include="Simulation\States\StateInitial.cs" />
+    <Compile Include="Simulation\States\State.cs" />
+    <Compile Include="Simulation\States\StateReproduce.cs" />
+    <Compile Include="Tools.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

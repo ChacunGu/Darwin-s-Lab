@@ -13,19 +13,9 @@ namespace Darwin_s_Lab
         {
             InitializeComponent();
 
-            Creature jack = new Creature()
-                            .WithEnergy(10)
-                            .WithSpeed(10)
-                            .WithDetectionRange(10)
-                            .WithForce(10)
-                            .WithColorH(10)
-                            .WithColorS(10)
-                            .WithColorV(10);
-            Creature bobby = new Creature();
-            Console.WriteLine("Jack:\n" + jack);
-            Console.WriteLine("Bobby:\n" + bobby);
+            Manager manager = new Manager(canvas);
 
-            creature_infos.SetCreature(jack);
+            manager.StartSimulation();
         }
     }
 }

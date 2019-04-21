@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.28307.438
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darwin-s-Lab", "Darwin-s-Lab.csproj", "{785548BC-F439-4847-BA24-EFC62FFA8D5F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Darwin-s-Lab-Test", "Darwin-s-Lab-Test\Darwin-s-Lab-Test.csproj", "{8EB78148-54BF-400B-BC6F-B89AC95D7C9E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{785548BC-F439-4847-BA24-EFC62FFA8D5F} = {785548BC-F439-4847-BA24-EFC62FFA8D5F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{785548BC-F439-4847-BA24-EFC62FFA8D5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{785548BC-F439-4847-BA24-EFC62FFA8D5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{785548BC-F439-4847-BA24-EFC62FFA8D5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EB78148-54BF-400B-BC6F-B89AC95D7C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EB78148-54BF-400B-BC6F-B89AC95D7C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EB78148-54BF-400B-BC6F-B89AC95D7C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EB78148-54BF-400B-BC6F-B89AC95D7C9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
