@@ -14,12 +14,20 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <Rectangle Fill="#26000000" Grid.ColumnSpan="3" />
+        <Rectangle Fill="#26000000" Grid.ColumnSpan="2" />
 
-        <local:CreatureInfos x:Name="creature_infos" Margin="10,10,5,10"></local:CreatureInfos>
+        <StackPanel Margin="10,10,5,10">
+            <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,0,5" Height="30" />
+            <Button x:Name="btnStopReset" Content="Stop" Click="BtnStopReset_Click" IsEnabled="False" Margin="0,0,0,5" Height="30"/>
+            <Slider x:Name="sldNbCreature" Margin="0,0,0,5" />
+            <Slider x:Name="sldNbFood" Margin="0,0,0,5" />
+            <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
+        </StackPanel>
+
+
 
         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Margin="5,10,10,10" >
-            <Canvas x:Name="canvas" Width="1000" Height="1000">
+            <Canvas x:Name="canvas" Width="1000" Height="1000" MouseDown="Canvas_MouseDown">
                 <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
             </Canvas>
         </Viewbox>
