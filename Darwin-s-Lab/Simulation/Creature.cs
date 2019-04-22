@@ -42,7 +42,7 @@ namespace Darwin_s_Lab.Simulation
         #region Constructor
         public Creature(Canvas canvas, Map map)
         {
-            Position = new Point(0, 0);
+            Position = new Point(0, 0); // TODO check si c'est pas là le problème
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
             this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
@@ -57,7 +57,7 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                (Tools.rdm.NextDouble() * map.MiddleAreaRadius / 4 + map.MiddleAreaRadius) / 2
+                map.MiddleAreaRadius + map.HomeRadius / 2
             );
 
             this.Width = CreatureDim.X;
@@ -234,7 +234,7 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Finds a new random target point. Updates the creature's direction vector.
         /// </summary>
-        public void FindRandomTarget()
+        private void FindRandomTarget()
         {
             Point randomPosition = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
@@ -252,11 +252,45 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Finds closest points home and sets target / direction.
+        /// </summary>
+        private void FindHomeTarget()
+        {
+            Target = FindClosestPointHome();
+
+            Vector newDirection = Target - Position;
+            newDirection.Normalize();
+            Direction = newDirection;
+        }
+
+        /// <summary>
         /// Creature forgets its target.
         /// </summary>
         public void ForgetTarget()
         {
             Target = new Point(Double.MaxValue, Double.MaxValue);
+        }
+
+        /// <summary>
+        /// Moves towards the current home target or defines a new one if it does not exist.
+        /// </summary>
+        /// <param name="dt">time elapsed in milliseconds</param>
+        public void MoveToHome(float dt)
+        {
+            if (Target != null && Target.X != Double.MaxValue && Target.Y != Double.MaxValue)
+            {
+                TakeStep(dt);
+
+                // check if target has been reached
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToEat)
+                {
+                    ForgetTarget();
+                }
+            }
+            else
+            {
+                FindHomeTarget();
+            }
         }
 
         /// <summary>
@@ -401,6 +435,7 @@ namespace Darwin_s_Lab.Simulation
 
                 newborn.AddGene(name, value, mask);
             }
+            newborn.UpdateColor();
             return newborn;
         }
 
@@ -488,8 +523,8 @@ namespace Darwin_s_Lab.Simulation
             // HSV to RGB
             int r, g, b;
             double h = Tools.Map((int)Genes["colorH"].Value, 0, (int)Genes["colorH"].Mask, 0, 360);
-            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0, 1);
-            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0, 1);
+            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0.2, 1.0);
+            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0.2, 1.0);
             Tools.HsvToRgb(h, s, v, out r, out g, out b);
 
             // RGB to hex
@@ -513,14 +548,7 @@ namespace Darwin_s_Lab.Simulation
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
             Ellipse.Fill = colorBrush;
-        }
-
-        /// <summary>
-        /// Updates element's graphical state before drawing.
-        /// </summary>
-        public void Update()
-        {
-            throw new NotImplementedException();
+            Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }
 
         /// <summary>
@@ -535,6 +563,21 @@ namespace Darwin_s_Lab.Simulation
                     this.Genes["force"].ToString()          + "\n" +
                     "color: " + this.GetHexColor()          + "\n" +
                     "position: " + this.Position.ToString() + "\n";
+        }
+
+        /// <summary>
+        /// Finds the closest point in the home area, to go back to.
+        /// </summary>
+        /// <returns>a Point in the safe area</returns>
+        private Point FindClosestPointHome()
+        {
+            Tuple<double, double> polarCoord = Map.CartesianToPolar(this.Position);
+            double alpha = polarCoord.Item1;
+            double radius = polarCoord.Item2;
+
+            radius = map.MiddleAreaRadius + map.HomeRadius / 2;
+
+            return Map.PolarToCartesian(alpha, radius);
         }
     }
 }

@@ -98,6 +98,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void SimulationStep()
         {
+            State.StopAction(this);
             State.GoNext(this);
             State.DoAction(this);
         }
@@ -110,7 +111,7 @@ namespace Darwin_s_Lab.Simulation
             for (int i = 0; i < CreatureNumber; i++)
             {
                 Point rdmPosition = Map.PolarToCartesian(Tools.rdm.NextDouble() * Math.PI * 2,
-                                                         Tools.rdm.NextDouble() * 10 + (map.MiddleAreaRadius / 2));
+                                                         map.HomeRadius / 2 + map.MiddleAreaRadius);
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(null, null)
@@ -352,9 +353,38 @@ namespace Darwin_s_Lab.Simulation
         {
             timer.Tick -= new EventHandler(CreaturesHuntingProcess);
             for (int i = 0; i < creatures.Count; i++)
-            {
                 creatures[i].ForgetTarget();
-            }
+        }
+
+        /// <summary>
+        /// Starts the creatures back home process.
+        /// </summary>
+        internal void StartBackHome()
+        {
+            dt = stopwatch.ElapsedMilliseconds;
+            timer.Tick += new EventHandler(CreaturesBackHomeProcess);
+        }
+
+        /// <summary>
+        /// Performs the creatures back home process.
+        /// </summary>
+        /// <param name="sender">event's sender</param>
+        /// <param name="e">event's arguments</param>
+        private void CreaturesBackHomeProcess(object sender, EventArgs e)
+        {
+            for (int i = 0; i < creatures.Count; i++)
+                creatures[i].MoveToHome(GetTimeElapsedInSeconds());
+            dt = stopwatch.ElapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// Ends creatures back home process.
+        /// </summary>
+        internal void EndCreaturesBackHomeProcess()
+        {
+            timer.Tick -= new EventHandler(CreaturesBackHomeProcess);
+            for (int i = 0; i < creatures.Count; i++)
+                creatures[i].ForgetTarget();
         }
     }
 }

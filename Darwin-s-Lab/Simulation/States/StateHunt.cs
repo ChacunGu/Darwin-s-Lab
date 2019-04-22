@@ -6,7 +6,7 @@ namespace Darwin_s_Lab.Simulation
         public StateHunt()
         {
             Name = "Hunt";
-            Duration = 1000000;
+            Duration = 10000;
         }
 
         /// <summary>
@@ -19,12 +19,20 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Stop the execution of state's actions.
+        /// </summary>
+        /// <param name="manager">simulation's manager</param>
+        public override void StopAction(Manager manager)
+        {
+            manager.EndCreaturesHuntingProcess();
+        }
+
+        /// <summary>
         /// Switch to state "back home".
         /// </summary>
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
-            manager.EndCreaturesHuntingProcess();
             manager.State = new StateBackHome();
         }
     }
