@@ -14,7 +14,7 @@ namespace Darwin_s_Lab.Simulation
         public double MiddleAreaRadius {
             get
             {
-                return this.middleAreaRadiusPourcent * Map.getMapSize() / 2;
+                return this.middleAreaRadiusPourcent * Map.GetMapSize() / 2;
             }
             set
             {
@@ -25,7 +25,7 @@ namespace Darwin_s_Lab.Simulation
         {
             get
             {
-                return Map.getMapSize() / 2 - MiddleAreaRadius;
+                return Map.GetMapSize() / 2 - MiddleAreaRadius;
             }
             set
             {
@@ -37,9 +37,18 @@ namespace Darwin_s_Lab.Simulation
         /// static access to the size of the map
         /// </summary>
         /// <returns>the size of the canvas/map</returns>
-        static public int getMapSize()
+        static public int GetMapSize()
         {
             return 1000;
+        }
+
+        /// <summary>
+        /// Returns the maps center point.
+        /// </summary>
+        /// <returns>center of the map</returns>
+        static public Point GetCenter()
+        {
+            return new Point(GetMapSize() / 2, GetMapSize() / 2);
         }
 
         public Map(double safeZoneRadiusPourcent, Canvas canvas)
@@ -52,8 +61,18 @@ namespace Darwin_s_Lab.Simulation
             this.Height = MiddleAreaRadius*2;
 
             CreateEllipse(Brushes.Green);
-            Position = new Point(Map.getMapSize() / 2, Map.getMapSize() / 2);
+            Position = GetCenter();
             Move();
+        }
+
+        /// <summary>
+        /// Returns true if the given point is inside the map's danger zone false otherwise.
+        /// </summary>
+        /// <param name="point">Point to test</param>
+        /// <returns>true if the given point is inside the map's danger zone false otherwise</returns>
+        public bool IsPointInsideDangerZone(Point point)
+        {
+            return DistanceBetweenTwoPointsOpti(point, GetCenter()) < MiddleAreaRadius * MiddleAreaRadius;
         }
 
         /// <summary>
@@ -64,7 +83,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns></returns>
         static public Point PolarToCartesian(double alpha, double radius)
         {
-            return new Point(radius * Math.Cos(alpha) + Map.getMapSize()/2, radius * Math.Sin(alpha) + Map.getMapSize()/2);
+            return new Point(radius * Math.Cos(alpha) + Map.GetMapSize()/2, radius * Math.Sin(alpha) + Map.GetMapSize()/2);
         }
 
         /// <summary>
@@ -74,7 +93,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>two doubles</returns>
         static public Tuple<double, double> CartesianToPolar(Point point)
         {
-            Point center = new Point(Map.getMapSize() / 2, Map.getMapSize() / 2);
+            Point center = new Point(Map.GetMapSize() / 2, Map.GetMapSize() / 2);
             double alpha = Math.Atan2(point.Y-center.Y, point.X-center.X);
             double radius = Map.DistanceBetweenTwoPoints(center, point);
             

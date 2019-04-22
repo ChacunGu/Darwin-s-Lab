@@ -11,7 +11,7 @@ namespace Darwin_s_Lab.Simulation
         public StateReproduce()
         {
             Name = "Reproduce";
-            Duration = 15000;
+            Duration = 7500;
         }
 
         /// <summary>
@@ -22,8 +22,6 @@ namespace Darwin_s_Lab.Simulation
         {
             manager.Mutate();
             manager.StartCross();
-            manager.RemoveDeadCreatures();
-            manager.RemoveRottenFood();
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace Darwin_s_Lab.Simulation
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
         {
             {"energy", new uint[]{1, 255}},
-            {"speed", new uint[]{1, 3}},
+            {"speed", new uint[]{1, 255}},
             {"detectionRange", new uint[]{1, 255}},
             {"force", new uint[]{1, 255}},
             {"colorH", new uint[]{1, 1023}},
@@ -36,7 +36,7 @@ namespace Darwin_s_Lab.Simulation
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
         public Creature Mate { get; set; }
-        public Point Target { get; set; } = new Point(Double.MaxValue, Double.MaxValue);
+        public Point Target { get; set; } = new Point(Double.NaN, Double.NaN);
         private Map map;
 
         #region Constructor
@@ -92,7 +92,7 @@ namespace Darwin_s_Lab.Simulation
         {
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = speed == null ? Tools.RandomUintInRange(0, finalMask) : (uint)speed;
-            this.AddGene("force", finalValue, finalMask);
+            this.AddGene("speed", finalValue, finalMask);
             return this;
         }
 
@@ -106,7 +106,7 @@ namespace Darwin_s_Lab.Simulation
         {
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = detectionRange == null ? Tools.RandomUintInRange(0, finalMask) : (uint)detectionRange;
-            this.AddGene("force", finalValue, finalMask);
+            this.AddGene("detectionRange", finalValue, finalMask);
             return this;
         }
         
@@ -216,7 +216,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="dt">time elapsed in milliseconds</param>
         public void MoveToTarget(float dt)
         {
-            if (Target != null && Target.X != Double.MaxValue && Target.Y != Double.MaxValue)
+            if (Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y))
             {
                 TakeStep(dt);
 
@@ -268,29 +268,33 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void ForgetTarget()
         {
-            Target = new Point(Double.MaxValue, Double.MaxValue);
+            Target = new Point(Double.NaN, Double.NaN);
+            Direction = new Vector(Double.NaN, Double.NaN);
         }
 
         /// <summary>
         /// Moves towards the current home target or defines a new one if it does not exist.
         /// </summary>
         /// <param name="dt">time elapsed in milliseconds</param>
-        public void MoveToHome(float dt)
+        /// <returns>true if the creature's back home false otherwise</returns>
+        public bool MoveToHome(float dt)
         {
-            if (Target != null && Target.X != Double.MaxValue && Target.Y != Double.MaxValue)
+            if (Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y))
             {
                 TakeStep(dt);
-
+                
                 // check if target has been reached
-                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToEat)
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Map.GetCenter()) > Math.Pow(map.MiddleAreaRadius + (map.HomeRadius * Tools.rdm.NextDouble()),2))
                 {
                     ForgetTarget();
+                    return true;
                 }
             }
             else
             {
                 FindHomeTarget();
             }
+            return false;
         }
 
         /// <summary>
@@ -447,15 +451,7 @@ namespace Darwin_s_Lab.Simulation
         {
             return GetEnergy() > 0;
         }
-
-        /// <summary>
-        /// Kills creature.
-        /// </summary>
-        public void Kill()
-        {
-            // TODO
-        }
-
+        
         /// <summary>
         /// Returns true if the creature can mutate false otherwise.
         /// </summary>
@@ -488,9 +484,9 @@ namespace Darwin_s_Lab.Simulation
         /// Returns the creature's speed.
         /// </summary>
         /// <returns>creature's speed</returns>
-        public int GetSpeed()
+        public double GetSpeed()
         {
-            return (int)Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1, (int)Genes["speed"].Mask+1);
+            return Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1.0, 8.0); //TODO
         }
 
         /// <summary>
@@ -537,7 +533,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature's detection range</returns>
         public int GetDetectionRange()
         {
-            return (int)Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, (int)Creature.CreatureDim.X, (int)Genes["energy"].Mask);
+            return (int)Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, (int)Creature.CreatureDim.X, (int)Creature.CreatureDim.X * 3);
         }
 
         /// <summary>

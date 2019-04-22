@@ -16,6 +16,7 @@ namespace Darwin_s_Lab.Simulation
         public static int FramesPerSec = 17;
         private List<Creature> creatures;
         private List<Creature> matingCreatures;
+        private List<Creature> goingBackHomeCreatures;
         private List<Creature> newbornCreatures;
         private List<Food> foods;
         private Map map;
@@ -35,7 +36,7 @@ namespace Darwin_s_Lab.Simulation
             this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
-            this.CreatureNumber = 10;
+            this.CreatureNumber = 5;
 
             timer = new DispatcherTimer
             {
@@ -115,7 +116,7 @@ namespace Darwin_s_Lab.Simulation
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(null, null)
-                              .WithSpeed(null, null)
+                              .WithSpeed(255, null)
                               .WithDetectionRange(null, null)
                               .WithForce(null, null)
                               .WithColorH(null, null)
@@ -259,9 +260,9 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i = creatures.Count - 1; i >= 0; i--)
             {
-                if (!creatures[i].IsAlive())
+                if (!creatures[i].IsAlive() || map.IsPointInsideDangerZone(creatures[i].Position))
                 {
-                    creatures[i].Kill();
+                    creatures[i].Destroy();
                     creatures.RemoveAt(i);
                 }
             }
@@ -361,6 +362,8 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         internal void StartBackHome()
         {
+            goingBackHomeCreatures = new List<Creature>(creatures);
+
             dt = stopwatch.ElapsedMilliseconds;
             timer.Tick += new EventHandler(CreaturesBackHomeProcess);
         }
@@ -372,8 +375,12 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="e">event's arguments</param>
         private void CreaturesBackHomeProcess(object sender, EventArgs e)
         {
-            for (int i = 0; i < creatures.Count; i++)
-                creatures[i].MoveToHome(GetTimeElapsedInSeconds());
+            for (int i = goingBackHomeCreatures.Count - 1; i >= 0; i--)
+            {
+                bool isBackHome = goingBackHomeCreatures[i].MoveToHome(GetTimeElapsedInSeconds());
+                if (isBackHome)
+                    goingBackHomeCreatures.RemoveAt(i);
+            }
             dt = stopwatch.ElapsedMilliseconds;
         }
 
@@ -385,6 +392,10 @@ namespace Darwin_s_Lab.Simulation
             timer.Tick -= new EventHandler(CreaturesBackHomeProcess);
             for (int i = 0; i < creatures.Count; i++)
                 creatures[i].ForgetTarget();
+            goingBackHomeCreatures.Clear();
+
+            RemoveDeadCreatures();
+            RemoveRottenFood();
         }
     }
 }
