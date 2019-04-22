@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -21,7 +22,18 @@ namespace Darwin_s_Lab.Simulation
             );
 
             CreateEllipse(Brushes.Red);
-            
+
+            Move();
+        }
+
+        public Food(Canvas canvas, Map map, Point position)
+        {
+            this.canvas = canvas;
+
+            Position = position;
+
+            CreateEllipse(Brushes.Red);
+
             Move();
         }
 

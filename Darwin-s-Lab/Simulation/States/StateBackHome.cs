@@ -11,7 +11,7 @@ namespace Darwin_s_Lab.Simulation
         public StateBackHome()
         {
             Name = "BackHome";
-            Duration = 3500;
+            Duration = 10000;
         }
         
         /// <summary>

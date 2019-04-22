@@ -30,6 +30,45 @@ namespace Darwin_s_Lab.Simulation
         }
 
         [TestMethod]
+        public void TestManager()
+        {
+            Canvas canvas = new Canvas();
+            canvas.Width = 1000;
+            canvas.Height = 1000;
+
+            Manager manager = new Manager(canvas);
+
+            manager.CreateInitialPopulation();
+            Assert.AreEqual(manager.CreatureNumber, manager.CreaturesListCount());
+
+            manager.GenerateFood();
+            Assert.AreEqual(manager.FoodNumber, manager.FoodsListCount());
+
+            manager.RemoveRottenFood();
+            Assert.AreEqual(0, manager.FoodsListCount());
+        }
+
+        [TestMethod]
+        public void TestManagerPlayPause()
+        {
+            Canvas canvas = new Canvas();
+            canvas.Width = 1000;
+            canvas.Height = 1000;
+
+            Manager manager = new Manager(canvas);
+
+            manager.StartSimulation();
+            Assert.IsFalse(manager.IsPaused);
+
+            manager.Pause();
+            Assert.IsTrue(manager.IsPaused);
+
+            manager.Resume();
+            Assert.IsFalse(manager.IsPaused);
+
+        }
+
+        [TestMethod]
         public void TestStates()
         {
             Canvas canvas = new Canvas();

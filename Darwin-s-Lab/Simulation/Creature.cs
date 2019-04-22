@@ -42,7 +42,7 @@ namespace Darwin_s_Lab.Simulation
         #region Constructor
         public Creature(Canvas canvas, Map map)
         {
-            Position = new Point(0, 0); // TODO check si c'est pas là le problème
+            Position = new Point(0, 0);
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
             this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
@@ -543,6 +543,7 @@ namespace Darwin_s_Lab.Simulation
         {
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
+            colorBrush.Opacity = Genes["force"].Value / (double)Genes["force"].Mask * 0.5 + 0.5; // Opacity changes with force
             Ellipse.Fill = colorBrush;
             Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }

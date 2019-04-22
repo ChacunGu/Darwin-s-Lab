@@ -24,19 +24,26 @@ namespace Darwin_s_Lab.Simulation
         private State state;
         private Stopwatch stopwatch;
         private DispatcherTimer timer;
+        private DispatcherTimer timerState;
         private long dt;
 
         public Manager(Canvas canvas)
         {
             this.canvas = canvas;
-            this.state = new StateInitial();
-            this.map = new Map(0.8, canvas);
 
-            this.foods = new List<Food>();
-            this.creatures = new List<Creature>();
+            initManager();
+        }
+        
+        private void initManager()
+        {
+            state = new StateInitial();
+            map = new Map(0.8, canvas);
 
-            this.FoodNumber = 20;
-            this.CreatureNumber = 5;
+            foods = new List<Food>();
+            creatures = new List<Creature>();
+
+            FoodNumber = 20;
+            CreatureNumber = 5;
 
             timer = new DispatcherTimer
             {
@@ -47,9 +54,8 @@ namespace Darwin_s_Lab.Simulation
             stopwatch.Start();
 
             timer.Start();
-            
         }
-        
+
         /// <summary>
         /// Gets or sets the state 
         /// </summary>
@@ -77,6 +83,24 @@ namespace Darwin_s_Lab.Simulation
         public int CreatureNumber { get; set; }
 
         /// <summary>
+        /// returns the length of the creatures List
+        /// </summary>
+        /// <returns>the length of the creatures List</returns>
+        public int CreaturesListCount()
+        {
+            return creatures.Count;
+        }
+        
+        /// <summary>
+        /// returns the length of the foods List
+        /// </summary>
+        /// <returns>the length of the foods List</returns>
+        public int FoodsListCount()
+        {
+            return foods.Count;
+        }
+
+        /// <summary>
         /// Start the simulation
         /// </summary>
         public void StartSimulation()
@@ -85,15 +109,32 @@ namespace Darwin_s_Lab.Simulation
             State.DoAction(this);
 
             // simulation's states loop
-            DispatcherTimer timer2 = new DispatcherTimer();
-            timer2.Tick += new EventHandler((sender, e) => {
+            timerState = new DispatcherTimer();
+            timerState.Tick += new EventHandler((sender, e) => {
                 SimulationStep();
-                timer2.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
+                timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             });
-            timer2.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
-            timer2.Start();
+            timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
+            timerState.Start();
         }
 
+        public bool IsPaused { get; set; } = false;
+        
+
+        public void Pause()
+        {
+            timer.Stop();
+            timerState.Stop();
+            IsPaused = true;
+        }
+
+        public void Resume()
+        {
+            timer.Start();
+            timerState.Start();
+            IsPaused = false;
+        }
+        
         /// <summary>
         /// Changes simulation's state and performs its action.
         /// </summary>
@@ -116,7 +157,7 @@ namespace Darwin_s_Lab.Simulation
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(null, null)
-                              .WithSpeed(255, null)
+                              .WithSpeed(null, null)
                               .WithDetectionRange(null, null)
                               .WithForce(null, null)
                               .WithColorH(null, null)
@@ -138,13 +179,29 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Generates new food on the map.
+        /// Generates new food on the map. Spead them along the map.
         /// </summary>
         public void GenerateFood()
         {
-            for (int i = 0 ; i < FoodNumber ; i++)
+            while (foods.Count < FoodNumber)
             {
-                foods.Add(new Food(canvas, map));
+                Point newPosisition = Map.PolarToCartesian(
+                    Tools.rdm.NextDouble() * Math.PI * 2,
+                    Tools.rdm.NextDouble() * map.MiddleAreaRadius - 100 // 100 -> margin
+                );
+                bool pointOK = true;
+                foreach(Food food in foods)
+                {
+                    if (Map.DistanceBetweenTwoPointsOpti(food.Position, newPosisition) < 1200)
+                    {
+                        pointOK = false;
+                        break;
+                    }
+                }
+                if (pointOK)
+                {
+                    foods.Add(new Food(canvas, map, newPosisition));
+                }
             }
         }
 

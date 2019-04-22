@@ -9,13 +9,31 @@ namespace Darwin_s_Lab
     /// </summary>
     public partial class MainWindow : Window
     {
+        Manager manager;
         public MainWindow()
         {
             InitializeComponent();
 
-            Manager manager = new Manager(canvas);
+            manager = new Manager(canvas);
 
             manager.StartSimulation();
+        }
+
+        /// <summary>
+        /// For debug, TODO remove!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Rectangle_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (manager.IsPaused)
+            {
+                manager.Resume();
+            }
+            else
+            {
+                manager.Pause();
+            }
         }
     }
 }
