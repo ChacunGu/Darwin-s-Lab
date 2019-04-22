@@ -163,7 +163,7 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Reproduces creatures sufficiently fed and close enough to each other.
         /// </summary>
-        internal void Cross()
+        internal void StartCross()
         {
             List<Creature> tmpMatingCreatures = new List<Creature>();
 
@@ -224,7 +224,7 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i = matingCreatures.Count - 1; i >= 0; i--)
             {
-                Creature newborn = matingCreatures[i].MatingProcess(GetTimeElapsedInSeconds(), map);
+                Creature newborn = matingCreatures[i].MatingProcess(GetTimeElapsedInSeconds());
                 if (newborn != null)
                 {
                     // remove creatures from matingCreatures as they already reproduced
@@ -286,6 +286,75 @@ namespace Darwin_s_Lab.Simulation
             for (int i = 0; i < matingCreatures.Count; i++)
                 matingCreatures[i].ForgetMate();
             matingCreatures.Clear();
+        }
+
+        /// <summary>
+        /// Starts the creatures hunting process.
+        /// </summary>
+        internal void StartHunt()
+        {
+            dt = stopwatch.ElapsedMilliseconds;
+            timer.Tick += new EventHandler(CreaturesHuntingProcess);
+        }
+
+        /// <summary>
+        /// Performs the creatures hunting process.
+        /// </summary>
+        /// <param name="sender">event's sender</param>
+        /// <param name="e">event's arguments</param>
+        private void CreaturesHuntingProcess(object sender, EventArgs e)
+        {
+            for (int i=0; i<creatures.Count; i++)
+            {
+                double smallestDistance = Double.MaxValue;
+                int nearestFoodIndex = -1;
+
+                for (int j=0; j<foods.Count; j++)
+                {
+                    double distance = Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[j].Position);
+                    if (distance <= Math.Pow(creatures[i].GetDetectionRange(), 2) && distance < smallestDistance)
+                    {
+                        smallestDistance = distance;
+                        nearestFoodIndex = j;
+                    }
+                }
+
+                // define the nearest food as the new target
+                if (nearestFoodIndex != -1)
+                {
+                    creatures[i].ForgetTarget();
+
+                    Vector foodDirection = foods[nearestFoodIndex].Position - creatures[i].Position;
+                    foodDirection.Normalize();
+                    creatures[i].Direction = foodDirection;
+                    
+                    creatures[i].TakeStep(GetTimeElapsedInSeconds());
+
+                    // check if food has been reached
+                    if (Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[nearestFoodIndex].Position) <= Creature.MinimalDistanceToEat)
+                    {
+                        creatures[i].Eat(foods[nearestFoodIndex]);
+                        foods[nearestFoodIndex].Destroy();
+                        foods.RemoveAt(nearestFoodIndex);
+                    }
+                } else
+                {
+                    creatures[i].MoveToTarget(GetTimeElapsedInSeconds());
+                }
+            }
+            dt = stopwatch.ElapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// Ends creatures hunting process and resets their target.
+        /// </summary>
+        public void EndCreaturesHuntingProcess()
+        {
+            timer.Tick -= new EventHandler(CreaturesHuntingProcess);
+            for (int i = 0; i < creatures.Count; i++)
+            {
+                creatures[i].ForgetTarget();
+            }
         }
     }
 }

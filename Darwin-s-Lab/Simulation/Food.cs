@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Food : Drawable
     {
-        public int Energy { get; set; }
+        public double Energy { get; set; } = 0.3;
         
         public Food(Canvas canvas, Map map)
         {

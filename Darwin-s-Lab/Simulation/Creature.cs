@@ -14,10 +14,11 @@ namespace Darwin_s_Lab.Simulation
     {
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
-        public static double MinimalDistanceToSearchMate = 600*600; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToJoinMate = 100*100; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToMate = 25*25; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalEnergyToMate = 0.0;
+        public static double MinimalDistanceToEat = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        public static double MinimalDistanceToSearchMate = Math.Pow(CreatureDim.X * 12, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToJoinMate = Math.Pow(CreatureDim.X * 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToMate = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalEnergyToMate = 0.2;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
@@ -35,6 +36,7 @@ namespace Darwin_s_Lab.Simulation
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
         public Creature Mate { get; set; }
+        public Point Target { get; set; } = new Point(Double.MaxValue, Double.MaxValue);
         private Map map;
 
         #region Constructor
@@ -198,11 +200,63 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Takes a step in a direction.
         /// </summary>
-        /// <param name="dt">time in milliseconds</param>
+        /// <param name="dt">time elapsed in milliseconds</param>
         public void TakeStep(float dt)
         {
-            Position += Direction * Genes["speed"].Value * SpeedFactor * dt;
-            Move();
+            if (!Double.IsNaN(Direction.X) && !Double.IsNaN(Direction.Y))
+            {
+                Position += Direction * GetSpeed() * SpeedFactor * dt;
+                Move();
+            }
+        }
+
+        /// <summary>
+        /// Moves towards the current target or defines a new one if it has been reached or does not exist.
+        /// </summary>
+        /// <param name="dt">time elapsed in milliseconds</param>
+        public void MoveToTarget(float dt)
+        {
+            if (Target != null && Target.X != Double.MaxValue && Target.Y != Double.MaxValue)
+            {
+                TakeStep(dt);
+
+                // check if target has been reached
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToEat)
+                {
+                    FindRandomTarget();
+                }
+            } else
+            {
+                FindRandomTarget();
+            }
+        }
+
+        /// <summary>
+        /// Finds a new random target point. Updates the creature's direction vector.
+        /// </summary>
+        public void FindRandomTarget()
+        {
+            Point randomPosition = Map.PolarToCartesian(
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                Tools.rdm.NextDouble() * map.MiddleAreaRadius / 2
+            );
+
+            double distance = Map.DistanceBetweenTwoPoints(randomPosition, Position);
+            double randomDist = Tools.rdm.NextDouble() * distance;
+
+            Vector newDirection = randomPosition - Position;
+            newDirection.Normalize();
+
+            Direction = newDirection;
+            Target = Position + Direction * randomDist;
+        }
+
+        /// <summary>
+        /// Creature forgets its target.
+        /// </summary>
+        public void ForgetTarget()
+        {
+            Target = new Point(Double.MaxValue, Double.MaxValue);
         }
 
         /// <summary>
@@ -211,11 +265,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="dt">time elapsed since last call in milliseconds</param>
         /// <param name="map">simulation's map</param>
         /// <returns>newborn creature or null if the creatures didn't found each other</returns>
-        public Creature MatingProcess(float dt, Map map)
+        public Creature MatingProcess(float dt)
         {
             // search best direction to move towards the creature's mate
-            FindDirectionTowardsMate(map);
-            
+            FindDirectionTowardsMate();
+
             // move
             TakeStep(dt);
 
@@ -242,8 +296,7 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Finds the direction towards the creature's mate.
         /// </summary>
-        /// <param name="map">simulation's map</param>
-        public void FindDirectionTowardsMate(Map map)
+        public void FindDirectionTowardsMate()
         {
             if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > MinimalDistanceToJoinMate)
             {
@@ -284,7 +337,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="food">food to eat</param>
         public void Eat(Food food)
         {
-            throw new NotImplementedException();
+            SetEnergy(GetEnergy() + food.Energy);
         }
 
         /// <summary>
@@ -318,7 +371,8 @@ namespace Darwin_s_Lab.Simulation
         public Creature Cross(Creature other)
         {
             Creature newborn = new Creature(this.canvas, this.map)
-                                    .WithPosition(Position);
+                                    .WithPosition(new Point(Position.X + Math.Abs(Position.X - other.Position.X) / 2,
+                                                            Position.Y + Math.Abs(Position.Y - other.Position.Y) / 2));
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;
@@ -414,6 +468,18 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Sets creature's energy level.
+        /// </summary>
+        /// <param name="newEnergyInPercentage">new energy value between 0 and 1</param>
+        public void SetEnergy(double newEnergyInPercentage)
+        {
+            newEnergyInPercentage = newEnergyInPercentage > 1.0 ? 1.0 : 
+                                    newEnergyInPercentage < 0.0 ? 0.0 : 
+                                    newEnergyInPercentage;
+            Genes["energy"].Value = Tools.Map(newEnergyInPercentage, 0.0, 1.0, 0, (int)Genes["energy"].Mask);
+        }
+
+        /// <summary>
         /// Returns the creature's HSV color in hexadecimal.
         /// </summary>
         /// <returns>creature's color in hexadecimal</returns>
@@ -428,6 +494,15 @@ namespace Darwin_s_Lab.Simulation
 
             // RGB to hex
             return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+        }
+
+        /// <summary>
+        /// Returns the creature's detection range.
+        /// </summary>
+        /// <returns>creature's detection range</returns>
+        public int GetDetectionRange()
+        {
+            return (int)Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, (int)Creature.CreatureDim.X, (int)Genes["energy"].Mask);
         }
 
         /// <summary>
@@ -458,9 +533,8 @@ namespace Darwin_s_Lab.Simulation
                     this.Genes["speed"].ToString()          + "\n" +
                     this.Genes["detectionRange"].ToString() + "\n" +
                     this.Genes["force"].ToString()          + "\n" +
-                    this.Genes["colorH"].ToString()         + "\n" +
-                    this.Genes["colorS"].ToString()         + "\n" +
-                    this.Genes["colorV"].ToString();
+                    "color: " + this.GetHexColor()          + "\n" +
+                    "position: " + this.Position.ToString() + "\n";
         }
     }
 }

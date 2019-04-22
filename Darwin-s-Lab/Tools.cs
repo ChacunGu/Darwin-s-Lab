@@ -160,6 +160,21 @@ namespace Darwin_s_Lab
         }
 
         /// <summary>
+        /// Maps given value in target range.
+        /// Source: https://stackoverflow.com/a/14353572
+        /// </summary>
+        /// <param name="value">value to map</param>
+        /// <param name="fromSource">source range's lower bound</param>
+        /// <param name="toSource">source range's upper bound</param>
+        /// <param name="fromTarget">target range's lower bound</param>
+        /// <param name="toTarget">target range's upper bound</param>
+        /// <returns>mapped value in target range</returns>
+        public static uint Map(double value, double fromSource, double toSource, int fromTarget, int toTarget)
+        {
+            return (uint)((value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget);
+        }
+
+        /// <summary>
         /// Returns a random uint in given range (max included).
         /// </summary>
         /// <param name="min">lower bound</param>
