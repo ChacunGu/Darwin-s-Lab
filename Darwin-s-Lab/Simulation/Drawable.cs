@@ -35,7 +35,8 @@ namespace Darwin_s_Lab.Simulation
                 Width = this.Width,
                 Height = this.Height,
 
-                Fill = color
+                Fill = color,
+                Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(color.Color, -0.5f))
             };
 
             canvas.Children.Add(Ellipse);

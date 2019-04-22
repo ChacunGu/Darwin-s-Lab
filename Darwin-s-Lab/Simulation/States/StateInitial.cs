@@ -24,6 +24,15 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Stop the execution of state's actions.
+        /// </summary>
+        /// <param name="manager">simulation's manager</param>
+        public override void StopAction(Manager manager)
+        {
+            
+        }
+
+        /// <summary>
         /// Switch to state "grow food".
         /// </summary>
         /// <param name="manager">simulation's manager</param>

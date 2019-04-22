@@ -9,7 +9,7 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Food : Drawable
     {
-        public int Energy { get; set; }
+        public double Energy { get; set; } = 0.3;
         
         public Food(Canvas canvas, Map map)
         {
@@ -17,7 +17,7 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                Tools.rdm.NextDouble() * map.MiddleAreaRadius/2
+                Tools.rdm.NextDouble() * map.MiddleAreaRadius - 100 // 100 -> margin
             );
 
             CreateEllipse(Brushes.Red);

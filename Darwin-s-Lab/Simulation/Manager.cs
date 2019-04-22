@@ -16,6 +16,7 @@ namespace Darwin_s_Lab.Simulation
         public static int FramesPerSec = 17;
         private List<Creature> creatures;
         private List<Creature> matingCreatures;
+        private List<Creature> goingBackHomeCreatures;
         private List<Creature> newbornCreatures;
         private List<Food> foods;
         private Map map;
@@ -35,7 +36,7 @@ namespace Darwin_s_Lab.Simulation
             this.creatures = new List<Creature>();
 
             this.FoodNumber = 20;
-            this.CreatureNumber = 10;
+            this.CreatureNumber = 5;
 
             timer = new DispatcherTimer
             {
@@ -98,6 +99,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void SimulationStep()
         {
+            State.StopAction(this);
             State.GoNext(this);
             State.DoAction(this);
         }
@@ -110,11 +112,11 @@ namespace Darwin_s_Lab.Simulation
             for (int i = 0; i < CreatureNumber; i++)
             {
                 Point rdmPosition = Map.PolarToCartesian(Tools.rdm.NextDouble() * Math.PI * 2,
-                                                         Tools.rdm.NextDouble() * 10 + (map.MiddleAreaRadius / 2));
+                                                         map.HomeRadius / 2 + map.MiddleAreaRadius);
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(null, null)
-                              .WithSpeed(null, null)
+                              .WithSpeed(255, null)
                               .WithDetectionRange(null, null)
                               .WithForce(null, null)
                               .WithColorH(null, null)
@@ -163,7 +165,7 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Reproduces creatures sufficiently fed and close enough to each other.
         /// </summary>
-        internal void Cross()
+        internal void StartCross()
         {
             List<Creature> tmpMatingCreatures = new List<Creature>();
 
@@ -224,7 +226,7 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i = matingCreatures.Count - 1; i >= 0; i--)
             {
-                Creature newborn = matingCreatures[i].MatingProcess(GetTimeElapsedInSeconds(), map);
+                Creature newborn = matingCreatures[i].MatingProcess(GetTimeElapsedInSeconds());
                 if (newborn != null)
                 {
                     // remove creatures from matingCreatures as they already reproduced
@@ -258,9 +260,9 @@ namespace Darwin_s_Lab.Simulation
         {
             for (int i = creatures.Count - 1; i >= 0; i--)
             {
-                if (!creatures[i].IsAlive())
+                if (!creatures[i].IsAlive() || map.IsPointInsideDangerZone(creatures[i].Position))
                 {
-                    creatures[i].Kill();
+                    creatures[i].Destroy();
                     creatures.RemoveAt(i);
                 }
             }
@@ -286,6 +288,114 @@ namespace Darwin_s_Lab.Simulation
             for (int i = 0; i < matingCreatures.Count; i++)
                 matingCreatures[i].ForgetMate();
             matingCreatures.Clear();
+        }
+
+        /// <summary>
+        /// Starts the creatures hunting process.
+        /// </summary>
+        internal void StartHunt()
+        {
+            dt = stopwatch.ElapsedMilliseconds;
+            timer.Tick += new EventHandler(CreaturesHuntingProcess);
+        }
+
+        /// <summary>
+        /// Performs the creatures hunting process.
+        /// </summary>
+        /// <param name="sender">event's sender</param>
+        /// <param name="e">event's arguments</param>
+        private void CreaturesHuntingProcess(object sender, EventArgs e)
+        {
+            for (int i=0; i<creatures.Count; i++)
+            {
+                double smallestDistance = Double.MaxValue;
+                int nearestFoodIndex = -1;
+
+                for (int j=0; j<foods.Count; j++)
+                {
+                    double distance = Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[j].Position);
+                    if (distance <= Math.Pow(creatures[i].GetDetectionRange(), 2) && distance < smallestDistance)
+                    {
+                        smallestDistance = distance;
+                        nearestFoodIndex = j;
+                    }
+                }
+
+                // define the nearest food as the new target
+                if (nearestFoodIndex != -1)
+                {
+                    creatures[i].ForgetTarget();
+
+                    Vector foodDirection = foods[nearestFoodIndex].Position - creatures[i].Position;
+                    foodDirection.Normalize();
+                    creatures[i].Direction = foodDirection;
+                    
+                    creatures[i].TakeStep(GetTimeElapsedInSeconds());
+
+                    // check if food has been reached
+                    if (Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[nearestFoodIndex].Position) <= Creature.MinimalDistanceToEat)
+                    {
+                        creatures[i].Eat(foods[nearestFoodIndex]);
+                        foods[nearestFoodIndex].Destroy();
+                        foods.RemoveAt(nearestFoodIndex);
+                    }
+                } else
+                {
+                    creatures[i].MoveToTarget(GetTimeElapsedInSeconds());
+                }
+            }
+            dt = stopwatch.ElapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// Ends creatures hunting process and resets their target.
+        /// </summary>
+        public void EndCreaturesHuntingProcess()
+        {
+            timer.Tick -= new EventHandler(CreaturesHuntingProcess);
+            for (int i = 0; i < creatures.Count; i++)
+                creatures[i].ForgetTarget();
+        }
+
+        /// <summary>
+        /// Starts the creatures back home process.
+        /// </summary>
+        internal void StartBackHome()
+        {
+            goingBackHomeCreatures = new List<Creature>(creatures);
+
+            dt = stopwatch.ElapsedMilliseconds;
+            timer.Tick += new EventHandler(CreaturesBackHomeProcess);
+        }
+
+        /// <summary>
+        /// Performs the creatures back home process.
+        /// </summary>
+        /// <param name="sender">event's sender</param>
+        /// <param name="e">event's arguments</param>
+        private void CreaturesBackHomeProcess(object sender, EventArgs e)
+        {
+            for (int i = goingBackHomeCreatures.Count - 1; i >= 0; i--)
+            {
+                bool isBackHome = goingBackHomeCreatures[i].MoveToHome(GetTimeElapsedInSeconds());
+                if (isBackHome)
+                    goingBackHomeCreatures.RemoveAt(i);
+            }
+            dt = stopwatch.ElapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// Ends creatures back home process.
+        /// </summary>
+        internal void EndCreaturesBackHomeProcess()
+        {
+            timer.Tick -= new EventHandler(CreaturesBackHomeProcess);
+            for (int i = 0; i < creatures.Count; i++)
+                creatures[i].ForgetTarget();
+            goingBackHomeCreatures.Clear();
+
+            RemoveDeadCreatures();
+            RemoveRottenFood();
         }
     }
 }

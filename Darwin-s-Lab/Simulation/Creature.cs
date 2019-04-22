@@ -14,17 +14,18 @@ namespace Darwin_s_Lab.Simulation
     {
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
-        public static double MinimalDistanceToSearchMate = 600*600; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToJoinMate = 100*100; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToMate = 25*25; // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalEnergyToMate = 0.0;
+        public static double MinimalDistanceToEat = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        public static double MinimalDistanceToSearchMate = Math.Pow(CreatureDim.X * 12, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToJoinMate = Math.Pow(CreatureDim.X * 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToMate = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalEnergyToMate = 0.2;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
         {
             {"energy", new uint[]{1, 255}},
-            {"speed", new uint[]{1, 3}},
+            {"speed", new uint[]{1, 255}},
             {"detectionRange", new uint[]{1, 255}},
             {"force", new uint[]{1, 255}},
             {"colorH", new uint[]{1, 1023}},
@@ -35,12 +36,13 @@ namespace Darwin_s_Lab.Simulation
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
         public Creature Mate { get; set; }
+        public Point Target { get; set; } = new Point(Double.NaN, Double.NaN);
         private Map map;
 
         #region Constructor
         public Creature(Canvas canvas, Map map)
         {
-            Position = new Point(0, 0);
+            Position = new Point(0, 0); // TODO check si c'est pas là le problème
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
             this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
@@ -55,7 +57,7 @@ namespace Darwin_s_Lab.Simulation
 
             Position = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                (Tools.rdm.NextDouble() * map.MiddleAreaRadius / 4 + map.MiddleAreaRadius) / 2
+                map.MiddleAreaRadius + map.HomeRadius / 2
             );
 
             this.Width = CreatureDim.X;
@@ -90,7 +92,7 @@ namespace Darwin_s_Lab.Simulation
         {
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = speed == null ? Tools.RandomUintInRange(0, finalMask) : (uint)speed;
-            this.AddGene("force", finalValue, finalMask);
+            this.AddGene("speed", finalValue, finalMask);
             return this;
         }
 
@@ -104,7 +106,7 @@ namespace Darwin_s_Lab.Simulation
         {
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = detectionRange == null ? Tools.RandomUintInRange(0, finalMask) : (uint)detectionRange;
-            this.AddGene("force", finalValue, finalMask);
+            this.AddGene("detectionRange", finalValue, finalMask);
             return this;
         }
         
@@ -198,11 +200,101 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Takes a step in a direction.
         /// </summary>
-        /// <param name="dt">time in milliseconds</param>
+        /// <param name="dt">time elapsed in milliseconds</param>
         public void TakeStep(float dt)
         {
-            Position += Direction * Genes["speed"].Value * SpeedFactor * dt;
-            Move();
+            if (!Double.IsNaN(Direction.X) && !Double.IsNaN(Direction.Y))
+            {
+                Position += Direction * GetSpeed() * SpeedFactor * dt;
+                Move();
+            }
+        }
+
+        /// <summary>
+        /// Moves towards the current target or defines a new one if it has been reached or does not exist.
+        /// </summary>
+        /// <param name="dt">time elapsed in milliseconds</param>
+        public void MoveToTarget(float dt)
+        {
+            if (Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y))
+            {
+                TakeStep(dt);
+
+                // check if target has been reached
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToEat)
+                {
+                    FindRandomTarget();
+                }
+            } else
+            {
+                FindRandomTarget();
+            }
+        }
+
+        /// <summary>
+        /// Finds a new random target point. Updates the creature's direction vector.
+        /// </summary>
+        private void FindRandomTarget()
+        {
+            Point randomPosition = Map.PolarToCartesian(
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                Tools.rdm.NextDouble() * map.MiddleAreaRadius / 2
+            );
+
+            double distance = Map.DistanceBetweenTwoPoints(randomPosition, Position);
+            double randomDist = Tools.rdm.NextDouble() * distance;
+
+            Vector newDirection = randomPosition - Position;
+            newDirection.Normalize();
+
+            Direction = newDirection;
+            Target = Position + Direction * randomDist;
+        }
+
+        /// <summary>
+        /// Finds closest points home and sets target / direction.
+        /// </summary>
+        private void FindHomeTarget()
+        {
+            Target = FindClosestPointHome();
+
+            Vector newDirection = Target - Position;
+            newDirection.Normalize();
+            Direction = newDirection;
+        }
+
+        /// <summary>
+        /// Creature forgets its target.
+        /// </summary>
+        public void ForgetTarget()
+        {
+            Target = new Point(Double.NaN, Double.NaN);
+            Direction = new Vector(Double.NaN, Double.NaN);
+        }
+
+        /// <summary>
+        /// Moves towards the current home target or defines a new one if it does not exist.
+        /// </summary>
+        /// <param name="dt">time elapsed in milliseconds</param>
+        /// <returns>true if the creature's back home false otherwise</returns>
+        public bool MoveToHome(float dt)
+        {
+            if (Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y))
+            {
+                TakeStep(dt);
+                
+                // check if target has been reached
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Map.GetCenter()) > Math.Pow(map.MiddleAreaRadius + (map.HomeRadius * Tools.rdm.NextDouble()),2))
+                {
+                    ForgetTarget();
+                    return true;
+                }
+            }
+            else
+            {
+                FindHomeTarget();
+            }
+            return false;
         }
 
         /// <summary>
@@ -211,11 +303,11 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="dt">time elapsed since last call in milliseconds</param>
         /// <param name="map">simulation's map</param>
         /// <returns>newborn creature or null if the creatures didn't found each other</returns>
-        public Creature MatingProcess(float dt, Map map)
+        public Creature MatingProcess(float dt)
         {
             // search best direction to move towards the creature's mate
-            FindDirectionTowardsMate(map);
-            
+            FindDirectionTowardsMate();
+
             // move
             TakeStep(dt);
 
@@ -242,8 +334,7 @@ namespace Darwin_s_Lab.Simulation
         /// <summary>
         /// Finds the direction towards the creature's mate.
         /// </summary>
-        /// <param name="map">simulation's map</param>
-        public void FindDirectionTowardsMate(Map map)
+        public void FindDirectionTowardsMate()
         {
             if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > MinimalDistanceToJoinMate)
             {
@@ -284,7 +375,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="food">food to eat</param>
         public void Eat(Food food)
         {
-            throw new NotImplementedException();
+            SetEnergy(GetEnergy() + food.Energy);
         }
 
         /// <summary>
@@ -318,7 +409,8 @@ namespace Darwin_s_Lab.Simulation
         public Creature Cross(Creature other)
         {
             Creature newborn = new Creature(this.canvas, this.map)
-                                    .WithPosition(Position);
+                                    .WithPosition(new Point(Position.X + Math.Abs(Position.X - other.Position.X) / 2,
+                                                            Position.Y + Math.Abs(Position.Y - other.Position.Y) / 2));
             for (int i = 0; i < Genes.Count(); i++) // for each gene
             {
                 Gene selfGene = Genes.ElementAt(i).Value;
@@ -347,6 +439,7 @@ namespace Darwin_s_Lab.Simulation
 
                 newborn.AddGene(name, value, mask);
             }
+            newborn.UpdateColor();
             return newborn;
         }
 
@@ -358,15 +451,7 @@ namespace Darwin_s_Lab.Simulation
         {
             return GetEnergy() > 0;
         }
-
-        /// <summary>
-        /// Kills creature.
-        /// </summary>
-        public void Kill()
-        {
-            // TODO
-        }
-
+        
         /// <summary>
         /// Returns true if the creature can mutate false otherwise.
         /// </summary>
@@ -399,9 +484,9 @@ namespace Darwin_s_Lab.Simulation
         /// Returns the creature's speed.
         /// </summary>
         /// <returns>creature's speed</returns>
-        public int GetSpeed()
+        public double GetSpeed()
         {
-            return (int)Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1, (int)Genes["speed"].Mask+1);
+            return Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1.0, 8.0); //TODO
         }
 
         /// <summary>
@@ -414,6 +499,18 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Sets creature's energy level.
+        /// </summary>
+        /// <param name="newEnergyInPercentage">new energy value between 0 and 1</param>
+        public void SetEnergy(double newEnergyInPercentage)
+        {
+            newEnergyInPercentage = newEnergyInPercentage > 1.0 ? 1.0 : 
+                                    newEnergyInPercentage < 0.0 ? 0.0 : 
+                                    newEnergyInPercentage;
+            Genes["energy"].Value = Tools.Map(newEnergyInPercentage, 0.0, 1.0, 0, (int)Genes["energy"].Mask);
+        }
+
+        /// <summary>
         /// Returns the creature's HSV color in hexadecimal.
         /// </summary>
         /// <returns>creature's color in hexadecimal</returns>
@@ -422,12 +519,21 @@ namespace Darwin_s_Lab.Simulation
             // HSV to RGB
             int r, g, b;
             double h = Tools.Map((int)Genes["colorH"].Value, 0, (int)Genes["colorH"].Mask, 0, 360);
-            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0, 1);
-            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0, 1);
+            double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0.2, 1.0);
+            double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0.2, 1.0);
             Tools.HsvToRgb(h, s, v, out r, out g, out b);
 
             // RGB to hex
             return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+        }
+
+        /// <summary>
+        /// Returns the creature's detection range.
+        /// </summary>
+        /// <returns>creature's detection range</returns>
+        public int GetDetectionRange()
+        {
+            return (int)Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, (int)Creature.CreatureDim.X, (int)Creature.CreatureDim.X * 3);
         }
 
         /// <summary>
@@ -438,14 +544,7 @@ namespace Darwin_s_Lab.Simulation
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
             Ellipse.Fill = colorBrush;
-        }
-
-        /// <summary>
-        /// Updates element's graphical state before drawing.
-        /// </summary>
-        public void Update()
-        {
-            throw new NotImplementedException();
+            Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }
 
         /// <summary>
@@ -458,9 +557,23 @@ namespace Darwin_s_Lab.Simulation
                     this.Genes["speed"].ToString()          + "\n" +
                     this.Genes["detectionRange"].ToString() + "\n" +
                     this.Genes["force"].ToString()          + "\n" +
-                    this.Genes["colorH"].ToString()         + "\n" +
-                    this.Genes["colorS"].ToString()         + "\n" +
-                    this.Genes["colorV"].ToString();
+                    "color: " + this.GetHexColor()          + "\n" +
+                    "position: " + this.Position.ToString() + "\n";
+        }
+
+        /// <summary>
+        /// Finds the closest point in the home area, to go back to.
+        /// </summary>
+        /// <returns>a Point in the safe area</returns>
+        private Point FindClosestPointHome()
+        {
+            Tuple<double, double> polarCoord = Map.CartesianToPolar(this.Position);
+            double alpha = polarCoord.Item1;
+            double radius = polarCoord.Item2;
+
+            radius = map.MiddleAreaRadius + map.HomeRadius / 2;
+
+            return Map.PolarToCartesian(alpha, radius);
         }
     }
 }
