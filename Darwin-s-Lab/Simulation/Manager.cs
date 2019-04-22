@@ -14,6 +14,7 @@ namespace Darwin_s_Lab.Simulation
     public class Manager
     {
         public static int FramesPerSec = 17;
+        public static Creature SelectedCreature { get; set; } = null;
         private List<Creature> creatures;
         private List<Creature> matingCreatures;
         private List<Creature> goingBackHomeCreatures;
