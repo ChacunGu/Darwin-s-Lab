@@ -27,6 +27,8 @@ namespace Darwin_s_Lab.Simulation
         static double UsedEnergyToMove = 0.000001;
         static double MinimalEnergyToMove = 0.000001;
         static double MinimalEnergyToMate = 0.2;
+        static double MinimalEnergyToStopHuntingInMorning = 1.0;
+        static double MinimalEnergyToStopHuntingInEvening = 0.4;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
@@ -552,6 +554,15 @@ namespace Darwin_s_Lab.Simulation
         public void Eat(Food food)
         {
             SetEnergy(GetEnergy() + food.Energy);
+        }
+
+        /// <summary>
+        /// Returns true if the creature's energy needs have been fulfilled false otherwise.
+        /// </summary>
+        /// <returns>true if the creature's energy needs have been fulfilled false otherwise</returns>
+        public bool HasEatenEnough(double huntProgression)
+        {
+            return GetEnergy() >= Tools.Map(2 * Math.Pow(huntProgression / 3, 2), 0, 0.222, Creature.MinimalEnergyToStopHuntingInMorning, Creature.MinimalEnergyToStopHuntingInEvening);
         }
 
         /// <summary>
