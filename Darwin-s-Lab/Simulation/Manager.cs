@@ -26,6 +26,7 @@ namespace Darwin_s_Lab.Simulation
         private Stopwatch stopwatch;
         private DispatcherTimer timer;
         private DispatcherTimer timerState;
+        private EventHandler stateHandler;
         private long dt;
 
         private MainWindow mainWindow;
@@ -146,10 +147,11 @@ namespace Darwin_s_Lab.Simulation
 
             // simulation's states loop
             timerState = new DispatcherTimer();
-            timerState.Tick += new EventHandler((sender, e) => {
+            stateHandler = new EventHandler((sender, e) => {
                 SimulationStep();
                 timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             });
+            timerState.Tick += stateHandler;
             timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             timerState.Start();
 
@@ -164,6 +166,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void Pause()
         {
+            stopwatch.Stop();
             timer.Stop();
             timerState.Stop();
             IsPaused = true;
@@ -174,7 +177,9 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void Resume()
         {
+            stopwatch.Start();
             timer.Start();
+            timerState.Interval =  new TimeSpan(0, 0, 0, 0, State.Duration - (int)GetStateElapsedTime());
             timerState.Start();
             IsPaused = false;
         }
