@@ -21,8 +21,8 @@ namespace Darwin_s_Lab.Simulation
         static double MinimalDistanceToReachTarget = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
 
         static double SleepEnergyGain = 1.0;
-        static double UsedEnergyToMove = 0.00001;
-        static double MinimalEnergyToMove = 0.00001;
+        static double UsedEnergyToMove = 0.000001;
+        static double MinimalEnergyToMove = 0.000001;
         static double MinimalEnergyToMate = 0.2;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
@@ -356,7 +356,7 @@ namespace Darwin_s_Lab.Simulation
         {
             Point randomPosition = Map.PolarToCartesian(
                 Tools.rdm.NextDouble() * Math.PI * 2,
-                Tools.rdm.NextDouble() * map.MiddleAreaRadius / 2
+                Math.Sqrt(Tools.rdm.NextDouble()) * (map.MiddleAreaRadius - 25) // 25 -> margin
             );
 
             double distance = Map.DistanceBetweenTwoPoints(randomPosition, Position);

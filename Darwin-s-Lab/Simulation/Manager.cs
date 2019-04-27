@@ -27,6 +27,7 @@ namespace Darwin_s_Lab.Simulation
         private DispatcherTimer timerState;
         private long dt;
 
+        #region simulation controls & parameters
         public Manager(Canvas canvas)
         {
             this.canvas = canvas;
@@ -34,7 +35,6 @@ namespace Darwin_s_Lab.Simulation
             InitManager();
         }
 
-        #region simulation controls
         /// <summary>
         /// Initializes the manager.
         /// </summary>
@@ -47,7 +47,7 @@ namespace Darwin_s_Lab.Simulation
             creatures = new List<Creature>();
 
             FoodNumber = 20;
-            CreatureNumber = 5;
+            CreatureNumber = 10;
 
             timer = new DispatcherTimer
             {
@@ -226,22 +226,31 @@ namespace Darwin_s_Lab.Simulation
             {
                 Point newPosisition = Map.PolarToCartesian(
                     Tools.rdm.NextDouble() * Math.PI * 2,
-                    Tools.rdm.NextDouble() * map.MiddleAreaRadius - 100 // 100 -> margin
+                    Math.Sqrt(Tools.rdm.NextDouble()) * (map.MiddleAreaRadius - 50) // 50 -> margin
                 );
-                bool pointOK = true;
-                foreach(Food food in foods)
-                {
-                    if (Map.DistanceBetweenTwoPointsOpti(food.Position, newPosisition) < 1200)
-                    {
-                        pointOK = false;
-                        break;
-                    }
-                }
-                if (pointOK)
-                {
-                    foods.Add(new Food(canvas, map, newPosisition));
-                }
+                foods.Add(new Food(canvas, map, newPosisition));
             }
+
+            //while (foods.Count < FoodNumber)
+            //{
+            //    Point newPosisition = Map.PolarToCartesian(
+            //        Tools.rdm.NextDouble() * Math.PI * 2,
+            //        Tools.rdm.NextDouble() * map.MiddleAreaRadius - 100 // 100 -> margin
+            //    );
+            //    bool pointOK = true;
+            //    foreach(Food food in foods)
+            //    {
+            //        if (Map.DistanceBetweenTwoPointsOpti(food.Position, newPosisition) < 1200)
+            //        {
+            //            pointOK = false;
+            //            break;
+            //        }
+            //    }
+            //    if (pointOK)
+            //    {
+            //        foods.Add(new Food(canvas, map, newPosisition));
+            //    }
+            //}
         }
         #endregion
 
