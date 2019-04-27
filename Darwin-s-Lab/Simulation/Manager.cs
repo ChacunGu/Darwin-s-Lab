@@ -31,10 +31,13 @@ namespace Darwin_s_Lab.Simulation
         private MainWindow mainWindow;
 
         #region simulation controls & parameters
-        public Manager(Canvas canvas, MainWindow mainWindow = null)
+        public Manager(Canvas canvas, MainWindow mainWindow)
         {
             this.canvas = canvas;
             this.mainWindow = mainWindow;
+
+            FoodNumber = 200;
+            CreatureNumber = 100;
 
             InitManager();
         }
@@ -44,6 +47,9 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void InitManager()
         {
+            SelectedCreature = null;
+
+            mainWindow.UpdateCreatureInfo();
 
             IsSimulating = false;
             IsPaused = false;
@@ -53,10 +59,7 @@ namespace Darwin_s_Lab.Simulation
 
             foods = new List<Food>();
             creatures = new List<Creature>();
-
-            FoodNumber = 200;
-            CreatureNumber = 100;
-
+            
             timer = new DispatcherTimer
             {
                 Interval = new TimeSpan(0, 0, 0, 0, FramesPerSec)
@@ -163,11 +166,9 @@ namespace Darwin_s_Lab.Simulation
             timerState.Tick += stateHandler;
             timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             timerState.Start();
-
-            if (mainWindow != null)
-            {
-                timer.Tick += new EventHandler(mainWindow.Update);
-            }
+            
+            timer.Tick += new EventHandler(mainWindow.Update);
+            
         }
         
         /// <summary>
@@ -266,6 +267,11 @@ namespace Darwin_s_Lab.Simulation
             {
                 if (!creatures[i].IsAlive() || map.IsPointInsideDangerZone(creatures[i].Position))
                 {
+                    if (creatures[i].IsSelected)
+                    {
+                        SelectedCreature = null;
+                        mainWindow.UpdateCreatureInfo();
+                    }
                     creatures[i].Destroy();
                     creatures.RemoveAt(i);
                 }

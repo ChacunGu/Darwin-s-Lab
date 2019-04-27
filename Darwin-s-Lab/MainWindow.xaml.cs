@@ -1,6 +1,7 @@
 ﻿using Darwin_s_Lab.Simulation;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -17,15 +18,26 @@ namespace Darwin_s_Lab
         public MainWindow()
         {
             InitializeComponent();
-            
+
             manager = new Manager(canvas, this);
+
+            sldNbCreature.Value = manager.CreatureNumber;
+            sldNbFood.Value = manager.FoodNumber;
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            creature_infos.Init();
+            UpdateCreatureInfo();
         }
         
+        /// <summary>
+        /// Update the values in the Creatures info
+        /// </summary>
+        public void UpdateCreatureInfo()
+        {
+            creature_infos.Init();
+        }
+
         private void BtnStartPause_Click(object sender, RoutedEventArgs e)
         {
             if (btnStartPause.Content.Equals("Start"))
@@ -81,6 +93,25 @@ namespace Darwin_s_Lab
             animation.Duration = new Duration(TimeSpan.FromMilliseconds(1000));
             filter.Background.BeginAnimation(SolidColorBrush.ColorProperty, animation);
 
+        }
+
+        private void SldNbCreature_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = sender as Slider;
+            double value = slider.Value;
+            if (manager != null) {
+                manager.CreatureNumber = (int)value;
+            }
+        }
+
+        private void SldNbFood_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = sender as Slider;
+            double value = slider.Value;
+            if (manager != null)
+            {
+                manager.FoodNumber = (int)value;
+            }
         }
     }
 }
