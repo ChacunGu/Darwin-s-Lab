@@ -30,7 +30,7 @@ namespace Darwin_s_Lab.Simulation
         static double CrossoverKeepOtherProbability = 0.5;
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
         {
-            {"energy", new uint[]{1, 255}},
+            {"energy", new uint[]{1, 511}},
             {"speed", new uint[]{1, 255}},
             {"detectionRange", new uint[]{1, 255}},
             {"force", new uint[]{1, 255}},
@@ -101,7 +101,7 @@ namespace Darwin_s_Lab.Simulation
         public Creature WithEnergy(uint? energy, uint? mask)
         {
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint) mask;
-            uint finalValue = energy == null ? Tools.RandomUintInRange(0, finalMask) : (uint) energy;
+            uint finalValue = energy == null ? Tools.RandomUintInRange(finalMask/2, finalMask) : (uint) energy;
             this.AddGene("energy", finalValue, finalMask);
             return this;
         }
@@ -234,7 +234,7 @@ namespace Darwin_s_Lab.Simulation
                 {
                     UseEnergyToMove();
                 }
-
+            
                 Position += Direction * GetSpeed() * SpeedFactor * dt;
                 Move();
             }
@@ -550,7 +550,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void UseEnergyToMove()
         {
-            SetEnergy(GetEnergy() - Creature.UsedEnergyToMove);
+            SetEnergy(GetEnergy() - Creature.UsedEnergyToMove * GetSpeed());
         }
 
         /// <summary>
