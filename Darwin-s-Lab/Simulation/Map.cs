@@ -70,6 +70,11 @@ namespace Darwin_s_Lab.Simulation
 
         private void Ellipse_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            if (Manager.SelectedCreature != null)
+            {
+                Manager.SelectedCreature.IsSelected = false;
+                Manager.SelectedCreature.Ellipse.StrokeThickness = 1;
+            }
             Manager.SelectedCreature = null;
         }
 

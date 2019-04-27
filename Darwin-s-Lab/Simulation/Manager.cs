@@ -172,6 +172,21 @@ namespace Darwin_s_Lab.Simulation
         }
         
         /// <summary>
+        /// Select a new Creature
+        /// </summary>
+        /// <param name="creature"></param>
+        public void SelectCreature(Creature creature)
+        {
+            if (SelectedCreature != null)
+            {
+                SelectedCreature.IsSelected = false;
+            }
+            SelectedCreature = creature;
+            SelectedCreature.Ellipse.StrokeThickness = 10;
+            creature.IsSelected = true;
+        }
+        
+        /// <summary>
         /// Pause the simulation.
         /// </summary>
         public void Pause()

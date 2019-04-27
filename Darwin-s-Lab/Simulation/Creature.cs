@@ -94,8 +94,10 @@ namespace Darwin_s_Lab.Simulation
             if (Manager.SelectedCreature != null)
             {
                 Manager.SelectedCreature.IsSelected = false;
+                Manager.SelectedCreature.Ellipse.StrokeThickness = 1;
             }
             Manager.SelectedCreature = this;
+            Manager.SelectedCreature.Ellipse.StrokeThickness = 5;
             IsSelected = true;
         }
 
