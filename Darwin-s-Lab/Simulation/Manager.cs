@@ -25,19 +25,30 @@ namespace Darwin_s_Lab.Simulation
         private State state;
         private Stopwatch stopwatch;
         private DispatcherTimer timer;
+        private DispatcherTimer timerState;
         private long dt;
 
+        #region simulation controls & parameters
         public Manager(Canvas canvas)
         {
             this.canvas = canvas;
-            this.state = new StateInitial();
-            this.map = new Map(0.8, canvas);
 
-            this.foods = new List<Food>();
-            this.creatures = new List<Creature>();
+            InitManager();
+        }
 
-            this.FoodNumber = 20;
-            this.CreatureNumber = 5;
+        /// <summary>
+        /// Initializes the manager.
+        /// </summary>
+        private void InitManager()
+        {
+            state = new StateInitial();
+            map = new Map(0.8, canvas);
+
+            foods = new List<Food>();
+            creatures = new List<Creature>();
+
+            FoodNumber = 20;
+            CreatureNumber = 10;
 
             timer = new DispatcherTimer
             {
@@ -48,9 +59,8 @@ namespace Darwin_s_Lab.Simulation
             stopwatch.Start();
 
             timer.Start();
-            
         }
-        
+
         /// <summary>
         /// Gets or sets the state 
         /// </summary>
@@ -78,6 +88,29 @@ namespace Darwin_s_Lab.Simulation
         public int CreatureNumber { get; set; }
 
         /// <summary>
+        /// Gets or sets the simulation pause status.
+        /// </summary>
+        public bool IsPaused { get; set; } = false;
+
+        /// <summary>
+        /// returns the length of the creatures List
+        /// </summary>
+        /// <returns>the length of the creatures List</returns>
+        public int CreaturesListCount()
+        {
+            return creatures.Count;
+        }
+        
+        /// <summary>
+        /// returns the length of the foods List
+        /// </summary>
+        /// <returns>the length of the foods List</returns>
+        public int FoodsListCount()
+        {
+            return foods.Count;
+        }
+
+        /// <summary>
         /// Start the simulation
         /// </summary>
         public void StartSimulation()
@@ -86,15 +119,35 @@ namespace Darwin_s_Lab.Simulation
             State.DoAction(this);
 
             // simulation's states loop
-            DispatcherTimer timer2 = new DispatcherTimer();
-            timer2.Tick += new EventHandler((sender, e) => {
+            timerState = new DispatcherTimer();
+            timerState.Tick += new EventHandler((sender, e) => {
                 SimulationStep();
-                timer2.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
+                timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             });
-            timer2.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
-            timer2.Start();
+            timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
+            timerState.Start();
+        }
+        
+        /// <summary>
+        /// Pause the simulation.
+        /// </summary>
+        public void Pause()
+        {
+            timer.Stop();
+            timerState.Stop();
+            IsPaused = true;
         }
 
+        /// <summary>
+        /// Resume the simulation.
+        /// </summary>
+        public void Resume()
+        {
+            timer.Start();
+            timerState.Start();
+            IsPaused = false;
+        }
+        
         /// <summary>
         /// Changes simulation's state and performs its action.
         /// </summary>
@@ -104,7 +157,19 @@ namespace Darwin_s_Lab.Simulation
             State.GoNext(this);
             State.DoAction(this);
         }
+        
+        /// <summary>
+        /// Returns time elapsed in seconds.
+        /// </summary>
+        /// <returns>time elapsed</returns>
+        internal float GetTimeElapsedInSeconds()
+        {
+            float localDt = (stopwatch.ElapsedMilliseconds - dt) / 1000f;
+            return localDt > 0.15f ? 0.15f : localDt;
+        }
+        #endregion
 
+        #region population & food controls
         /// <summary>
         /// Creates initial creatures population.
         /// </summary>
@@ -117,12 +182,27 @@ namespace Darwin_s_Lab.Simulation
                 creatures.Add(new Creature(canvas, map)
                               .WithPosition(rdmPosition)
                               .WithEnergy(null, null)
-                              .WithSpeed(255, null)
+                              .WithSpeed(null, null)
                               .WithDetectionRange(null, null)
                               .WithForce(null, null)
                               .WithColorH(null, null)
                               .WithColorS(null, null)
                               .WithColorV(null, null));
+            }
+        }
+
+        /// <summary>
+        /// Removes creatures whith not enough energy to survive.
+        /// </summary>
+        internal void RemoveDeadCreatures()
+        {
+            for (int i = creatures.Count - 1; i >= 0; i--)
+            {
+                if (!creatures[i].IsAlive() || map.IsPointInsideDangerZone(creatures[i].Position))
+                {
+                    creatures[i].Destroy();
+                    creatures.RemoveAt(i);
+                }
             }
         }
 
@@ -139,16 +219,43 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Generates new food on the map.
+        /// Generates new food on the map. Spead them along the map.
         /// </summary>
         public void GenerateFood()
         {
-            for (int i = 0 ; i < FoodNumber ; i++)
+            while (foods.Count < FoodNumber)
             {
-                foods.Add(new Food(canvas, map));
+                Point newPosisition = Map.PolarToCartesian(
+                    Tools.rdm.NextDouble() * Math.PI * 2,
+                    Math.Sqrt(Tools.rdm.NextDouble()) * (map.MiddleAreaRadius - 50) // 50 -> margin
+                );
+                foods.Add(new Food(canvas, map, newPosisition));
             }
-        }
 
+            //while (foods.Count < FoodNumber)
+            //{
+            //    Point newPosisition = Map.PolarToCartesian(
+            //        Tools.rdm.NextDouble() * Math.PI * 2,
+            //        Tools.rdm.NextDouble() * map.MiddleAreaRadius - 100 // 100 -> margin
+            //    );
+            //    bool pointOK = true;
+            //    foreach(Food food in foods)
+            //    {
+            //        if (Map.DistanceBetweenTwoPointsOpti(food.Position, newPosisition) < 1200)
+            //        {
+            //            pointOK = false;
+            //            break;
+            //        }
+            //    }
+            //    if (pointOK)
+            //    {
+            //        foods.Add(new Food(canvas, map, newPosisition));
+            //    }
+            //}
+        }
+        #endregion
+
+        #region state reproduce
         /// <summary>
         /// Generates a random number for each creature and mutates it if needed.
         /// </summary>
@@ -245,31 +352,6 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
-        /// Returns time elapsed in seconds.
-        /// </summary>
-        /// <returns>time elapsed</returns>
-        internal float GetTimeElapsedInSeconds()
-        {
-            float localDt = (stopwatch.ElapsedMilliseconds - dt) / 1000f;
-            return localDt > 0.15f ? 0.15f : localDt;
-        }
-
-        /// <summary>
-        /// Removes creatures whith not enough energy to survive.
-        /// </summary>
-        internal void RemoveDeadCreatures()
-        {
-            for (int i = creatures.Count - 1; i >= 0; i--)
-            {
-                if (!creatures[i].IsAlive() || map.IsPointInsideDangerZone(creatures[i].Position))
-                {
-                    creatures[i].Destroy();
-                    creatures.RemoveAt(i);
-                }
-            }
-        }
-
-        /// <summary>
         /// Adds newborn creatures to the simulation.
         /// </summary>
         internal void AddNewbornCreatures()
@@ -290,7 +372,9 @@ namespace Darwin_s_Lab.Simulation
                 matingCreatures[i].ForgetMate();
             matingCreatures.Clear();
         }
+        #endregion
 
+        #region state hunt
         /// <summary>
         /// Starts the creatures hunting process.
         /// </summary>
@@ -312,6 +396,7 @@ namespace Darwin_s_Lab.Simulation
                 double smallestDistance = Double.MaxValue;
                 int nearestFoodIndex = -1;
 
+                // search for the nearest food
                 for (int j=0; j<foods.Count; j++)
                 {
                     double distance = Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[j].Position);
@@ -325,24 +410,14 @@ namespace Darwin_s_Lab.Simulation
                 // define the nearest food as the new target
                 if (nearestFoodIndex != -1)
                 {
-                    creatures[i].ForgetTarget();
-
-                    Vector foodDirection = foods[nearestFoodIndex].Position - creatures[i].Position;
-                    foodDirection.Normalize();
-                    creatures[i].Direction = foodDirection;
-                    
-                    creatures[i].TakeStep(GetTimeElapsedInSeconds());
-
-                    // check if food has been reached
-                    if (Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[nearestFoodIndex].Position) <= Creature.MinimalDistanceToEat)
+                    bool foodEaten = creatures[i].MoveToFood(foods[nearestFoodIndex], GetTimeElapsedInSeconds());
+                    if (foodEaten)
                     {
-                        creatures[i].Eat(foods[nearestFoodIndex]);
-                        foods[nearestFoodIndex].Destroy();
                         foods.RemoveAt(nearestFoodIndex);
                     }
                 } else
                 {
-                    creatures[i].MoveToTarget(GetTimeElapsedInSeconds());
+                    creatures[i].MoveToHuntingZone(GetTimeElapsedInSeconds());
                 }
             }
             dt = stopwatch.ElapsedMilliseconds;
@@ -357,7 +432,9 @@ namespace Darwin_s_Lab.Simulation
             for (int i = 0; i < creatures.Count; i++)
                 creatures[i].ForgetTarget();
         }
+        #endregion
 
+        #region back home
         /// <summary>
         /// Starts the creatures back home process.
         /// </summary>
@@ -391,12 +468,17 @@ namespace Darwin_s_Lab.Simulation
         internal void EndCreaturesBackHomeProcess()
         {
             timer.Tick -= new EventHandler(CreaturesBackHomeProcess);
-            for (int i = 0; i < creatures.Count; i++)
-                creatures[i].ForgetTarget();
-            goingBackHomeCreatures.Clear();
 
             RemoveDeadCreatures();
             RemoveRottenFood();
+
+            for (int i = 0; i < creatures.Count; i++)
+            {
+                creatures[i].ForgetTarget();
+                creatures[i].Sleep();
+            }
+            goingBackHomeCreatures.Clear();
         }
+        #endregion
     }
 }

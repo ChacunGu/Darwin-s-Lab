@@ -15,10 +15,15 @@ namespace Darwin_s_Lab.Simulation
     {
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
-        public static double MinimalDistanceToEat = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         public static double MinimalDistanceToSearchMate = Math.Pow(CreatureDim.X * 12, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToEat = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         static double MinimalDistanceToJoinMate = Math.Pow(CreatureDim.X * 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         static double MinimalDistanceToMate = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalDistanceToReachTarget = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+
+        static double SleepEnergyGain = 1.0;
+        static double UsedEnergyToMove = 0.000001;
+        static double MinimalEnergyToMove = 0.000001;
         static double MinimalEnergyToMate = 0.2;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
@@ -40,10 +45,10 @@ namespace Darwin_s_Lab.Simulation
         public Point Target { get; set; } = new Point(Double.NaN, Double.NaN);
         private Map map;
 
-        #region Constructor
+        #region constructor & initialization
         public Creature(Canvas canvas, Map map)
         {
-            Position = new Point(0, 0); // TODO check si c'est pas là le problème
+            Position = new Point(0, 0);
             this.Genes = new Dictionary<string, Gene>();
             this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
             this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
@@ -200,7 +205,6 @@ namespace Darwin_s_Lab.Simulation
             Move();
             return this;
         }
-        #endregion
 
         /// <summary>
         /// Adds a new gene to the creature or modifies current one if it already exists.
@@ -215,73 +219,27 @@ namespace Darwin_s_Lab.Simulation
             else
                 this.Genes.Add(name, new Gene(name, value, mask));
         }
+        #endregion
 
+        #region movements
         /// <summary>
         /// Takes a step in a direction.
         /// </summary>
         /// <param name="dt">time elapsed in milliseconds</param>
-        public void TakeStep(float dt)
+        public void TakeStep(float dt, bool costsEnergy=true)
         {
-            if (!Double.IsNaN(Direction.X) && !Double.IsNaN(Direction.Y))
+            if (IsDirectionSet() && (!costsEnergy || CanMove()))
             {
+                if (costsEnergy)
+                {
+                    UseEnergyToMove();
+                }
+
                 Position += Direction * GetSpeed() * SpeedFactor * dt;
                 Move();
             }
         }
-
-        /// <summary>
-        /// Moves towards the current target or defines a new one if it has been reached or does not exist.
-        /// </summary>
-        /// <param name="dt">time elapsed in milliseconds</param>
-        public void MoveToTarget(float dt)
-        {
-            if (Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y))
-            {
-                TakeStep(dt);
-
-                // check if target has been reached
-                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToEat)
-                {
-                    FindRandomTarget();
-                }
-            } else
-            {
-                FindRandomTarget();
-            }
-        }
-
-        /// <summary>
-        /// Finds a new random target point. Updates the creature's direction vector.
-        /// </summary>
-        private void FindRandomTarget()
-        {
-            Point randomPosition = Map.PolarToCartesian(
-                Tools.rdm.NextDouble() * Math.PI * 2,
-                Tools.rdm.NextDouble() * map.MiddleAreaRadius / 2
-            );
-
-            double distance = Map.DistanceBetweenTwoPoints(randomPosition, Position);
-            double randomDist = Tools.rdm.NextDouble() * distance;
-
-            Vector newDirection = randomPosition - Position;
-            newDirection.Normalize();
-
-            Direction = newDirection;
-            Target = Position + Direction * randomDist;
-        }
-
-        /// <summary>
-        /// Finds closest points home and sets target / direction.
-        /// </summary>
-        private void FindHomeTarget()
-        {
-            Target = FindClosestPointHome();
-
-            Vector newDirection = Target - Position;
-            newDirection.Normalize();
-            Direction = newDirection;
-        }
-
+              
         /// <summary>
         /// Creature forgets its target.
         /// </summary>
@@ -290,32 +248,38 @@ namespace Darwin_s_Lab.Simulation
             Target = new Point(Double.NaN, Double.NaN);
             Direction = new Vector(Double.NaN, Double.NaN);
         }
-
+        
         /// <summary>
-        /// Moves towards the current home target or defines a new one if it does not exist.
+        /// Sets direction vector to move to given target.
         /// </summary>
-        /// <param name="dt">time elapsed in milliseconds</param>
-        /// <returns>true if the creature's back home false otherwise</returns>
-        public bool MoveToHome(float dt)
+        /// <param name="target">target's position</param>
+        public void SetDirection(Point target)
         {
-            if (Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y))
-            {
-                TakeStep(dt);
-                
-                // check if target has been reached
-                if (Map.DistanceBetweenTwoPointsOpti(Position, Map.GetCenter()) > Math.Pow(map.MiddleAreaRadius + (map.HomeRadius * Tools.rdm.NextDouble()),2))
-                {
-                    ForgetTarget();
-                    return true;
-                }
-            }
-            else
-            {
-                FindHomeTarget();
-            }
-            return false;
+            Vector newDirection = target - Position;
+            newDirection.Normalize();
+            Direction = newDirection;
         }
 
+        /// <summary>
+        /// Returns true if the creature's target has been set false otherwise.
+        /// </summary>
+        /// <returns>true if the creature's target has been set false otherwise</returns>
+        public bool IsTargetSet()
+        {
+            return Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y);
+        }
+
+        /// <summary>
+        /// Returns true if the creature's direction vector has been set false otherwise.
+        /// </summary>
+        /// <returns>true if the creature's direction vector has been set false otherwise</returns>
+        public bool IsDirectionSet()
+        {
+            return !Double.IsNaN(Direction.X) && !Double.IsNaN(Direction.Y);
+        }
+        #endregion
+
+        #region mating process
         /// <summary>
         /// Completes the whole mating process. Moves towards the mate and if in range reproduces and returns the newborn.
         /// </summary>
@@ -328,7 +292,7 @@ namespace Darwin_s_Lab.Simulation
             FindDirectionTowardsMate();
 
             // move
-            TakeStep(dt);
+            TakeStep(dt, false);
 
             // mate if in range
             if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= MinimalDistanceToMate)
@@ -378,25 +342,125 @@ namespace Darwin_s_Lab.Simulation
                 Direction = mateDirection;
             }
         }
+        #endregion
 
+        #region hunting process
         /// <summary>
-        /// Fights this creature with other.
+        /// Moves towards the current target in the hunting zone or defines a new one if it has been reached or
+        /// does not exist.
         /// </summary>
-        /// <param name="other">creature to fight with</param>
-        public void Fight(Creature other)
+        /// <param name="dt">time elapsed in milliseconds</param>
+        public void MoveToHuntingZone(float dt)
         {
-            throw new NotImplementedException();
+            if (IsTargetSet())
+            {
+                TakeStep(dt);
+
+                // check if target has been reached
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToReachTarget)
+                {
+                    FindRandomTarget();
+                }
+            }
+            else
+            {
+                FindRandomTarget();
+            }
         }
 
         /// <summary>
-        /// Eats given food.
+        /// Finds a new random target point. Updates the creature's direction vector.
         /// </summary>
-        /// <param name="food">food to eat</param>
-        public void Eat(Food food)
+        private void FindRandomTarget()
         {
-            SetEnergy(GetEnergy() + food.Energy);
+            Point randomPosition = Map.PolarToCartesian(
+                Tools.rdm.NextDouble() * Math.PI * 2,
+                Math.Sqrt(Tools.rdm.NextDouble()) * (map.MiddleAreaRadius - 25) // 25 -> margin
+            );
+
+            double distance = Map.DistanceBetweenTwoPoints(randomPosition, Position);
+            double randomDist = Tools.rdm.NextDouble() * distance;
+
+            SetDirection(randomPosition);
+            Target = Position + Direction * randomDist;
         }
 
+        /// <summary>
+        /// Moves towards the given food inside the hunting zone. Returns true if the creature's reaches it and
+        /// eats it false otherwise.
+        /// </summary>
+        /// <param name="food">targeted food</param>
+        /// <param name="dt">time elapsed in milliseconds</param>
+        /// <returns>true if the creature's reaches it and eats it false otherwise</returns>
+        public bool MoveToFood(Food food, float dt)
+        {
+            ForgetTarget();
+            SetDirection(food.Position);                    
+            TakeStep(dt);
+
+            // check if food has been reached
+            if (Map.DistanceBetweenTwoPointsOpti(Position, food.Position) <= Creature.MinimalDistanceToEat)
+            {
+                Eat(food);
+                food.Destroy();
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
+        #region back home process
+        /// <summary>
+        /// Moves towards the current home target or defines a new one if it does not exist.
+        /// </summary>
+        /// <param name="dt">time elapsed in milliseconds</param>
+        /// <returns>true if the creature's back home false otherwise</returns>
+        public bool MoveToHome(float dt)
+        {
+            if (IsTargetSet())
+            {
+                TakeStep(dt);
+
+                // check if target has been reached
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Map.GetCenter()) > Math.Pow(map.MiddleAreaRadius + (map.HomeRadius * Tools.rdm.NextDouble()), 2))
+                {
+                    ForgetTarget();
+                    return true;
+                }
+            }
+            else
+            {
+                FindHomeTarget();
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Finds closest points home and sets target / direction.
+        /// </summary>
+        private void FindHomeTarget()
+        {
+            Target = FindClosestPointHome();
+            SetDirection(Target);
+        }
+
+        /// <summary>
+        /// Finds the closest point in the home area, to go back to.
+        /// </summary>
+        /// <returns>a Point in the safe area</returns>
+        private Point FindClosestPointHome()
+        {
+            Tuple<double, double> polarCoord = Map.CartesianToPolar(this.Position);
+            double alpha = polarCoord.Item1;
+            double radius = polarCoord.Item2;
+
+            radius = map.MiddleAreaRadius + map.HomeRadius / 2;
+
+            return Map.PolarToCartesian(alpha, radius);
+        }
+        #endregion
+
+        #region genetic algorithm
         /// <summary>
         /// Mutates creature's genes.
         /// </summary>
@@ -461,6 +525,33 @@ namespace Darwin_s_Lab.Simulation
             newborn.UpdateColor();
             return newborn;
         }
+        #endregion
+
+        #region creature internal state (genes)
+        /// <summary>
+        /// Eats given food.
+        /// </summary>
+        /// <param name="food">food to eat</param>
+        public void Eat(Food food)
+        {
+            SetEnergy(GetEnergy() + food.Energy);
+        }
+
+        /// <summary>
+        /// Sleeps and gets energy back.
+        /// </summary>
+        public void Sleep()
+        {
+            SetEnergy(GetEnergy() + Creature.SleepEnergyGain);
+        }
+
+        /// <summary>
+        /// Use the needed energy to move.
+        /// </summary>
+        public void UseEnergyToMove()
+        {
+            SetEnergy(GetEnergy() - Creature.UsedEnergyToMove);
+        }
 
         /// <summary>
         /// Returns true if the creature is still alive false otherwise.
@@ -488,7 +579,16 @@ namespace Darwin_s_Lab.Simulation
         {
             return GetEnergy() >= MinimalEnergyToMate;
         }
-        
+
+        /// <summary>
+        /// Returns true if the creature has enough energy to move false otherwise.
+        /// </summary>
+        /// <returns>true if the creature can move false otherwise</returns>
+        public bool CanMove()
+        {
+            return GetEnergy() >= MinimalEnergyToMove;
+        }
+
         /// <summary>
         /// Sets each other's mate.
         /// </summary>
@@ -562,10 +662,11 @@ namespace Darwin_s_Lab.Simulation
         {
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
+            colorBrush.Opacity = Genes["force"].Value / (double)Genes["force"].Mask * 0.5 + 0.5; // Opacity changes with force
             Ellipse.Fill = colorBrush;
             Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }
-
+        
         /// <summary>
         /// Returns creature's representation as a string.
         /// </summary>
@@ -579,20 +680,15 @@ namespace Darwin_s_Lab.Simulation
                     "color: " + this.GetHexColor()          + "\n" +
                     "position: " + this.Position.ToString() + "\n";
         }
+        #endregion
 
         /// <summary>
-        /// Finds the closest point in the home area, to go back to.
+        /// Fights this creature with other.
         /// </summary>
-        /// <returns>a Point in the safe area</returns>
-        private Point FindClosestPointHome()
+        /// <param name="other">creature to fight with</param>
+        public void Fight(Creature other)
         {
-            Tuple<double, double> polarCoord = Map.CartesianToPolar(this.Position);
-            double alpha = polarCoord.Item1;
-            double radius = polarCoord.Item2;
-
-            radius = map.MiddleAreaRadius + map.HomeRadius / 2;
-
-            return Map.PolarToCartesian(alpha, radius);
+            throw new NotImplementedException();
         }
     }
 }

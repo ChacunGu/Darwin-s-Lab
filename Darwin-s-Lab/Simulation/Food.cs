@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -9,7 +10,7 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Food : Drawable
     {
-        public double Energy { get; set; } = 0.3;
+        public double Energy { get; set; } = 0.5;
         
         public Food(Canvas canvas, Map map)
         {
@@ -21,7 +22,18 @@ namespace Darwin_s_Lab.Simulation
             );
 
             CreateEllipse(Brushes.Red);
-            
+
+            Move();
+        }
+
+        public Food(Canvas canvas, Map map, Point position)
+        {
+            this.canvas = canvas;
+
+            Position = position;
+
+            CreateEllipse(Brushes.Red);
+
             Move();
         }
 
