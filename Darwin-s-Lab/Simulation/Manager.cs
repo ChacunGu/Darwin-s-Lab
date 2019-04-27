@@ -458,12 +458,16 @@ namespace Darwin_s_Lab.Simulation
         internal void EndCreaturesBackHomeProcess()
         {
             timer.Tick -= new EventHandler(CreaturesBackHomeProcess);
-            for (int i = 0; i < creatures.Count; i++)
-                creatures[i].ForgetTarget();
-            goingBackHomeCreatures.Clear();
 
             RemoveDeadCreatures();
             RemoveRottenFood();
+
+            for (int i = 0; i < creatures.Count; i++)
+            {
+                creatures[i].ForgetTarget();
+                creatures[i].Sleep();
+            }
+            goingBackHomeCreatures.Clear();
         }
         #endregion
     }

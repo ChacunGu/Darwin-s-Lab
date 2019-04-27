@@ -20,6 +20,9 @@ namespace Darwin_s_Lab.Simulation
         static double MinimalDistanceToMate = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         static double MinimalDistanceToReachTarget = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
 
+        static double SleepEnergyGain = 1.0;
+        static double UsedEnergyToMove = 0.00001;
+        static double MinimalEnergyToMove = 0.00001;
         static double MinimalEnergyToMate = 0.2;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
@@ -204,10 +207,15 @@ namespace Darwin_s_Lab.Simulation
         /// Takes a step in a direction.
         /// </summary>
         /// <param name="dt">time elapsed in milliseconds</param>
-        public void TakeStep(float dt)
+        public void TakeStep(float dt, bool costsEnergy=true)
         {
-            if (!Double.IsNaN(Direction.X) && !Double.IsNaN(Direction.Y))
+            if (IsDirectionSet() && (!costsEnergy || CanMove()))
             {
+                if (costsEnergy)
+                {
+                    UseEnergyToMove();
+                }
+
                 Position += Direction * GetSpeed() * SpeedFactor * dt;
                 Move();
             }
@@ -241,6 +249,15 @@ namespace Darwin_s_Lab.Simulation
         {
             return Target != null && !Double.IsNaN(Target.X) && !Double.IsNaN(Target.Y);
         }
+
+        /// <summary>
+        /// Returns true if the creature's direction vector has been set false otherwise.
+        /// </summary>
+        /// <returns>true if the creature's direction vector has been set false otherwise</returns>
+        public bool IsDirectionSet()
+        {
+            return !Double.IsNaN(Direction.X) && !Double.IsNaN(Direction.Y);
+        }
         #endregion
 
         #region mating process
@@ -256,7 +273,7 @@ namespace Darwin_s_Lab.Simulation
             FindDirectionTowardsMate();
 
             // move
-            TakeStep(dt);
+            TakeStep(dt, false);
 
             // mate if in range
             if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= MinimalDistanceToMate)
@@ -502,6 +519,22 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Sleeps and gets energy back.
+        /// </summary>
+        public void Sleep()
+        {
+            SetEnergy(GetEnergy() + Creature.SleepEnergyGain);
+        }
+
+        /// <summary>
+        /// Use the needed energy to move.
+        /// </summary>
+        public void UseEnergyToMove()
+        {
+            SetEnergy(GetEnergy() - Creature.UsedEnergyToMove);
+        }
+
+        /// <summary>
         /// Returns true if the creature is still alive false otherwise.
         /// </summary>
         /// <returns>creature's state alive (true) or dead (false)</returns>
@@ -527,7 +560,16 @@ namespace Darwin_s_Lab.Simulation
         {
             return GetEnergy() >= MinimalEnergyToMate;
         }
-        
+
+        /// <summary>
+        /// Returns true if the creature has enough energy to move false otherwise.
+        /// </summary>
+        /// <returns>true if the creature can move false otherwise</returns>
+        public bool CanMove()
+        {
+            return GetEnergy() >= MinimalEnergyToMove;
+        }
+
         /// <summary>
         /// Sets each other's mate.
         /// </summary>
