@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -12,6 +13,7 @@ namespace Darwin_s_Lab.Simulation
         {
             Name = "Reproduce";
             Duration = 7500;
+            FilterColor = new SolidColorBrush(Color.FromArgb(140, 0, 0, 128));
         }
 
         /// <summary>
@@ -39,7 +41,12 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
-            manager.State = new StateGrowFood();
+            manager.State = GetNextState();
+        }
+
+        public override State GetNextState()
+        {
+            return new StateGrowFood();
         }
     }
 }

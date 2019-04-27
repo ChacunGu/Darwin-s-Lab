@@ -184,6 +184,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void SimulationStep()
         {
+            mainWindow.SimulationStateChanged();
             State.StopAction(this);
             State.GoNext(this);
             StateStartTime = stopwatch.ElapsedMilliseconds;

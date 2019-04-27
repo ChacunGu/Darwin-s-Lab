@@ -1,6 +1,8 @@
 ﻿using Darwin_s_Lab.Simulation;
 using System;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace Darwin_s_Lab
 {
@@ -10,12 +12,14 @@ namespace Darwin_s_Lab
     public partial class MainWindow : Window
     {
         Manager manager;
+        ColorAnimation animation;
 
         public MainWindow()
         {
             InitializeComponent();
             
             manager = new Manager(canvas, this);
+
             manager.StartSimulation();
         }
 
@@ -68,6 +72,18 @@ namespace Darwin_s_Lab
         /// <param name="e">event's arguments</param>
         public void Update(object sender, EventArgs e)
         {
+
+            
+        }
+
+        public void SimulationStateChanged()
+        {
+            
+            animation = new ColorAnimation();
+            animation.From = manager.State.FilterColor.Color;
+            animation.To = manager.State.GetNextState().FilterColor.Color;
+            animation.Duration = new Duration(TimeSpan.FromMilliseconds(1000));
+            filter.Background.BeginAnimation(SolidColorBrush.ColorProperty, animation);
 
         }
     }
