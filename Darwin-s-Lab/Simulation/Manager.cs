@@ -131,7 +131,7 @@ namespace Darwin_s_Lab.Simulation
         /// returns the length of the creatures List
         /// </summary>
         /// <returns>the length of the creatures List</returns>
-        public int CreaturesListCount()
+        public int GetNumberOfCreatures()
         {
             return creatures.Count;
         }
@@ -140,7 +140,7 @@ namespace Darwin_s_Lab.Simulation
         /// returns the length of the foods List
         /// </summary>
         /// <returns>the length of the foods List</returns>
-        public int FoodsListCount()
+        public int GetNumberOfFoods()
         {
             return foods.Count;
         }
@@ -217,6 +217,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void SimulationStep()
         {
+            mainWindow.SimulationStateChanged();
             State.StopAction(this);
             State.GoNext(this);
             StateStartTime = stopwatch.ElapsedMilliseconds;

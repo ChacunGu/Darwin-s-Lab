@@ -39,13 +39,13 @@ namespace Darwin_s_Lab.Simulation
             Manager manager = new Manager(canvas);
 
             manager.CreateInitialPopulation();
-            Assert.AreEqual(manager.CreatureNumber, manager.CreaturesListCount());
+            Assert.AreEqual(manager.CreatureNumber, manager.GetNumberOfCreatures());
 
             manager.GenerateFood();
-            Assert.AreEqual(manager.FoodNumber, manager.FoodsListCount());
+            Assert.AreEqual(manager.FoodNumber, manager.GetNumberOfFoods());
 
             manager.RemoveRottenFood();
-            Assert.AreEqual(0, manager.FoodsListCount());
+            Assert.AreEqual(0, manager.GetNumberOfFoods());
         }
 
         [TestMethod]

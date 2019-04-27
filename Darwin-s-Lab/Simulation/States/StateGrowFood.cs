@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Media;
+
 namespace Darwin_s_Lab.Simulation
 {
     public class StateGrowFood : State
@@ -7,6 +9,7 @@ namespace Darwin_s_Lab.Simulation
         {
             Name = "GrowFood";
             Duration = 500;
+            FilterColor = new SolidColorBrush(Color.FromArgb(0, 0, 0, 128));
         }
 
         /// <summary>
@@ -34,7 +37,12 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
-            manager.State = new StateHunt();
+            manager.State = GetNextState();
+        }
+
+        public override State GetNextState()
+        {
+            return new StateHunt();
         }
     }
 }

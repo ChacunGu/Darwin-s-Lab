@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -13,6 +14,7 @@ namespace Darwin_s_Lab.Simulation
     {
         public String Name { get; set; }
         public int Duration { get; set; }
+        public SolidColorBrush FilterColor { get; set; }
 
         /// <summary>
         /// Changes to the next State
@@ -32,5 +34,10 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         /// <param name="manager">simulation's manager</param>
         public abstract void DoAction(Manager manager);
+
+        /// <summary>
+        /// Return the next state
+        /// </summary>
+        public abstract State GetNextState();
     }
 }

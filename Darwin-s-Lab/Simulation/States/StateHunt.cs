@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Media;
+
 namespace Darwin_s_Lab.Simulation
 {
     public class StateHunt : State
@@ -7,6 +9,7 @@ namespace Darwin_s_Lab.Simulation
         {
             Name = "Hunt";
             Duration = 15000;
+            FilterColor = new SolidColorBrush(Color.FromArgb(0, 0, 0, 128));
         }
 
         /// <summary>
@@ -33,7 +36,12 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void GoNext(Manager manager)
         {
-            manager.State = new StateBackHome();
+            manager.State = GetNextState();
+        }
+
+        public override State GetNextState()
+        {
+            return new StateBackHome();
         }
     }
 }
