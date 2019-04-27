@@ -18,7 +18,7 @@
 
         <StackPanel Margin="10,10,5,10">
             <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,0,5" Height="30" />
-            <Button x:Name="btnStopReset" Content="Stop" Click="BtnStopReset_Click" IsEnabled="False" Margin="0,0,0,5" Height="30"/>
+            <Button x:Name="btnStopReset" Content="Stop" Click="BtnStop_Click" IsEnabled="False" Margin="0,0,0,5" Height="30"/>
             <Slider x:Name="sldNbCreature" Margin="0,0,0,5" />
             <Slider x:Name="sldNbFood" Margin="0,0,0,5" />
             <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>

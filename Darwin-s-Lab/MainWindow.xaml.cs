@@ -16,7 +16,6 @@ namespace Darwin_s_Lab
             InitializeComponent();
             
             manager = new Manager(canvas, this);
-            manager.StartSimulation();
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -32,7 +31,14 @@ namespace Darwin_s_Lab
                 sldNbCreature.IsEnabled = false;
                 sldNbFood.IsEnabled = false;
                 btnStopReset.IsEnabled = true;
-                manager.Resume();
+                if (manager.IsSimulating)
+                {
+                    manager.Resume();
+                }
+                else
+                {
+                    manager.StartSimulation();
+                }
             }
             else
             {
@@ -41,24 +47,15 @@ namespace Darwin_s_Lab
             }
         }
 
-        private void BtnStopReset_Click(object sender, RoutedEventArgs e)
+        private void BtnStop_Click(object sender, RoutedEventArgs e)
         {
-            if (btnStopReset.Content.Equals("Stop"))
-            {
-                btnStopReset.Content = "Reset";
-                btnStartPause.IsEnabled = false;
-                // TODO
-            }
-            else
-            {
-                btnStopReset.Content = "Stop";
-                btnStartPause.Content = "Start";
-                sldNbCreature.IsEnabled = true;
-                sldNbFood.IsEnabled = true;
-                btnStopReset.IsEnabled = false;
-                btnStartPause.IsEnabled = true;
-                manager = new Manager(canvas);// TODO
-            }
+            btnStartPause.Content = "Start";
+            sldNbCreature.IsEnabled = true;
+            sldNbFood.IsEnabled = true;
+            btnStopReset.IsEnabled = false;
+            btnStartPause.IsEnabled = true;
+            manager.Reset();
+            
         }
 
         /// <summary>

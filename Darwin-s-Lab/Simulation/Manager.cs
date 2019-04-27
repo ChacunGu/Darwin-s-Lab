@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Windows;
-using System.Threading.Tasks;
 
 namespace Darwin_s_Lab.Simulation
 {
@@ -45,6 +44,10 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         private void InitManager()
         {
+
+            IsSimulating = false;
+            IsPaused = false;
+
             state = new StateInitial();
             map = new Map(0.8, canvas);
 
@@ -120,6 +123,11 @@ namespace Darwin_s_Lab.Simulation
         public bool IsPaused { get; set; } = false;
 
         /// <summary>
+        /// check if a Simulation is ongoing.
+        /// </summary>
+        public bool IsSimulating { get; set; } = false;
+        
+        /// <summary>
         /// returns the length of the creatures List
         /// </summary>
         /// <returns>the length of the creatures List</returns>
@@ -142,6 +150,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void StartSimulation()
         {
+            IsSimulating = true;
             // initial state
             State.DoAction(this);
 
@@ -184,6 +193,25 @@ namespace Darwin_s_Lab.Simulation
             IsPaused = false;
         }
         
+        /// <summary>
+        /// Resets everthing
+        /// </summary>
+        public void Reset()
+        {
+            Pause();
+            foreach (Creature creature in creatures) {
+                creature.Destroy();
+            }
+            foreach (Food food in foods)
+            {
+                food.Destroy();
+            }
+
+            map.Destroy();
+
+            InitManager();
+        }
+
         /// <summary>
         /// Changes simulation's state and performs its action.
         /// </summary>
