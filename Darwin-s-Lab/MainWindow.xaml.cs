@@ -23,8 +23,7 @@ namespace Darwin_s_Lab
         {
             creature_infos.Init();
         }
-
-
+        
         private void BtnStartPause_Click(object sender, RoutedEventArgs e)
         {
             if (btnStartPause.Content.Equals("Start"))
@@ -33,13 +32,12 @@ namespace Darwin_s_Lab
                 sldNbCreature.IsEnabled = false;
                 sldNbFood.IsEnabled = false;
                 btnStopReset.IsEnabled = true;
-                // TODO Start
+                manager.Resume();
             }
             else
             {
                 btnStartPause.Content = "Start";
-
-                // TODO Pause
+                manager.Pause();
             }
         }
 
