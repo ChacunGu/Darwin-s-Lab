@@ -386,6 +386,7 @@ namespace Darwin_s_Lab.Simulation
                 double smallestDistance = Double.MaxValue;
                 int nearestFoodIndex = -1;
 
+                // search for the nearest food
                 for (int j=0; j<foods.Count; j++)
                 {
                     double distance = Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[j].Position);
@@ -399,24 +400,14 @@ namespace Darwin_s_Lab.Simulation
                 // define the nearest food as the new target
                 if (nearestFoodIndex != -1)
                 {
-                    creatures[i].ForgetTarget();
-
-                    Vector foodDirection = foods[nearestFoodIndex].Position - creatures[i].Position;
-                    foodDirection.Normalize();
-                    creatures[i].Direction = foodDirection;
-                    
-                    creatures[i].TakeStep(GetTimeElapsedInSeconds());
-
-                    // check if food has been reached
-                    if (Map.DistanceBetweenTwoPointsOpti(creatures[i].Position, foods[nearestFoodIndex].Position) <= Creature.MinimalDistanceToEat)
+                    bool foodEaten = creatures[i].MoveToFood(foods[nearestFoodIndex], GetTimeElapsedInSeconds());
+                    if (foodEaten)
                     {
-                        creatures[i].Eat(foods[nearestFoodIndex]);
-                        foods[nearestFoodIndex].Destroy();
                         foods.RemoveAt(nearestFoodIndex);
                     }
                 } else
                 {
-                    creatures[i].MoveToTarget(GetTimeElapsedInSeconds());
+                    creatures[i].MoveToHuntingZone(GetTimeElapsedInSeconds());
                 }
             }
             dt = stopwatch.ElapsedMilliseconds;
