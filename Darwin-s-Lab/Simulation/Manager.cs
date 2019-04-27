@@ -27,10 +27,13 @@ namespace Darwin_s_Lab.Simulation
         private DispatcherTimer timerState;
         private long dt;
 
+        private MainWindow mainWindow;
+
         #region simulation controls & parameters
-        public Manager(Canvas canvas)
+        public Manager(Canvas canvas, MainWindow mainWindow = null)
         {
             this.canvas = canvas;
+            this.mainWindow = mainWindow;
 
             InitManager();
         }
@@ -74,6 +77,20 @@ namespace Darwin_s_Lab.Simulation
                 state = value;
                 Console.WriteLine("Manager's State: " + state.GetType().Name);
             }
+        }
+
+        /// <summary>
+        /// Remember the time of the start of a State
+        /// </summary>
+        private long StateStartTime { get; set; }
+
+        /// <summary>
+        /// Get the state's progression in pourcent, between 0 and 1
+        /// </summary>
+        /// <returns>the state's progression between 0 and 1</returns>
+        public double GetStateProgression()
+        {
+            return State.Duration / (double)(stopwatch.ElapsedMilliseconds - StateStartTime);
         }
 
         /// <summary>
@@ -154,6 +171,7 @@ namespace Darwin_s_Lab.Simulation
         {
             State.StopAction(this);
             State.GoNext(this);
+            StateStartTime = stopwatch.ElapsedMilliseconds;
             State.DoAction(this);
         }
         

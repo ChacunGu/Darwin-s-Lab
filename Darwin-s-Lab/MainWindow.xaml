@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin_s_Lab"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Background="#FF60BD60">
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Background>
+        <ImageBrush/>
+    </Window.Background>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -14,11 +17,12 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="109*"/>
+            <ColumnDefinition Width="623*"/>
             <ColumnDefinition Width="30"/>
         </Grid.ColumnDefinitions>
-        <Rectangle Fill="#26000000" Grid.ColumnSpan="3" Grid.RowSpan="3" MouseDown="Rectangle_MouseDown"/>
-        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1">
+        <Rectangle Fill="#26000000" Grid.ColumnSpan="4" Grid.RowSpan="3" MouseDown="Rectangle_MouseDown"/>
+        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="76.818,0,186,0">
             <Canvas x:Name="canvas" Width="1000" Height="1000">
                 <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
             </Canvas>

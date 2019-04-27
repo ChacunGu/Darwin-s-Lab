@@ -14,7 +14,7 @@ namespace Darwin_s_Lab
         {
             InitializeComponent();
 
-            manager = new Manager(canvas);
+            manager = new Manager(canvas, this);
 
             manager.StartSimulation();
         }
