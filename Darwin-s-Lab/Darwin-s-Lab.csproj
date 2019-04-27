@@ -55,12 +55,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Interface\CreatureInfos.xaml.cs">
+      <DependentUpon>CreatureInfos.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Simulation\Creature.cs" />
     <Compile Include="Simulation\Food.cs" />
     <Compile Include="Simulation\Gene.cs" />
     <Compile Include="Simulation\Drawable.cs" />
     <Compile Include="Simulation\Manager.cs" />
     <Compile Include="Simulation\Map.cs" />
+    <Page Include="Interface\CreatureInfos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Compile Include="Simulation\States\StateBackHome.cs" />
     <Compile Include="Simulation\States\StateGrowFood.cs" />
     <Compile Include="Simulation\States\StateHunt.cs" />
@@ -106,6 +113,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\detection.png" />
+    <Resource Include="Icons\energy.png" />
+    <Resource Include="Icons\speed.png" />
+    <Resource Include="Icons\strength.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -14,6 +14,7 @@ namespace Darwin_s_Lab.Simulation
     public class Manager
     {
         public static int FramesPerSec = 17;
+        public static Creature SelectedCreature { get; set; } = null;
         private List<Creature> creatures;
         private List<Creature> matingCreatures;
         private List<Creature> goingBackHomeCreatures;
@@ -49,8 +50,8 @@ namespace Darwin_s_Lab.Simulation
             foods = new List<Food>();
             creatures = new List<Creature>();
 
-            FoodNumber = 20;
-            CreatureNumber = 10;
+            FoodNumber = 200;
+            CreatureNumber = 100;
 
             timer = new DispatcherTimer
             {
@@ -90,7 +91,16 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>the state's progression between 0 and 1</returns>
         public double GetStateProgression()
         {
-            return State.Duration / (double)(stopwatch.ElapsedMilliseconds - StateStartTime);
+            return State.Duration / (double)GetStateElapsedTime();
+        }
+
+        /// <summary>
+        /// Get the current State's Elapsed time in milliseconds
+        /// </summary>
+        /// <returns>the current State's Elapsed time in milliseconds</returns>
+        public long GetStateElapsedTime()
+        {
+            return stopwatch.ElapsedMilliseconds - StateStartTime;
         }
 
         /// <summary>
@@ -142,6 +152,11 @@ namespace Darwin_s_Lab.Simulation
             });
             timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             timerState.Start();
+
+            if (mainWindow != null)
+            {
+                timer.Tick += new EventHandler(mainWindow.Update);
+            }
         }
         
         /// <summary>

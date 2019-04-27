@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
@@ -10,7 +11,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents a simulation's creature.
     /// </summary>
-    class Creature : Drawable
+    public class Creature : Drawable
     {
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
@@ -69,8 +70,26 @@ namespace Darwin_s_Lab.Simulation
             this.Height = CreatureDim.Y;
             
             CreateEllipse(Brushes.Blue);
+            Ellipse.MouseDown += Ellipse_MouseDown;
+            Ellipse.MouseEnter += Ellipse_MouseEnter;
+            Ellipse.MouseLeave += Ellipse_MouseLeave;
 
             Move();
+        }
+
+        private void Ellipse_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+        }
+
+        private void Ellipse_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Hand;
+        }
+
+        private void Ellipse_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Manager.SelectedCreature = this;
         }
 
         /// <summary>

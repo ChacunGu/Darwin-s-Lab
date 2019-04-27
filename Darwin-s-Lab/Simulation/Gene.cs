@@ -5,7 +5,7 @@ namespace Darwin_s_Lab.Simulation
     /// <summary>
     /// Represents a creature's gene.
     /// </summary>
-    class Gene
+    public class Gene
     {
         public static double MutationProbability = 0.35;
 

@@ -10,30 +10,65 @@ namespace Darwin_s_Lab
     public partial class MainWindow : Window
     {
         Manager manager;
+
         public MainWindow()
         {
             InitializeComponent();
-
+            
             manager = new Manager(canvas, this);
-
             manager.StartSimulation();
         }
 
-        /// <summary>
-        /// For debug, TODO remove!
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Rectangle_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (manager.IsPaused)
+            creature_infos.Init();
+        }
+        
+        private void BtnStartPause_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnStartPause.Content.Equals("Start"))
             {
+                btnStartPause.Content = "Pause";
+                sldNbCreature.IsEnabled = false;
+                sldNbFood.IsEnabled = false;
+                btnStopReset.IsEnabled = true;
                 manager.Resume();
             }
             else
             {
+                btnStartPause.Content = "Start";
                 manager.Pause();
             }
+        }
+
+        private void BtnStopReset_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnStopReset.Content.Equals("Stop"))
+            {
+                btnStopReset.Content = "Reset";
+                btnStartPause.IsEnabled = false;
+                // TODO
+            }
+            else
+            {
+                btnStopReset.Content = "Stop";
+                btnStartPause.Content = "Start";
+                sldNbCreature.IsEnabled = true;
+                sldNbFood.IsEnabled = true;
+                btnStopReset.IsEnabled = false;
+                btnStartPause.IsEnabled = true;
+                manager = new Manager(canvas);// TODO
+            }
+        }
+
+        /// <summary>
+        /// Update the interface
+        /// </summary>
+        /// <param name="sender">event's sender</param>
+        /// <param name="e">event's arguments</param>
+        public void Update(object sender, EventArgs e)
+        {
+
         }
     }
 }

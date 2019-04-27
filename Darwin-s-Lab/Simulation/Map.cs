@@ -61,8 +61,16 @@ namespace Darwin_s_Lab.Simulation
             this.Height = MiddleAreaRadius*2;
 
             CreateEllipse(Brushes.Green);
+            Ellipse.Stroke = null;
+            Ellipse.MouseDown += Ellipse_MouseDown;
+
             Position = GetCenter();
             Move();
+        }
+
+        private void Ellipse_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Manager.SelectedCreature = null;
         }
 
         /// <summary>

@@ -3,27 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Darwin_s_Lab"
+        xmlns:local="clr-namespace:Darwin_s_Lab.Interface"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Window.Background>
-        <ImageBrush/>
-    </Window.Background>
+        Title="Darwin's Lab" Height="450" Width="800" Background="#FF60BD60" MinWidth="640" MinHeight="360">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30"/>
-            <ColumnDefinition Width="109*"/>
-            <ColumnDefinition Width="623*"/>
-            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
-        <Rectangle Fill="#26000000" Grid.ColumnSpan="4" Grid.RowSpan="3" MouseDown="Rectangle_MouseDown"/>
-        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="76.818,0,186,0">
-            <Canvas x:Name="canvas" Width="1000" Height="1000">
+        <Rectangle Fill="#26000000" Grid.ColumnSpan="2" />
+
+        <StackPanel Margin="10,10,5,10">
+            <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,0,5" Height="30" />
+            <Button x:Name="btnStopReset" Content="Stop" Click="BtnStopReset_Click" IsEnabled="False" Margin="0,0,0,5" Height="30"/>
+            <Slider x:Name="sldNbCreature" Margin="0,0,0,5" />
+            <Slider x:Name="sldNbFood" Margin="0,0,0,5" />
+            <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
+        </StackPanel>
+
+        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Margin="5,10,10,10" >
+            <Canvas x:Name="canvas" Width="1000" Height="1000" MouseDown="Canvas_MouseDown">
                 <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
             </Canvas>
         </Viewbox>
