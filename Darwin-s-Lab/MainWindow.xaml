@@ -38,9 +38,8 @@
                 <Label Grid.Row="1" Foreground="White" Content="Food quantity" />
                 <Slider x:Name="sldNbFood" Margin="0,4,0,8" Minimum="10" Maximum="300" ValueChanged="SldNbFood_ValueChanged" Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" IsSnapToTickEnabled="True"/>
                 <Label Grid.Row="1" Grid.Column="2" Foreground="White" Content="{Binding Value, ElementName=sldNbFood}"/>
-
-
             </Grid>
+            <Label x:Name="counters" Content="" FontSize="18" FontWeight="Bold" Foreground="White"/>
             <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
         </StackPanel>
 
@@ -55,7 +54,7 @@
         </Viewbox>
 
         <Grid x:Name="filter" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="#00000000" Grid.RowSpan="2" />
-        <Image x:Name="sunmoon" Grid.ColumnSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" />
+        <Image x:Name="sunmoon" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" />
 
     </Grid>
 </Window>

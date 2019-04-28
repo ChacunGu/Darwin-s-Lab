@@ -13,6 +13,10 @@ namespace Darwin_s_Lab
     /// </summary>
     public partial class MainWindow : Window
     {
+        static Point sunmoonDefaultDimension = new Point(360, 360);
+        static double sunmoonStartingAngle = 3 * Math.PI / 2; // 5 * Math.PI / 4;
+        static double sunmoonEndingAngle = 3 * Math.PI / 2; // 5 * Math.PI / 3
+        static double sunmoonMargin = 300;
         Manager manager;
         ColorAnimation animation;
 
@@ -90,14 +94,34 @@ namespace Darwin_s_Lab
         /// <param name="e">event's arguments</param>
         public void Update(object sender, EventArgs e)
         {
-            float position = -60;
+            counters.Content = manager.GetNumberOfCreatures() + " creatures\n" + manager.GetNumberOfFoods() + " foods";
 
             if (manager.State.GetType() != typeof(StateInitial))
             {
-                float blabla = (float)(elapsed + manager.GetStateElapsedTime()) / (isDay ? (float)dayTime : (float)nightTime); 
-                position = (blabla * ((float)ActualWidth+60)) - 60;
+                float stateProgression = (float)(elapsed + manager.GetStateElapsedTime()) / (isDay ? (float)dayTime : (float)nightTime);
+                double angle = Tools.Map(stateProgression, 0, 1, sunmoonStartingAngle, sunmoonEndingAngle - 2 * Math.PI);
+                
+                // canvas scale
+                ContainerVisual child = VisualTreeHelper.GetChild(viewbox, 0) as ContainerVisual;
+                ScaleTransform scale = child.Transform as ScaleTransform;
+
+                // compute sun/moon width
+                sunmoon.Width = sunmoonDefaultDimension.X * scale.ScaleX;
+                sunmoon.Height = sunmoonDefaultDimension.Y * scale.ScaleY;
+
+                // canvas dynamic position
+                double canvasRadius = (scale.ScaleX * canvas.Width) / 2;
+                Point canvasTopLeftPosition = canvas.TransformToAncestor(this).Transform(new Point(0, 0));
+                Point canvasCenterPosition = new Point(canvasTopLeftPosition.X + canvasRadius,
+                                                       canvasTopLeftPosition.Y + canvasRadius);
+                
+                double distanceFromCanvasCenter = sunmoonMargin * scale.ScaleX + canvasRadius;
+
+                Point position = new Point(distanceFromCanvasCenter * Math.Cos(angle), distanceFromCanvasCenter * Math.Sin(angle));
+                position = new Point(position.X + canvasCenterPosition.X - sunmoon.Width / 2,
+                                     -position.Y + canvasCenterPosition.Y - sunmoon.Width / 2);
+                sunmoon.Margin = new Thickness(position.X, position.Y, 0, 0);
             }
-            sunmoon.Margin = new Thickness(position, 0, 0, 0);
         }
 
         public void SimulationStateChanged()
@@ -109,12 +133,18 @@ namespace Darwin_s_Lab
                 {
                     elapsed = 0;
                     isDay = true;
+                    sunmoonDefaultDimension = new Point(420, 420);
+
+                    // image source: https://www.goodfreephotos.com/vector-images/cartoon-sun-vector-art.png.php
                     sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/sun.png"));
                 }
                 else if(manager.State.GetNextState().GetType() == typeof(StateReproduce))
                 { 
                     elapsed = 0;
                     isDay = false;
+                    sunmoonDefaultDimension = new Point(320, 320);
+
+                    // image source: http://www.publicdomainfiles.com/show_file.php?id=13939368015951
                     sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/moon.png"));
                 }
                 else
