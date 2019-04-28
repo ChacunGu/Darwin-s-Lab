@@ -60,8 +60,7 @@ namespace Darwin_s_Lab.Simulation
             this.Width = MiddleAreaRadius*2;
             this.Height = MiddleAreaRadius*2;
 
-            SolidColorBrush brush = new SolidColorBrush(Brushes.Green.Color);
-            brush.Opacity = 0.6;
+            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(64, 0, 0, 0));
 
             CreateEllipse(brush);
             Ellipse.Stroke = null;

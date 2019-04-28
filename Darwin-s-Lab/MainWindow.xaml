@@ -5,16 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin_s_Lab.Interface"
         mc:Ignorable="d"
-        Title="Darwin's Lab" Height="450" Width="800" Background="#FF60BD60" MinWidth="640" MinHeight="360">
+        Title="Darwin's Lab" Height="450" Width="800" MinWidth="640" MinHeight="360">
+    <Window.Background>
+        <ImageBrush ImageSource="Images/space.jpg" Stretch="UniformToFill" />
+    </Window.Background>
     <Grid x:Name="maingrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="3*" MaxWidth="400px"/>
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
-        <Rectangle Fill="#26000000" Margin="5,5,0,5" />
+        <Rectangle Fill="#7F000000" Margin="5,5,0,5" />
 
         <StackPanel Margin="10,10,5,10" Panel.ZIndex="1" Grid.Row="1" >
             <Label Content="Darwin's Lab" Foreground="White" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
@@ -56,14 +59,14 @@
             <Canvas x:Name="canvas" Width="1000" Height="1000" MouseDown="Canvas_MouseDown">
                 <Ellipse Width="1000" Height="1000" >
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="Images/grass.png"/>
+                        <ImageBrush ImageSource="Images/grass.png" Viewbox="0,0,128,128" TileMode="Tile" ViewportUnits="Absolute" ViewboxUnits="Absolute" Viewport="0,0,512,512" />
                     </Ellipse.Fill>
                 </Ellipse>
             </Canvas>
         </Viewbox>
 
         <Grid x:Name="filter" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="#00000000" Grid.RowSpan="2" />
-        <Image x:Name="sunmoon" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" />
+        <Image x:Name="sunmoon" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" Panel.ZIndex="-1" />
 
     </Grid>
 </Window>
