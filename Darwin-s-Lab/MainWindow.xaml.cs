@@ -32,7 +32,7 @@ namespace Darwin_s_Lab
 
             manager = new Manager(canvas, this);
             dayTime = new StateGrowFood().Duration + new StateHunt().Duration;
-            nightTime = new StateBackHome().Duration + new StateReproduce().Duration;
+            nightTime = new StateBackHome().Duration + new StateReproduce().Duration + new StateMutate().Duration;
             isDay = true;
             elapsed = 0;
 
