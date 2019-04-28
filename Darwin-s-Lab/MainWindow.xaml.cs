@@ -31,8 +31,8 @@ namespace Darwin_s_Lab
             InitializeComponent();
 
             manager = new Manager(canvas, this);
-            dayTime = 500 + 15000 + 10000;
-            nightTime = 7500;
+            dayTime = new StateGrowFood().Duration + new StateHunt().Duration + new StateBackHome().Duration;
+            nightTime = new StateReproduce().Duration;
             isDay = true;
             elapsed = 0;
 

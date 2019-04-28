@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin_s_Lab.Interface"
         mc:Ignorable="d"
-        Title="Darwin's Lab" Height="450" Width="800" Background="#FF60BD60" MinWidth="640" MinHeight="360">
+        Title="Darwin's Lab" Height="450" Width="800" Background="#FF4FF7FF" MinWidth="640" MinHeight="360">
     <Grid x:Name="maingrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -37,7 +37,6 @@
                 <Label Grid.Row="1" Foreground="White" Content="Food quantity" />
                 <Slider x:Name="sldNbFood" Margin="0,4,0,8" Minimum="10" Maximum="300" ValueChanged="SldNbFood_ValueChanged" Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" IsSnapToTickEnabled="True"/>
                 <Label Grid.Row="1" Grid.Column="2" Foreground="White" Content="{Binding Value, ElementName=sldNbFood}"/>
-                
             </Grid>
             <Label x:Name="counters" Content="" FontSize="18" FontWeight="Bold" Foreground="White"/>
             <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
@@ -45,7 +44,11 @@
 
         <Viewbox x:Name="viewbox" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"  Margin="65,70,70,70" >
             <Canvas x:Name="canvas" Width="1000" Height="1000" MouseDown="Canvas_MouseDown">
-                <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
+                <Ellipse Width="1000" Height="1000" >
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="Images/grass.png"/>
+                    </Ellipse.Fill>
+                </Ellipse>
             </Canvas>
         </Viewbox>
 
