@@ -272,7 +272,10 @@ namespace Darwin_s_Lab.Simulation
             // birth animation
             for (int i=animationBirth.Count - 1; i>=0; i--)
             {
-
+                if (animationBirth[i].Grow())
+                {
+                    animationBirth.RemoveAt(i);
+                }
             }
 
             dt = stopwatch.ElapsedMilliseconds;

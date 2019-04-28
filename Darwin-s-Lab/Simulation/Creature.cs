@@ -23,12 +23,13 @@ namespace Darwin_s_Lab.Simulation
 
         public double MinimalDistanceToEat { get; set; } = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
 
+        private double AdultWidth;
+        private double AdultHeight;
+
         static double SleepEnergyGain = 1.0;
         static double UsedEnergyToMove = 0.000001;
         static double MinimalEnergyToMove = 0.000001;
         static double MinimalEnergyToMate = 0.2;
-        static double MinimalEnergyToStopHuntingInMorning = 1.0;
-        static double MinimalEnergyToStopHuntingInEvening = 0.4;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
@@ -70,17 +71,19 @@ namespace Darwin_s_Lab.Simulation
                 map.MiddleAreaRadius + map.HomeRadius / 2
             );
 
+            Width = CreatureDim.X;
+            Height = CreatureDim.Y;
+            AdultWidth = CreatureDim.X;
+            AdultHeight = CreatureDim.Y;
+
             if (isNewborn)
             {
-                this.Width = CreatureDim.X/10;
-                this.Height = CreatureDim.Y/10;
-            } else
-            {
-                this.Width = CreatureDim.X;
-                this.Height = CreatureDim.Y;
+                Width = CreatureDim.X/10;
+                Height = CreatureDim.Y/10;
             }
             
             CreateEllipse(Brushes.Blue);
+            
             Ellipse.MouseDown += Ellipse_MouseDown;
             Ellipse.MouseEnter += Ellipse_MouseEnter;
             Ellipse.MouseLeave += Ellipse_MouseLeave;
@@ -239,6 +242,8 @@ namespace Darwin_s_Lab.Simulation
             Manager.SelectedCreature = this;
             Manager.SelectedCreature.Ellipse.StrokeThickness = 5;
             IsSelected = true;
+
+            Console.WriteLine(this.IsAdultSize());
         }
 
         /// <summary>
@@ -721,9 +726,38 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void UpdateForce()
         {
-            Ellipse.Width = Width * (GetForce() + 0.5);
-            Ellipse.Height = Height * (GetForce() + 0.5);
+            Ellipse.Width = getRealWidth();
+            Ellipse.Height = getRealHeight();
             MinimalDistanceToEat = Math.Pow(Ellipse.Width / 2, 2);
+            Move();
+        }
+
+        /// <summary>
+        /// returns the real Width of the creature
+        /// </summary>
+        /// <returns>the real Width of the creature</returns>
+        private double getRealWidth()
+        {
+            return Width * (GetForce() + 0.5);
+        }
+
+        /// <summary>
+        /// returns the real Height of the creature
+        /// </summary>
+        /// <returns>
+        /// returns </returns>
+        private double getRealHeight()
+        {
+            return Height * (GetForce() + 0.5);
+        }
+
+        /// <summary>
+        /// Test if the creature is at its adult size
+        /// </summary>
+        /// <returns>true if adult</returns>
+        public bool IsAdultSize()
+        {
+            return Width >= AdultWidth && Height >= AdultHeight;
         }
 
         /// <summary>
@@ -740,6 +774,27 @@ namespace Darwin_s_Lab.Simulation
                     "position: " + this.Position.ToString() + "\n";
         }
         #endregion
+        
+        /// <summary>
+        /// Make the creature grow towards it's adult size
+        /// </summary>
+        /// <returns>If the creature is Adult</returns>
+        public bool Grow()
+        {
+            if (!IsAdultSize())
+            {
+                Width *= 1.02;
+                Height *= 1.02;
+                UpdateForce();
+                return false;
+            } else
+            {
+                Width = AdultWidth;
+                Height = AdultHeight;
+                UpdateForce();
+                return true;
+            }
+        }
 
         /// <summary>
         /// Fights this creature with other.
