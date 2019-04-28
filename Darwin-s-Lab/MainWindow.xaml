@@ -25,14 +25,14 @@
             <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
         </StackPanel>
 
-        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"  Margin="5,10,10,10" >
+        <Viewbox x:Name="viewbox" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"  Margin="5,10,10,10" >
             <Canvas x:Name="canvas" Width="1000" Height="1000" MouseDown="Canvas_MouseDown">
                 <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
             </Canvas>
         </Viewbox>
 
         <Grid x:Name="filter" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="#00000000" Grid.RowSpan="2" />
-        <Image x:Name="sunmoon" Grid.ColumnSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" />
+        <Image x:Name="sunmoon" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" />
 
     </Grid>
 </Window>
