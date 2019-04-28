@@ -32,7 +32,7 @@
         </Viewbox>
 
         <Grid x:Name="filter" Grid.ColumnSpan="2" IsHitTestVisible="False" Background="#00000000" Grid.RowSpan="2" />
-        <Image x:Name="sunmoon" Grid.ColumnSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Icons/sun.png" Margin="-60,0,0,0" />
+        <Image x:Name="sunmoon" Grid.ColumnSpan="2" Width="60" Height="60" HorizontalAlignment="Left" Source="/Darwin-s-Lab;component/Images/sun.png" Margin="-60,0,0,0" />
 
     </Grid>
 </Window>

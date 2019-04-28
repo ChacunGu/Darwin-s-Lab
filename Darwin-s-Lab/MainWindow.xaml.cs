@@ -109,13 +109,13 @@ namespace Darwin_s_Lab
                 {
                     elapsed = 0;
                     isDay = true;
-                    sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Icons/sun.png"));
+                    sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/sun.png"));
                 }
                 else if(manager.State.GetNextState().GetType() == typeof(StateBackHome))
                 { 
                     elapsed = 0;
                     isDay = false;
-                    sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Icons/moon.png"));
+                    sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/moon.png"));
                 }
                 else
                 {
