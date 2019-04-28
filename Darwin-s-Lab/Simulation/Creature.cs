@@ -797,6 +797,24 @@ namespace Darwin_s_Lab.Simulation
         }
 
         /// <summary>
+        /// Make the creature shrink when dying
+        /// </summary>
+        /// <returns>true if the creature is dead</returns>
+        public bool Shrink()
+        {
+            if (Width > 0.1 || Height > 0.1)
+            {
+                Width /= 1.04;
+                Height /= 1.04;
+                UpdateForce();
+                return false;
+            } else
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Fights this creature with other.
         /// </summary>
         /// <param name="other">creature to fight with</param>
