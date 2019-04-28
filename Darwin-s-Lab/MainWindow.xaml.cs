@@ -31,8 +31,8 @@ namespace Darwin_s_Lab
             InitializeComponent();
 
             manager = new Manager(canvas, this);
-            dayTime = new StateGrowFood().Duration + new StateHunt().Duration + new StateBackHome().Duration;
-            nightTime = new StateReproduce().Duration;
+            dayTime = new StateGrowFood().Duration + new StateHunt().Duration;
+            nightTime = new StateBackHome().Duration + new StateReproduce().Duration;
             isDay = true;
             elapsed = 0;
 
@@ -136,7 +136,7 @@ namespace Darwin_s_Lab
                     // image source: https://www.goodfreephotos.com/vector-images/cartoon-sun-vector-art.png.php
                     sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/sun.png"));
                 }
-                else if(manager.State.GetNextState().GetType() == typeof(StateReproduce))
+                else if(manager.State.GetNextState().GetType() == typeof(StateBackHome))
                 { 
                     elapsed = 0;
                     isDay = false;

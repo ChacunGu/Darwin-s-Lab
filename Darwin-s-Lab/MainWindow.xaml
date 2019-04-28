@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin_s_Lab.Interface"
         mc:Ignorable="d"
-        Title="Darwin's Lab" Height="450" Width="800" Background="#FF4FF7FF" MinWidth="640" MinHeight="360">
+        Title="Darwin's Lab" Height="450" Width="800" Background="#FF60BD60" MinWidth="640" MinHeight="360">
     <Grid x:Name="maingrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
