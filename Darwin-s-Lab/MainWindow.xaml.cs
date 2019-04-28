@@ -3,6 +3,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace Darwin_s_Lab
 {
@@ -14,11 +15,21 @@ namespace Darwin_s_Lab
         Manager manager;
         ColorAnimation animation;
 
+        int dayTime;
+        int nightTime;
+        bool isDay;
+
+        int elapsed;
+
         public MainWindow()
         {
             InitializeComponent();
             
             manager = new Manager(canvas, this);
+            dayTime = 500 + 15000;
+            nightTime = 10000 + 7500;
+            isDay = true;
+            elapsed = 0;
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -58,7 +69,6 @@ namespace Darwin_s_Lab
             btnStopReset.IsEnabled = false;
             btnStartPause.IsEnabled = true;
             manager.Reset();
-            
         }
 
         /// <summary>
@@ -68,19 +78,43 @@ namespace Darwin_s_Lab
         /// <param name="e">event's arguments</param>
         public void Update(object sender, EventArgs e)
         {
+            float position = -60;
 
-            
+            if (manager.State.GetType() != typeof(StateInitial))
+            {
+                float blabla = (float)(elapsed + manager.GetStateElapsedTime()) / (isDay ? (float)dayTime : (float)nightTime); 
+                position = (blabla * ((float)ActualWidth+60)) - 60;
+            }
+            sunmoon.Margin = new Thickness(position, 0, 0, 0);
         }
 
         public void SimulationStateChanged()
         {
             
-            animation = new ColorAnimation();
-            animation.From = manager.State.FilterColor.Color;
-            animation.To = manager.State.GetNextState().FilterColor.Color;
-            animation.Duration = new Duration(TimeSpan.FromMilliseconds(1000));
-            filter.Background.BeginAnimation(SolidColorBrush.ColorProperty, animation);
-
+            if (manager.State.GetType() != typeof(StateInitial))
+            {
+                if (manager.State.GetNextState().GetType() == typeof(StateGrowFood))
+                {
+                    elapsed = 0;
+                    isDay = true;
+                    sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Icons/sun.png"));
+                }
+                else if(manager.State.GetNextState().GetType() == typeof(StateBackHome))
+                { 
+                    elapsed = 0;
+                    isDay = false;
+                    sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Icons/moon.png"));
+                }
+                else
+                {
+                    elapsed += manager.State.Duration;
+                }                
+                animation = new ColorAnimation();
+                animation.From = manager.State.FilterColor.Color;
+                animation.To = manager.State.GetNextState().FilterColor.Color;
+                animation.Duration = new Duration(TimeSpan.FromMilliseconds(1000));
+                filter.Background.BeginAnimation(SolidColorBrush.ColorProperty, animation);
+            }
         }
     }
 }
