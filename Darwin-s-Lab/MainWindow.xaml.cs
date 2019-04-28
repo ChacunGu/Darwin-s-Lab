@@ -27,8 +27,8 @@ namespace Darwin_s_Lab
             InitializeComponent();
 
             manager = new Manager(canvas, this);
-            dayTime = 500 + 15000;
-            nightTime = 10000 + 7500;
+            dayTime = 500 + 15000 + 10000;
+            nightTime = 7500;
             isDay = true;
             elapsed = 0;
 
@@ -111,7 +111,7 @@ namespace Darwin_s_Lab
                     isDay = true;
                     sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/sun.png"));
                 }
-                else if(manager.State.GetNextState().GetType() == typeof(StateBackHome))
+                else if(manager.State.GetNextState().GetType() == typeof(StateReproduce))
                 { 
                     elapsed = 0;
                     isDay = false;
