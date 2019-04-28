@@ -20,6 +20,7 @@ namespace Darwin_s_Lab.Simulation
         private List<Creature> goingBackHomeCreatures;
         private List<Creature> newbornCreatures;
         private List<Creature> animationBirth;
+        private List<Creature> animationDeath;
         private List<Food> foods;
         private Map map;
         private Canvas canvas;
@@ -62,6 +63,7 @@ namespace Darwin_s_Lab.Simulation
             foods = new List<Food>();
             creatures = new List<Creature>();
             animationBirth = new List<Creature>();
+            animationDeath = new List<Creature>();
 
             timer = new DispatcherTimer
             {
@@ -272,9 +274,22 @@ namespace Darwin_s_Lab.Simulation
             // birth animation
             for (int i=animationBirth.Count - 1; i>=0; i--)
             {
-
+                if (animationBirth[i].Grow())
+                {
+                    animationBirth.RemoveAt(i);
+                }
             }
 
+            // death animation
+            for (int i = animationDeath.Count - 1; i >= 0; i--)
+            {
+                if (animationDeath[i].Shrink())
+                {
+                    animationDeath[i].Destroy();
+                    animationDeath.RemoveAt(i);
+                }
+            }
+            
             dt = stopwatch.ElapsedMilliseconds;
         }
 
@@ -335,7 +350,8 @@ namespace Darwin_s_Lab.Simulation
                         SelectedCreature = null;
                         mainWindow.UpdateCreatureInfo();
                     }
-                    creatures[i].Destroy();
+                    animationDeath.Add(creatures[i]);
+                    //creatures[i].Destroy();
                     creatures.RemoveAt(i);
                 }
             }

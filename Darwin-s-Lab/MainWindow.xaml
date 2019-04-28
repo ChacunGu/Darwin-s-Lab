@@ -16,12 +16,31 @@
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
         <Rectangle Fill="#26000000" Grid.ColumnSpan="2" Grid.RowSpan="2" />
-        
+
         <StackPanel Margin="10,10,5,10" Panel.ZIndex="1" Grid.Row="1" >
             <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,0,5" Height="30" />
             <Button x:Name="btnStopReset" Content="Stop" Click="BtnStop_Click" IsEnabled="False" Margin="0,0,0,5" Height="30"/>
-            <Slider x:Name="sldNbCreature" Margin="0,0,0,5" Minimum="10" Maximum="100" ValueChanged="SldNbCreature_ValueChanged" />
-            <Slider x:Name="sldNbFood" Margin="0,0,0,5" Minimum="10" Maximum="300" ValueChanged="SldNbFood_ValueChanged" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                </Grid.RowDefinitions>
+
+                <Label Foreground="White" Content="Number of creatures" />
+                <Slider x:Name="sldNbCreature" Margin="0,4,0,8" Minimum="10" Maximum="100" ValueChanged="SldNbCreature_ValueChanged" VerticalAlignment="Center" Grid.Column="1" IsSnapToTickEnabled="True"/>
+                <Label Grid.Column="2" Content="{Binding Value, ElementName=sldNbCreature}" Foreground="White"/>
+
+                <Label Grid.Row="1" Foreground="White" Content="Food quantity" />
+                <Slider x:Name="sldNbFood" Margin="0,4,0,8" Minimum="10" Maximum="300" ValueChanged="SldNbFood_ValueChanged" Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" IsSnapToTickEnabled="True"/>
+                <Label Grid.Row="1" Grid.Column="2" Foreground="White" Content="{Binding Value, ElementName=sldNbFood}"/>
+                
+            </Grid>
+            <Label x:Name="counters" Content="" FontSize="18" FontWeight="Bold" Foreground="White"/>
             <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
         </StackPanel>
 

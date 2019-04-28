@@ -48,8 +48,8 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void Move()
         {
-            Canvas.SetLeft(Ellipse, Position.X - Width / 2);
-            Canvas.SetTop(Ellipse, Position.Y - Height / 2);
+            Canvas.SetLeft(Ellipse, Position.X - Ellipse.Width / 2);
+            Canvas.SetTop(Ellipse, Position.Y - Ellipse.Height / 2);
         }
 
         /// <summary>
@@ -58,6 +58,20 @@ namespace Darwin_s_Lab.Simulation
         public void Destroy()
         {
             canvas.Children.Remove(Ellipse);
+        }
+
+        /// <summary>
+        /// Detect if 2 items intersects each other
+        /// </summary>
+        /// <param name="other">An other Drawable object</param>
+        /// <returns>true if they collide</returns>
+        public bool CollideWith(Drawable other)
+        {
+            return 
+                Map.DistanceBetweenTwoPointsOpti(Position, other.Position)
+                < 
+                (Ellipse.Width / 2 + other.Ellipse.Width) / 2 *
+                (Ellipse.Width / 2 + other.Ellipse.Width / 2);
         }
     }
 }
