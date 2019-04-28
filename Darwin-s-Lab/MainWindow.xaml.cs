@@ -90,6 +90,8 @@ namespace Darwin_s_Lab
         /// <param name="e">event's arguments</param>
         public void Update(object sender, EventArgs e)
         {
+            counters.Content = manager.GetNumberOfCreatures() + " creatures\n" + manager.GetNumberOfFoods() + " foods";
+
             float position = -60;
 
             if (manager.State.GetType() != typeof(StateInitial))
