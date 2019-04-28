@@ -19,6 +19,7 @@ namespace Darwin_s_Lab.Simulation
         private List<Creature> huntingCreatures;
         private List<Creature> goingBackHomeCreatures;
         private List<Creature> newbornCreatures;
+        private List<Creature> animationBirth;
         private List<Food> foods;
         private Map map;
         private Canvas canvas;
@@ -60,7 +61,8 @@ namespace Darwin_s_Lab.Simulation
 
             foods = new List<Food>();
             creatures = new List<Creature>();
-            
+            animationBirth = new List<Creature>();
+
             timer = new DispatcherTimer
             {
                 Interval = new TimeSpan(0, 0, 0, 0, FramesPerSec)
@@ -69,7 +71,9 @@ namespace Darwin_s_Lab.Simulation
             stopwatch = new Stopwatch();
             stopwatch.Start();
 
+            dt = stopwatch.ElapsedMilliseconds;
             timer.Start();
+            timer.Tick += new EventHandler(Animate);
         }
 
         /// <summary>
@@ -167,9 +171,9 @@ namespace Darwin_s_Lab.Simulation
             timerState.Tick += stateHandler;
             timerState.Interval = new TimeSpan(0, 0, 0, 0, State.Duration);
             timerState.Start();
-            
-            timer.Tick += new EventHandler(mainWindow.Update);
-            
+
+            AddEventHandlerToTimer(new EventHandler(mainWindow.Update));
+
         }
         
         /// <summary>
@@ -256,6 +260,42 @@ namespace Darwin_s_Lab.Simulation
         {
             float localDt = (stopwatch.ElapsedMilliseconds - dt) / 1000f;
             return localDt > 0.15f ? 0.15f : localDt;
+        }
+
+        /// <summary>
+        /// Performs simulation's animations.
+        /// </summary>
+        /// <param name="sender">event's sender</param>
+        /// <param name="e">event's arguments</param>
+        private void Animate(object sender, EventArgs e)
+        {
+            // birth animation
+            for (int i=animationBirth.Count - 1; i>=0; i--)
+            {
+
+            }
+
+            dt = stopwatch.ElapsedMilliseconds;
+        }
+
+        /// <summary>
+        /// Adds a new event handler to the simulation timer.
+        /// </summary>
+        /// <param name="eventHandler">new event handler to add</param>
+        private void AddEventHandlerToTimer(EventHandler eventHandler)
+        {
+            timer.Tick -= new EventHandler(Animate);
+            timer.Tick += eventHandler;
+            timer.Tick += new EventHandler(Animate);
+        }
+
+        /// <summary>
+        /// Removes an event handler from the simulation timer.
+        /// </summary>
+        /// <param name="eventHandler">event handler to remove</param>
+        private void RemoveEventHandlerFromTimer(EventHandler eventHandler)
+        {
+            timer.Tick -= eventHandler;
         }
         #endregion
 
@@ -395,8 +435,7 @@ namespace Darwin_s_Lab.Simulation
             }
             
             newbornCreatures = new List<Creature>();
-            dt = stopwatch.ElapsedMilliseconds;
-            timer.Tick += new EventHandler(CreaturesMatingProcess);
+            AddEventHandlerToTimer(new EventHandler(CreaturesMatingProcess));
         }
 
         /// <summary>
@@ -420,9 +459,9 @@ namespace Darwin_s_Lab.Simulation
 
                     // add the newborn to the creatures
                     newbornCreatures.Add(newborn);
+                    animationBirth.Add(newborn);
                 }
             }
-            dt = stopwatch.ElapsedMilliseconds;
         }
 
         /// <summary>
@@ -439,7 +478,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         internal void EndCreaturesMatingProcess()
         {
-            timer.Tick -= new EventHandler(CreaturesMatingProcess);
+            RemoveEventHandlerFromTimer(new EventHandler(CreaturesMatingProcess));
             AddNewbornCreatures();
 
             for (int i = 0; i < matingCreatures.Count; i++)
@@ -455,9 +494,8 @@ namespace Darwin_s_Lab.Simulation
         internal void StartHunt()
         {
             huntingCreatures = new List<Creature>(creatures);
-
-            dt = stopwatch.ElapsedMilliseconds;
-            timer.Tick += new EventHandler(CreaturesHuntingProcess);
+            
+            AddEventHandlerToTimer(new EventHandler(CreaturesHuntingProcess));
         }
 
         /// <summary>
@@ -509,7 +547,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void EndCreaturesHuntingProcess()
         {
-            timer.Tick -= new EventHandler(CreaturesHuntingProcess);
+            RemoveEventHandlerFromTimer(new EventHandler(CreaturesHuntingProcess));
             for (int i = huntingCreatures.Count - 1; i >= 0; i--)
             {
                 huntingCreatures[i].ForgetTarget();
@@ -527,7 +565,7 @@ namespace Darwin_s_Lab.Simulation
         {
             goingBackHomeCreatures = new List<Creature>();
             
-            timer.Tick += new EventHandler(CreaturesBackHomeProcess);
+            AddEventHandlerToTimer(new EventHandler(CreaturesBackHomeProcess));
         }
 
         /// <summary>
@@ -543,7 +581,6 @@ namespace Darwin_s_Lab.Simulation
                 if (isBackHome)
                     goingBackHomeCreatures.RemoveAt(i);
             }
-            dt = stopwatch.ElapsedMilliseconds;
         }
 
         /// <summary>
@@ -551,7 +588,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         internal void EndCreaturesBackHomeProcess()
         {
-            timer.Tick -= new EventHandler(CreaturesBackHomeProcess);
+            RemoveEventHandlerFromTimer(new EventHandler(CreaturesBackHomeProcess));
 
             RemoveDeadCreatures();
             RemoveRottenFood();
