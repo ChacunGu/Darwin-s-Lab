@@ -31,8 +31,8 @@ namespace Darwin_s_Lab
             InitializeComponent();
 
             manager = new Manager(canvas, this);
-            dayTime = 500 + 15000 + 10000;
-            nightTime = 7500;
+            dayTime = new StateGrowFood().Duration + new StateHunt().Duration;
+            nightTime = new StateBackHome().Duration + new StateReproduce().Duration;
             isDay = true;
             elapsed = 0;
 
@@ -58,8 +58,7 @@ namespace Darwin_s_Lab
             if (btnStartPause.Content.Equals("Start"))
             {
                 btnStartPause.Content = "Pause";
-                sldNbCreature.IsEnabled = false;
-                sldNbFood.IsEnabled = false;
+                slidersgrid.Visibility = Visibility.Collapsed;
                 btnStopReset.IsEnabled = true;
                 if (manager.IsSimulating)
                 {
@@ -80,8 +79,7 @@ namespace Darwin_s_Lab
         private void BtnStop_Click(object sender, RoutedEventArgs e)
         {
             btnStartPause.Content = "Start";
-            sldNbCreature.IsEnabled = true;
-            sldNbFood.IsEnabled = true;
+            slidersgrid.Visibility = Visibility.Visible;
             btnStopReset.IsEnabled = false;
             btnStartPause.IsEnabled = true;
             manager.Reset();
@@ -138,7 +136,7 @@ namespace Darwin_s_Lab
                     // image source: https://www.goodfreephotos.com/vector-images/cartoon-sun-vector-art.png.php
                     sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/sun.png"));
                 }
-                else if(manager.State.GetNextState().GetType() == typeof(StateReproduce))
+                else if(manager.State.GetNextState().GetType() == typeof(StateBackHome))
                 { 
                     elapsed = 0;
                     isDay = false;

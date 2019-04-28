@@ -8,19 +8,28 @@
         Title="Darwin's Lab" Height="450" Width="800" Background="#FF60BD60" MinWidth="640" MinHeight="360">
     <Grid x:Name="maingrid">
         <Grid.RowDefinitions>
-            <RowDefinition Height="70"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
-        <Rectangle Fill="#26000000" Grid.ColumnSpan="2" Grid.RowSpan="2" />
+        <Rectangle Fill="#26000000" Margin="5,5,0,5" />
 
         <StackPanel Margin="10,10,5,10" Panel.ZIndex="1" Grid.Row="1" >
-            <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,0,5" Height="30" />
-            <Button x:Name="btnStopReset" Content="Stop" Click="BtnStop_Click" IsEnabled="False" Margin="0,0,0,5" Height="30"/>
-            <Grid>
+            <Label Content="Darwin's Lab" Foreground="White" FontSize="36" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,2,0" Height="30" />
+                <Button x:Name="btnStopReset" Content="Stop" Click="BtnStop_Click" IsEnabled="False" Margin="2,0,0,0" Height="30" Grid.Column="1"/>
+            </Grid>
+
+
+            <Grid x:Name="slidersgrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="1*"/>
@@ -38,15 +47,18 @@
                 <Label Grid.Row="1" Foreground="White" Content="Food quantity" />
                 <Slider x:Name="sldNbFood" Margin="0,4,0,8" Minimum="10" Maximum="300" ValueChanged="SldNbFood_ValueChanged" Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" IsSnapToTickEnabled="True"/>
                 <Label Grid.Row="1" Grid.Column="2" Foreground="White" Content="{Binding Value, ElementName=sldNbFood}"/>
-                
             </Grid>
             <Label x:Name="counters" Content="" FontSize="18" FontWeight="Bold" Foreground="White"/>
             <local:CreatureInfos x:Name="creature_infos" ></local:CreatureInfos>
         </StackPanel>
 
-        <Viewbox x:Name="viewbox" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"  Margin="5,10,10,10" >
+        <Viewbox x:Name="viewbox" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1"  Margin="65,70,70,70" >
             <Canvas x:Name="canvas" Width="1000" Height="1000" MouseDown="Canvas_MouseDown">
-                <Ellipse Fill="#FF60BD60" Width="1000" Height="1000" />
+                <Ellipse Width="1000" Height="1000" >
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="Images/grass.png"/>
+                    </Ellipse.Fill>
+                </Ellipse>
             </Canvas>
         </Viewbox>
 

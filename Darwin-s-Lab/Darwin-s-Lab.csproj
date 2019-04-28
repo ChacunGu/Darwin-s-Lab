@@ -125,5 +125,10 @@
     <Resource Include="Images\moon.png" />
     <Resource Include="Images\sun.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\grass.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -60,7 +60,10 @@ namespace Darwin_s_Lab.Simulation
             this.Width = MiddleAreaRadius*2;
             this.Height = MiddleAreaRadius*2;
 
-            CreateEllipse(Brushes.Green);
+            SolidColorBrush brush = new SolidColorBrush(Brushes.Green.Color);
+            brush.Opacity = 0.6;
+
+            CreateEllipse(brush);
             Ellipse.Stroke = null;
             Ellipse.MouseDown += Ellipse_MouseDown;
 

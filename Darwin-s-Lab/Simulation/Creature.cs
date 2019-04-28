@@ -810,8 +810,8 @@ namespace Darwin_s_Lab.Simulation
         {
             if (Width > 0.1 || Height > 0.1)
             {
-                Width /= 1.04;
-                Height /= 1.04;
+                Width /= 1.1;
+                Height /= 1.1;
                 UpdateForce();
                 return false;
             } else
