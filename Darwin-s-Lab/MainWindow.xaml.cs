@@ -58,8 +58,7 @@ namespace Darwin_s_Lab
             if (btnStartPause.Content.Equals("Start"))
             {
                 btnStartPause.Content = "Pause";
-                sldNbCreature.IsEnabled = false;
-                sldNbFood.IsEnabled = false;
+                slidersgrid.Visibility = Visibility.Collapsed;
                 btnStopReset.IsEnabled = true;
                 if (manager.IsSimulating)
                 {
@@ -80,8 +79,7 @@ namespace Darwin_s_Lab
         private void BtnStop_Click(object sender, RoutedEventArgs e)
         {
             btnStartPause.Content = "Start";
-            sldNbCreature.IsEnabled = true;
-            sldNbFood.IsEnabled = true;
+            slidersgrid.Visibility = Visibility.Visible;
             btnStopReset.IsEnabled = false;
             btnStartPause.IsEnabled = true;
             manager.Reset();
