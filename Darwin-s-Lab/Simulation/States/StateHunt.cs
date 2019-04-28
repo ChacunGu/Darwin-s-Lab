@@ -19,6 +19,7 @@ namespace Darwin_s_Lab.Simulation
         public override void DoAction(Manager manager)
         {
             manager.StartHunt();
+            manager.StartBackHome();
         }
 
         /// <summary>

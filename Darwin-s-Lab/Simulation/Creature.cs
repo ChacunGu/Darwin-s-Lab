@@ -16,15 +16,19 @@ namespace Darwin_s_Lab.Simulation
         private static int SpeedFactor = 10;
         private static Vector CreatureDim = new Vector(50, 50);
         public static double MinimalDistanceToSearchMate = Math.Pow(CreatureDim.X * 12, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToEat = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         static double MinimalDistanceToJoinMate = Math.Pow(CreatureDim.X * 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         static double MinimalDistanceToMate = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
         static double MinimalDistanceToReachTarget = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        static double MinimalOpacity = 0.2;
+
+        public double MinimalDistanceToEat { get; set; } = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
 
         static double SleepEnergyGain = 1.0;
         static double UsedEnergyToMove = 0.000001;
         static double MinimalEnergyToMove = 0.000001;
         static double MinimalEnergyToMate = 0.2;
+        static double MinimalEnergyToStopHuntingInMorning = 1.0;
+        static double MinimalEnergyToStopHuntingInEvening = 0.4;
         static double MutationProbability = 0.5;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
@@ -46,7 +50,7 @@ namespace Darwin_s_Lab.Simulation
         private Map map;
 
         #region constructor & initialization
-        public Creature(Canvas canvas, Map map)
+        public Creature(Canvas canvas, Map map, bool isNewborn=false)
         {
             Position = new Point(0, 0);
             this.Genes = new Dictionary<string, Gene>();
@@ -66,8 +70,15 @@ namespace Darwin_s_Lab.Simulation
                 map.MiddleAreaRadius + map.HomeRadius / 2
             );
 
-            this.Width = CreatureDim.X;
-            this.Height = CreatureDim.Y;
+            if (isNewborn)
+            {
+                this.Width = CreatureDim.X/10;
+                this.Height = CreatureDim.Y/10;
+            } else
+            {
+                this.Width = CreatureDim.X;
+                this.Height = CreatureDim.Y;
+            }
             
             CreateEllipse(Brushes.Blue);
             Ellipse.MouseDown += Ellipse_MouseDown;
@@ -75,21 +86,6 @@ namespace Darwin_s_Lab.Simulation
             Ellipse.MouseLeave += Ellipse_MouseLeave;
 
             Move();
-        }
-
-        private void Ellipse_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Arrow;
-        }
-
-        private void Ellipse_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Hand;
-        }
-
-        private void Ellipse_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            Manager.SelectedCreature = this;
         }
 
         /// <summary>
@@ -103,6 +99,7 @@ namespace Darwin_s_Lab.Simulation
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint) mask;
             uint finalValue = energy == null ? Tools.RandomUintInRange(finalMask/2, finalMask) : (uint) energy;
             this.AddGene("energy", finalValue, finalMask);
+            UpdateColor();
             return this;
         }
 
@@ -145,7 +142,7 @@ namespace Darwin_s_Lab.Simulation
             uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = force == null ? Tools.RandomUintInRange(0, finalMask) : (uint)force;
             this.AddGene("force", finalValue, finalMask);
-            UpdateColor();
+            UpdateForce();
             return this;
         }
 
@@ -219,6 +216,35 @@ namespace Darwin_s_Lab.Simulation
             else
                 this.Genes.Add(name, new Gene(name, value, mask));
         }
+        #endregion
+
+        #region click & selection
+        private void Ellipse_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+        }
+
+        private void Ellipse_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Hand;
+        }
+
+        private void Ellipse_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (Manager.SelectedCreature != null)
+            {
+                Manager.SelectedCreature.IsSelected = false;
+                Manager.SelectedCreature.Ellipse.StrokeThickness = 1;
+            }
+            Manager.SelectedCreature = this;
+            Manager.SelectedCreature.Ellipse.StrokeThickness = 5;
+            IsSelected = true;
+        }
+
+        /// <summary>
+        /// Indicate if the creature is selected
+        /// </summary>
+        public bool IsSelected { get; set; } = false;
         #endregion
 
         #region movements
@@ -399,7 +425,7 @@ namespace Darwin_s_Lab.Simulation
             TakeStep(dt);
 
             // check if food has been reached
-            if (Map.DistanceBetweenTwoPointsOpti(Position, food.Position) <= Creature.MinimalDistanceToEat)
+            if (Map.DistanceBetweenTwoPointsOpti(Position, food.Position) <= MinimalDistanceToEat)
             {
                 Eat(food);
                 food.Destroy();
@@ -475,6 +501,9 @@ namespace Darwin_s_Lab.Simulation
                     switch (Genes.ElementAt(i).Key)
                     {
                         case "force":
+                            UpdateForce();
+                            break;
+                        case "energy":
                         case "colorH":
                         case "colorS":
                         case "colorV":
@@ -491,7 +520,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="other">significant other</param>
         public Creature Cross(Creature other)
         {
-            Creature newborn = new Creature(this.canvas, this.map)
+            Creature newborn = new Creature(this.canvas, this.map, true)
                                     .WithPosition(new Point(Position.X + Math.Abs(Position.X - other.Position.X) / 2,
                                                             Position.Y + Math.Abs(Position.Y - other.Position.Y) / 2));
             for (int i = 0; i < Genes.Count(); i++) // for each gene
@@ -523,6 +552,7 @@ namespace Darwin_s_Lab.Simulation
                 newborn.AddGene(name, value, mask);
             }
             newborn.UpdateColor();
+            newborn.UpdateForce();
             return newborn;
         }
         #endregion
@@ -535,6 +565,15 @@ namespace Darwin_s_Lab.Simulation
         public void Eat(Food food)
         {
             SetEnergy(GetEnergy() + food.Energy);
+        }
+
+        /// <summary>
+        /// Returns true if the creature's energy needs have been fulfilled false otherwise.
+        /// </summary>
+        /// <returns>true if the creature's energy needs have been fulfilled false otherwise</returns>
+        public bool HasEatenEnough(double huntProgression)
+        {
+            return Tools.rdm.NextDouble() < huntProgression;
         }
 
         /// <summary>
@@ -605,7 +644,16 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature's speed</returns>
         public double GetSpeed()
         {
-            return Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1.0, 8.0); //TODO
+            return Tools.Map((int)Genes["speed"].Value, 0, (int)Genes["speed"].Mask, 1.0, 8.0);
+        }
+
+        /// <summary>
+        /// Returns the creature's force (between 0 and 1).
+        /// </summary>
+        /// <returns>creature's force</returns>
+        public double GetForce()
+        {
+            return Tools.Map((int)Genes["force"].Value, 0, (int)Genes["force"].Mask, 0, 1);
         }
 
         /// <summary>
@@ -627,6 +675,7 @@ namespace Darwin_s_Lab.Simulation
                                     newEnergyInPercentage < 0.0 ? 0.0 : 
                                     newEnergyInPercentage;
             Genes["energy"].Value = Tools.Map(newEnergyInPercentage, 0.0, 1.0, 0, (int)Genes["energy"].Mask);
+            Ellipse.Fill.Opacity = GetEnergy() * (1 - MinimalOpacity) + MinimalOpacity;
         }
 
         /// <summary>
@@ -662,11 +711,21 @@ namespace Darwin_s_Lab.Simulation
         {
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
-            colorBrush.Opacity = Genes["force"].Value / (double)Genes["force"].Mask * 0.5 + 0.5; // Opacity changes with force
+            colorBrush.Opacity = GetEnergy() * (1 - MinimalOpacity) + MinimalOpacity; // Opacity changes with force
             Ellipse.Fill = colorBrush;
             Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }
         
+        /// <summary>
+        /// Updates creature's force (its size when displayed).
+        /// </summary>
+        public void UpdateForce()
+        {
+            Ellipse.Width = Width * (GetForce() + 0.5);
+            Ellipse.Height = Height * (GetForce() + 0.5);
+            MinimalDistanceToEat = Math.Pow(Ellipse.Width / 2, 2);
+        }
+
         /// <summary>
         /// Returns creature's representation as a string.
         /// </summary>

@@ -36,7 +36,7 @@ namespace Darwin_s_Lab.Simulation
             canvas.Width = 1000;
             canvas.Height = 1000;
 
-            Manager manager = new Manager(canvas);
+            Manager manager = new Manager(canvas, new MainWindow());
 
             manager.CreateInitialPopulation();
             Assert.AreEqual(manager.CreatureNumber, manager.GetNumberOfCreatures());
@@ -55,7 +55,7 @@ namespace Darwin_s_Lab.Simulation
             canvas.Width = 1000;
             canvas.Height = 1000;
 
-            Manager manager = new Manager(canvas);
+            Manager manager = new Manager(canvas, new MainWindow());
 
             manager.StartSimulation();
             Assert.IsFalse(manager.IsPaused);
@@ -75,7 +75,7 @@ namespace Darwin_s_Lab.Simulation
             canvas.Width = 1000;
             canvas.Height = 1000;
 
-            Manager manager = new Manager(canvas);
+            Manager manager = new Manager(canvas, new MainWindow());
             Assert.IsTrue(
                 manager.State is StateInitial
             );
