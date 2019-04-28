@@ -12,7 +12,7 @@ namespace Darwin_s_Lab.Simulation
         public StateReproduce()
         {
             Name = "Reproduce";
-            Duration = 7500;
+            Duration = 7000;
             FilterColor = new SolidColorBrush(Color.FromArgb(140, 0, 0, 128));
         }
 
@@ -22,7 +22,6 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void DoAction(Manager manager)
         {
-            manager.Mutate();
             manager.StartCross();
         }
 

@@ -30,7 +30,7 @@ namespace Darwin_s_Lab.Simulation
         static double UsedEnergyToMove = 0.000001;
         static double MinimalEnergyToMove = 0.000001;
         static double MinimalEnergyToMate = 0.2;
-        static double MutationProbability = 0.5;
+        static double MutationProbability = 0.3;
         static double CrossoverKeepAverageProbability = 0.75;
         static double CrossoverKeepOtherProbability = 0.5;
         static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
@@ -49,6 +49,8 @@ namespace Darwin_s_Lab.Simulation
         public Creature Mate { get; set; }
         public Point Target { get; set; } = new Point(Double.NaN, Double.NaN);
         private Map map;
+        private int blinkCounter = 0;
+        private float blinkState = 0;
 
         #region constructor & initialization
         public Creature(Canvas canvas, Map map, bool isNewborn=false)
@@ -493,14 +495,17 @@ namespace Darwin_s_Lab.Simulation
 
         #region genetic algorithm
         /// <summary>
-        /// Mutates creature's genes.
+        /// Mutates creature's genes. Returns true if the creature did mutate false otherwise.
         /// </summary>
-        public void Mutate()
+        /// <returns>true if the creature did mutate false otherwise</returns>
+        public bool Mutate()
         {
+            bool didMutate = false;
             for (int i=0; i<Genes.Count(); i++) // for each gene
             {
                 if (Tools.rdm.NextDouble() < Gene.MutationProbability) // if gene has to mutate
                 {
+                    didMutate = true;
                     Genes.ElementAt(i).Value.Mutate();
                     
                     switch (Genes.ElementAt(i).Key)
@@ -517,6 +522,7 @@ namespace Darwin_s_Lab.Simulation
                     }
                 }
             }
+            return didMutate;
         }
 
         /// <summary>
@@ -690,11 +696,10 @@ namespace Darwin_s_Lab.Simulation
         public String GetHexColor()
         {
             // HSV to RGB
-            int r, g, b;
             double h = Tools.Map((int)Genes["colorH"].Value, 0, (int)Genes["colorH"].Mask, 0, 360);
             double s = Tools.Map((int)Genes["colorS"].Value, 0, (int)Genes["colorS"].Mask, 0.2, 1.0);
             double v = Tools.Map((int)Genes["colorV"].Value, 0, (int)Genes["colorV"].Mask, 0.2, 1.0);
-            Tools.HsvToRgb(h, s, v, out r, out g, out b);
+            Tools.HsvToRgb(h, s, v, out int r, out int g, out int b);
 
             // RGB to hex
             return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
@@ -774,7 +779,8 @@ namespace Darwin_s_Lab.Simulation
                     "position: " + this.Position.ToString() + "\n";
         }
         #endregion
-        
+
+        #region animations
         /// <summary>
         /// Make the creature grow towards it's adult size
         /// </summary>
@@ -813,6 +819,49 @@ namespace Darwin_s_Lab.Simulation
                 return true;
             }
         }
+
+        /// <summary>
+        /// Makes the creature blink. Returns true if the blink is over false otherwise.
+        /// </summary>
+        /// <returns>true if the blink is over false otherwise</returns>
+        public bool Blink()
+        {
+            float maxBlinkState = 0.30f;
+            float blinkStateStep = 0.03f;
+            int numberBlinks = 3;
+
+            if (blinkCounter < numberBlinks * 2)
+            {
+                if (blinkCounter % 2 == 0 && blinkState < maxBlinkState)
+                {
+                    blinkState += blinkStateStep;
+                } else
+                {
+                    blinkCounter += blinkState >= maxBlinkState ? 1 : 0;
+                    blinkState -= blinkStateStep;
+                    blinkCounter += blinkState <= 0 ? 1 : 0;
+                }
+
+                SolidColorBrush colorBrush = new SolidColorBrush();
+                colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
+                Color color = colorBrush.Color;
+                double opacity = Ellipse.Fill.Opacity;
+
+                colorBrush.Color = Tools.ChangeColorBrightness(color, blinkState);
+
+                Ellipse.Fill = colorBrush;
+                Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
+
+                return false;
+            } else
+            {
+                blinkCounter = 0;
+                blinkState = 0;
+                UpdateColor();
+            }
+            return true;
+        }
+        #endregion
 
         /// <summary>
         /// Fights this creature with other.

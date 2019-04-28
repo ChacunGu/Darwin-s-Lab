@@ -7,22 +7,22 @@ using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
-    public class StateBackHome : State
+    public class StateMutate : State
     {
-        public StateBackHome()
+        public StateMutate()
         {
-            Name = "BackHome";
-            Duration = 10000;
-            FilterColor = new SolidColorBrush(Color.FromArgb(70, 0, 0, 128));
+            Name = "Mutate";
+            Duration = 2000;
+            FilterColor = new SolidColorBrush(Color.FromArgb(140, 0, 0, 128));
         }
-        
+
         /// <summary>
-        /// Each creature tries to reach the safe zone before night.
+        /// Mutates the creatures.
         /// </summary>
         /// <param name="manager">simulation's manager</param>
         public override void DoAction(Manager manager)
         {
-            // pass
+            manager.Mutate();
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Darwin_s_Lab.Simulation
         /// <param name="manager">simulation's manager</param>
         public override void StopAction(Manager manager)
         {
-            manager.EndCreaturesBackHomeProcess();
+            // pass
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Darwin_s_Lab.Simulation
 
         public override State GetNextState()
         {
-            return new StateMutate();
+            return new StateReproduce();
         }
     }
 }
