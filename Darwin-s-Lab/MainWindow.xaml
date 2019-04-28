@@ -7,8 +7,9 @@
         mc:Ignorable="d"
         Title="Darwin's Lab" Height="450" Width="800" MinWidth="640" MinHeight="360">
     <Window.Background>
-        <ImageBrush ImageSource="Images/space.jpg" Stretch="UniformToFill" />
+        <ImageBrush ImageSource="/Darwin-s-Lab;component/Images/space.jpg" Stretch="UniformToFill" />
     </Window.Background>
+    
     <Grid x:Name="maingrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
