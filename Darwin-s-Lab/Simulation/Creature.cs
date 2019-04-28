@@ -562,7 +562,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>true if the creature's energy needs have been fulfilled false otherwise</returns>
         public bool HasEatenEnough(double huntProgression)
         {
-            return GetEnergy() >= Tools.Map(2 * Math.Pow(huntProgression / 3, 2), 0, 0.222, Creature.MinimalEnergyToStopHuntingInMorning, Creature.MinimalEnergyToStopHuntingInEvening);
+            return Tools.rdm.NextDouble() < huntProgression;
         }
 
         /// <summary>
