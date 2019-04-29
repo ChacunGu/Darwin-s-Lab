@@ -97,6 +97,11 @@ namespace Darwin_s_Lab.Simulation
 
             manager.State.GoNext(manager);
             Assert.IsTrue(
+                manager.State is StateMutate
+            );
+
+            manager.State.GoNext(manager);
+            Assert.IsTrue(
                 manager.State is StateReproduce
             );
 
