@@ -106,7 +106,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>the state's progression between 0 and 1</returns>
         public double GetStateProgression()
         {
-            return (double)GetStateElapsedTime() / (double)State.Duration;
+            return GetStateElapsedTime() / (double)State.Duration;
         }
 
         /// <summary>
