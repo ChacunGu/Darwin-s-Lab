@@ -13,37 +13,12 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Creature : Drawable
     {
-        private static int SpeedFactor = 10;
-        private static Vector CreatureDim = new Vector(50, 50);
-        public static double MinimalDistanceToSearchMate = Math.Pow(CreatureDim.X * 12, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToJoinMate = Math.Pow(CreatureDim.X * 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToMate = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalDistanceToReachTarget = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
-        static double MinimalOpacity = 0.2;
-
-        public double MinimalDistanceToEat { get; set; } = Math.Pow(CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
+        
+        public double MinimalDistanceToEat { get; set; } = Math.Pow(Properties.CreatureDim.X / 2, 2); // to the power of 2 as it is only used with optimized distance computation (no sqrt)
 
         private double AdultWidth;
         private double AdultHeight;
-
-        static double SleepEnergyGain = 1.0;
-        static double UsedEnergyToMove = 0.000001;
-        static double MinimalEnergyToMove = 0.000001;
-        static double MinimalEnergyToMate = 0.2;
-        static double MutationProbability = 0.3;
-        static double CrossoverKeepAverageProbability = 0.75;
-        static double CrossoverKeepOtherProbability = 0.5;
-        static Dictionary<string, uint[]> DefaultGenesValues = new Dictionary<string, uint[]>
-        {
-            {"energy", new uint[]{1, 511}},
-            {"speed", new uint[]{1, 255}},
-            {"detectionRange", new uint[]{1, 255}},
-            {"force", new uint[]{1, 255}},
-            {"colorH", new uint[]{1, 1023}},
-            {"colorS", new uint[]{1, 1023}},
-            {"colorV", new uint[]{1, 1023}}
-        };
-
+        
         public System.Windows.Vector Direction { get; set; }
         public Dictionary<String, Gene> Genes { get; set; }
         public Creature Mate { get; set; }
@@ -57,13 +32,13 @@ namespace Darwin_s_Lab.Simulation
         {
             Position = new Point(0, 0);
             this.Genes = new Dictionary<string, Gene>();
-            this.AddGene("energy", Creature.DefaultGenesValues["energy"][0], Creature.DefaultGenesValues["energy"][1]);
-            this.AddGene("speed", Creature.DefaultGenesValues["speed"][0], Creature.DefaultGenesValues["speed"][1]);
-            this.AddGene("detectionRange", Creature.DefaultGenesValues["detectionRange"][0], Creature.DefaultGenesValues["detectionRange"][1]);
-            this.AddGene("force", Creature.DefaultGenesValues["force"][0], Creature.DefaultGenesValues["force"][1]);
-            this.AddGene("colorH", Creature.DefaultGenesValues["colorH"][0], Creature.DefaultGenesValues["colorH"][1]);
-            this.AddGene("colorS", Creature.DefaultGenesValues["colorS"][0], Creature.DefaultGenesValues["colorS"][1]);
-            this.AddGene("colorV", Creature.DefaultGenesValues["colorV"][0], Creature.DefaultGenesValues["colorV"][1]);
+            this.AddGene("energy", Properties.DefaultGenesValues["energy"][0], Properties.DefaultGenesValues["energy"][1]);
+            this.AddGene("speed", Properties.DefaultGenesValues["speed"][0], Properties.DefaultGenesValues["speed"][1]);
+            this.AddGene("detectionRange", Properties.DefaultGenesValues["detectionRange"][0], Properties.DefaultGenesValues["detectionRange"][1]);
+            this.AddGene("force", Properties.DefaultGenesValues["force"][0], Properties.DefaultGenesValues["force"][1]);
+            this.AddGene("colorH", Properties.DefaultGenesValues["colorH"][0], Properties.DefaultGenesValues["colorH"][1]);
+            this.AddGene("colorS", Properties.DefaultGenesValues["colorS"][0], Properties.DefaultGenesValues["colorS"][1]);
+            this.AddGene("colorV", Properties.DefaultGenesValues["colorV"][0], Properties.DefaultGenesValues["colorV"][1]);
 
             this.canvas = canvas;
             this.map = map;
@@ -73,15 +48,15 @@ namespace Darwin_s_Lab.Simulation
                 map.MiddleAreaRadius + map.HomeRadius / 2
             );
 
-            Width = CreatureDim.X;
-            Height = CreatureDim.Y;
-            AdultWidth = CreatureDim.X;
-            AdultHeight = CreatureDim.Y;
+            Width = Properties.CreatureDim.X;
+            Height = Properties.CreatureDim.Y;
+            AdultWidth = Properties.CreatureDim.X;
+            AdultHeight = Properties.CreatureDim.Y;
 
             if (isNewborn)
             {
-                Width = CreatureDim.X/10;
-                Height = CreatureDim.Y/10;
+                Width = Properties.CreatureDim.X/10;
+                Height = Properties.CreatureDim.Y/10;
             }
             
             CreateEllipse(Brushes.Blue);
@@ -101,7 +76,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with energy's gene set</returns>
         public Creature WithEnergy(uint? energy, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint) mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint) mask;
             uint finalValue = energy == null ? Tools.RandomUintInRange(finalMask/2, finalMask) : (uint) energy;
             this.AddGene("energy", finalValue, finalMask);
             UpdateColor();
@@ -116,7 +91,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with speed's gene set</returns>
         public Creature WithSpeed(uint? speed, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = speed == null ? Tools.RandomUintInRange(0, finalMask) : (uint)speed;
             this.AddGene("speed", finalValue, finalMask);
             return this;
@@ -130,7 +105,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with detection range's gene set</returns>
         public Creature WithDetectionRange(uint? detectionRange, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = detectionRange == null ? Tools.RandomUintInRange(0, finalMask) : (uint)detectionRange;
             this.AddGene("detectionRange", finalValue, finalMask);
             return this;
@@ -144,7 +119,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with force's gene set</returns>
         public Creature WithForce(uint? force, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = force == null ? Tools.RandomUintInRange(0, finalMask) : (uint)force;
             this.AddGene("force", finalValue, finalMask);
             UpdateForce();
@@ -159,7 +134,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with color H gene set</returns>
         public Creature WithColorH(uint? colorH, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = colorH == null ? Tools.RandomUintInRange(0, finalMask) : (uint)colorH;
             this.AddGene("colorH", finalValue, finalMask);
             UpdateColor();
@@ -174,7 +149,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with color S gene set</returns>
         public Creature WithColorS(uint? colorS, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = colorS == null ? Tools.RandomUintInRange(0, finalMask) : (uint)colorS;
             this.AddGene("colorS", finalValue, finalMask);
             UpdateColor();
@@ -189,7 +164,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature with color V gene set</returns>
         public Creature WithColorV(uint? colorV, uint? mask)
         {
-            uint finalMask = mask == null ? DefaultGenesValues["energy"][1] : (uint)mask;
+            uint finalMask = mask == null ? Properties.DefaultGenesValues["energy"][1] : (uint)mask;
             uint finalValue = colorV == null ? Tools.RandomUintInRange(0, finalMask) : (uint)colorV;
             this.AddGene("colorV", finalValue, finalMask);
             UpdateColor();
@@ -268,7 +243,7 @@ namespace Darwin_s_Lab.Simulation
                     UseEnergyToMove();
                 }
             
-                Position += Direction * GetSpeed() * SpeedFactor * dt;
+                Position += Direction * GetSpeed() * Properties.SpeedFactor * dt;
                 Move();
             }
         }
@@ -328,7 +303,7 @@ namespace Darwin_s_Lab.Simulation
             TakeStep(dt, false);
 
             // mate if in range
-            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= MinimalDistanceToMate)
+            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) <= Properties.MinimalDistanceToMate)
             {
                 return Cross(Mate);
             }
@@ -352,7 +327,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void FindDirectionTowardsMate()
         {
-            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > MinimalDistanceToJoinMate)
+            if (Map.DistanceBetweenTwoPointsOpti(Position, Mate.Position) > Properties.MinimalDistanceToJoinMate)
             {
                 // find safe zone circle's tangent
                 Vector myPosToCenter = map.Position - Position;
@@ -390,7 +365,7 @@ namespace Darwin_s_Lab.Simulation
                 TakeStep(dt);
 
                 // check if target has been reached
-                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Creature.MinimalDistanceToReachTarget)
+                if (Map.DistanceBetweenTwoPointsOpti(Position, Target) <= Properties.MinimalDistanceToReachTarget)
                 {
                     FindRandomTarget();
                 }
@@ -503,7 +478,7 @@ namespace Darwin_s_Lab.Simulation
             bool didMutate = false;
             for (int i=0; i<Genes.Count(); i++) // for each gene
             {
-                if (Tools.rdm.NextDouble() < Gene.MutationProbability) // if gene has to mutate
+                if (Tools.rdm.NextDouble() < Properties.GeneMutationProbability) // if gene has to mutate
                 {
                     didMutate = true;
                     Genes.ElementAt(i).Value.Mutate();
@@ -543,7 +518,7 @@ namespace Darwin_s_Lab.Simulation
                 uint mask = selfGene.Mask;
                 uint value = 0;
 
-                if (Tools.rdm.NextDouble() < CrossoverKeepAverageProbability) // average between self and other
+                if (Tools.rdm.NextDouble() < Properties.CrossoverKeepAverageProbability) // average between self and other
                 {
                     uint avg = selfGene.Value / 2 + otherGene.Value / 2;
                     double rdmOffset = Tools.rdm.NextDouble() - 0.5; // random between -0.5 and 0.5
@@ -551,7 +526,7 @@ namespace Darwin_s_Lab.Simulation
                     value = avg + (uint) Math.Floor(rdmOffset); // apply offset to average
                 } else
                 {
-                    if (Tools.rdm.NextDouble() < CrossoverKeepOtherProbability) // keep other
+                    if (Tools.rdm.NextDouble() < Properties.CrossoverKeepOtherProbability) // keep other
                     {
                         value = otherGene.Value;
                     } else // keep self
@@ -592,7 +567,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void Sleep()
         {
-            SetEnergy(GetEnergy() + Creature.SleepEnergyGain);
+            SetEnergy(GetEnergy() + Properties.SleepEnergyGain);
         }
 
         /// <summary>
@@ -600,7 +575,7 @@ namespace Darwin_s_Lab.Simulation
         /// </summary>
         public void UseEnergyToMove()
         {
-            SetEnergy(GetEnergy() - Creature.UsedEnergyToMove * GetSpeed());
+            SetEnergy(GetEnergy() - Properties.UsedEnergyToMove * GetSpeed());
         }
 
         /// <summary>
@@ -618,7 +593,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>true if the creature can mutate false otherwise</returns>
         public bool CanMutate()
         {
-            return Tools.rdm.NextDouble() < MutationProbability;
+            return Tools.rdm.NextDouble() < Properties.CreatureMutationProbability;
         }
 
         /// <summary>
@@ -627,7 +602,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>true if the creature can mate false otherwise</returns>
         public bool CanMate()
         {
-            return GetEnergy() >= MinimalEnergyToMate;
+            return GetEnergy() >= Properties.MinimalEnergyToMate;
         }
 
         /// <summary>
@@ -636,7 +611,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>true if the creature can move false otherwise</returns>
         public bool CanMove()
         {
-            return GetEnergy() >= MinimalEnergyToMove;
+            return GetEnergy() >= Properties.MinimalEnergyToMove;
         }
 
         /// <summary>
@@ -686,7 +661,7 @@ namespace Darwin_s_Lab.Simulation
                                     newEnergyInPercentage < 0.0 ? 0.0 : 
                                     newEnergyInPercentage;
             Genes["energy"].Value = Tools.Map(newEnergyInPercentage, 0.0, 1.0, 0, (int)Genes["energy"].Mask);
-            Ellipse.Fill.Opacity = GetEnergy() * (1 - MinimalOpacity) + MinimalOpacity;
+            Ellipse.Fill.Opacity = GetEnergy() * (1 - Properties.MinimalOpacity) + Properties.MinimalOpacity;
         }
 
         /// <summary>
@@ -711,7 +686,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>creature's detection range</returns>
         public int GetDetectionRange()
         {
-            return (int)Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, (int)Creature.CreatureDim.X, (int)Creature.CreatureDim.X * 3);
+            return (int)Tools.Map((int)Genes["energy"].Value, 0, (int)Genes["energy"].Mask, (int)Properties.CreatureDim.X, (int)Properties.CreatureDim.X * 3);
         }
 
         /// <summary>
@@ -721,7 +696,7 @@ namespace Darwin_s_Lab.Simulation
         {
             SolidColorBrush colorBrush = new SolidColorBrush();
             colorBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(GetHexColor()));
-            colorBrush.Opacity = GetEnergy() * (1 - MinimalOpacity) + MinimalOpacity; // Opacity changes with force
+            colorBrush.Opacity = GetEnergy() * (1 - Properties.MinimalOpacity) + Properties.MinimalOpacity; // Opacity changes with force
             Ellipse.Fill = colorBrush;
             Ellipse.Stroke = new SolidColorBrush(Tools.ChangeColorBrightness(colorBrush.Color, -0.5f));
         }

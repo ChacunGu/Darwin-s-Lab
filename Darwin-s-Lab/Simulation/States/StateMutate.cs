@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
+    /// <summary>
+    /// Represents the mutation State, Handle the animation and mutation
+    /// </summary>
     public class StateMutate : State
     {
         public StateMutate()

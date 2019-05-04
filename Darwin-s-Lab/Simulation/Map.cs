@@ -39,7 +39,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>the size of the canvas/map</returns>
         static public int GetMapSize()
         {
-            return 1000;
+            return Properties.MapSize;
         }
 
         /// <summary>

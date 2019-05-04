@@ -7,8 +7,7 @@ namespace Darwin_s_Lab.Simulation
     /// </summary>
     public class Gene
     {
-        public static double MutationProbability = 0.35;
-
+        
         public String Name { get; set; }
         public uint Value { get; set; }
         public uint Mask { get; set; }
