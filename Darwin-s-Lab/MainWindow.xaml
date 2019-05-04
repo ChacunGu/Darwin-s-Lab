@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin_s_Lab.Interface"
         mc:Ignorable="d"
-        Title="Darwin's Lab" Height="550" Width="900" MinWidth="800" MinHeight="550">
+        Title="Darwin's Lab" Height="550" Width="900" MinWidth="800" MinHeight="550" Deactivated="Window_Deactivated">
     <Window.Background>
         <ImageBrush ImageSource="/Darwin-s-Lab;component/Images/space.jpg" Stretch="UniformToFill" />
     </Window.Background>

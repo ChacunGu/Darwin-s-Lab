@@ -198,5 +198,13 @@ namespace Darwin_s_Lab
                 manager.FoodNumber = (int)value;
             }
         }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            if (manager.IsSimulating)
+            {
+                BtnStartPause_Click(sender, new RoutedEventArgs());
+            }
+        }
     }
 }
