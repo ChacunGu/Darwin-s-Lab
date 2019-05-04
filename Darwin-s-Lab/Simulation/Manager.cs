@@ -63,6 +63,7 @@ namespace Darwin_s_Lab.Simulation
 
             foods = new List<Food>();
             creatures = new List<Creature>();
+            newbornCreatures = new List<Creature>();
             animationBirth = new List<Creature>();
             animationDeath = new List<Creature>();
             animationMutate = new List<Creature>();
@@ -145,7 +146,7 @@ namespace Darwin_s_Lab.Simulation
         /// <returns>the length of the creatures List</returns>
         public int GetNumberOfCreatures()
         {
-            return creatures.Count;
+            return creatures.Count + newbornCreatures.Count;
         }
         
         /// <summary>
@@ -495,8 +496,14 @@ namespace Darwin_s_Lab.Simulation
                     i--;
 
                     // add the newborn to the creatures
-                    newbornCreatures.Add(newborn);
-                    animationBirth.Add(newborn);
+                    if (GetNumberOfCreatures() < Properties.MaximumNumberCreatures)
+                    {
+                        newbornCreatures.Add(newborn);
+                        animationBirth.Add(newborn);
+                    } else
+                    {
+                        newborn.Destroy();
+                    }
                 }
             }
         }

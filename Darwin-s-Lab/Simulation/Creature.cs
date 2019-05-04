@@ -837,14 +837,5 @@ namespace Darwin_s_Lab.Simulation
             return true;
         }
         #endregion
-
-        /// <summary>
-        /// Fights this creature with other.
-        /// </summary>
-        /// <param name="other">creature to fight with</param>
-        public void Fight(Creature other)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
