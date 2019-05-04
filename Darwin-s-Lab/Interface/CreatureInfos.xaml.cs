@@ -43,6 +43,7 @@ namespace Darwin_s_Lab.Interface
             if (Manager.SelectedCreature != null)
             {
                 progress_energy.Value = Manager.SelectedCreature.Genes["energy"].Value;
+                energy_value.Content = Manager.SelectedCreature.Genes["energy"].Value;
                 progress_speed.Value = Manager.SelectedCreature.Genes["speed"].Value;
                 progress_detection.Value = Manager.SelectedCreature.Genes["detectionRange"].Value;
                 progress_strength.Value = Manager.SelectedCreature.Genes["force"].Value;
