@@ -219,8 +219,6 @@ namespace Darwin_s_Lab.Simulation
             Manager.SelectedCreature = this;
             Manager.SelectedCreature.Ellipse.StrokeThickness = 5;
             IsSelected = true;
-
-            Console.WriteLine(this.IsAdultSize());
         }
 
         /// <summary>
