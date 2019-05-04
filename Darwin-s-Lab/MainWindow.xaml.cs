@@ -201,7 +201,7 @@ namespace Darwin_s_Lab
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            if (manager.IsSimulating)
+            if (manager.IsSimulating && !manager.IsPaused)
             {
                 BtnStartPause_Click(sender, new RoutedEventArgs());
             }
