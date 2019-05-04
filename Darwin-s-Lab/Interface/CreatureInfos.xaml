@@ -6,12 +6,12 @@
              xmlns:local="clr-namespace:Darwin_s_Lab.Interface" >
     <Grid>
         <StackPanel>
-            <Ellipse x:Name="preview" Fill="Red" Height="100" Width="100" Margin="5"></Ellipse>
+            <Ellipse x:Name="preview" Fill="Red" Height="100" Width="100" Margin="5" />
             <DockPanel >
                 <Image Width="40" Height="40" Margin="5" Source="/Darwin-s-Lab;component/Icons/energy.png"/>
                 <Grid>
                     <ProgressBar x:Name="progress_energy" Background="#33000000" Value="75" BorderBrush="#00000000" BorderThickness="0" Foreground="#FFC107" Margin="5" Height="40"/>
-                    <Label x:Name="energy_value" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Foreground="White"></Label>
+                    <Label x:Name="energy_value" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" Foreground="White" />
                 </Grid>
             </DockPanel>
             <DockPanel>

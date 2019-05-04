@@ -61,6 +61,9 @@
     <Compile Include="Interface\CreatureInfos.xaml.cs">
       <DependentUpon>CreatureInfos.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Interface\InfoWindow.xaml.cs">
+      <DependentUpon>InfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Simulation\Properties.cs" />
     <Compile Include="Simulation\Creature.cs" />
     <Compile Include="Simulation\Food.cs" />
@@ -80,6 +83,10 @@
     <Compile Include="Simulation\States\StateMutate.cs" />
     <Compile Include="Simulation\States\StateReproduce.cs" />
     <Compile Include="Tools.cs" />
+    <Page Include="Interface\InfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

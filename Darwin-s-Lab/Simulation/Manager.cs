@@ -369,7 +369,9 @@ namespace Darwin_s_Lab.Simulation
 
             if (GetNumberOfCreatures() <= 0)
             {
-                // TODO display message in MainWindow
+                mainWindow.EndSimultation();
+                Reset();
+                MessageBox.Show(mainWindow, "All your creatures are dead !", "Game over");
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Darwin_s_Lab.Simulation;
+using Darwin_s_Lab.Interface;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,12 +24,12 @@ namespace Darwin_s_Lab
         int dayTime;
         int nightTime;
         bool isDay;
-
         int elapsed;
 
         public MainWindow()
         {
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
             manager = new Manager(canvas, this);
             dayTime = new StateGrowFood().Duration + new StateHunt().Duration;
@@ -44,7 +45,7 @@ namespace Darwin_s_Lab
         {
             UpdateCreatureInfo();
         }
-        
+
         /// <summary>
         /// Update the values in the Creatures info
         /// </summary>
@@ -78,16 +79,33 @@ namespace Darwin_s_Lab
 
         private void BtnStop_Click(object sender, RoutedEventArgs e)
         {
-            btnStartPause.Content = "Start";
-            slidersgrid.Visibility = Visibility.Visible;
-            btnStopReset.IsEnabled = false;
-            btnStartPause.IsEnabled = true;
+            EndSimultation();
             manager.Reset();
         }
 
         private void BtnInfo_Click(object sender, RoutedEventArgs e)
         {
-            
+            InfoWindow info = new InfoWindow();
+            info.Owner = Application.Current.MainWindow;
+            info.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            info.ShowDialog();
+        }
+
+        /// <summary>
+        /// Restart the simulation and change buttons labels
+        /// </summary>
+        public void EndSimultation()
+        {
+            btnStartPause.Content = "Start";
+            slidersgrid.Visibility = Visibility.Visible;
+            btnStopReset.IsEnabled = false;
+            btnStartPause.IsEnabled = true;
+
+            isDay = true;
+            elapsed = 0;
+            sldNbCreature.Value = manager.CreatureNumber;
+            sldNbFood.Value = manager.FoodNumber;
+            sunmoon.Source = new BitmapImage(new Uri("pack://application:,,,/Darwin-s-Lab;component/Images/sun.png"));
         }
 
         /// <summary>
