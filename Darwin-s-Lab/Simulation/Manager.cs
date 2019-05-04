@@ -92,7 +92,6 @@ namespace Darwin_s_Lab.Simulation
             set
             {
                 state = value;
-                Console.WriteLine("Manager's State: " + state.GetType().Name);
             }
         }
 
