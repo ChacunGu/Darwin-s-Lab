@@ -8,7 +8,7 @@ using System.Windows.Media;
 namespace Darwin_s_Lab.Simulation
 {
     /// <summary>
-    /// Enum that represents the states on the simulation
+    /// Abstract class that represents the states on the simulation
     /// </summary>
     abstract public class State
     {

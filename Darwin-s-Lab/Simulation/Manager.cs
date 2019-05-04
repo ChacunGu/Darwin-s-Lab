@@ -366,6 +366,11 @@ namespace Darwin_s_Lab.Simulation
                     creatures.RemoveAt(i);
                 }
             }
+
+            if (GetNumberOfCreatures() <= 0)
+            {
+                // TODO display message in MainWindow
+            }
         }
 
         /// <summary>
@@ -445,7 +450,7 @@ namespace Darwin_s_Lab.Simulation
                 for (int j = i-1; j >= 0; j--)
                 {
                     double distance = Map.DistanceBetweenTwoPointsOpti(tmpMatingCreatures[i].Position, tmpMatingCreatures[j].Position);
-                    if (distance <= Creature.MinimalDistanceToSearchMate && distance < smallestDistance)
+                    if (distance <= Properties.MinimalDistanceToSearchMate && distance < smallestDistance)
                     {
                         smallestDistance = distance;
                         nearestCreatureIndex = j;

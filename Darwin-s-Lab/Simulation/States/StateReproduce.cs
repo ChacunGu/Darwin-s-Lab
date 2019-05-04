@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
+    /// <summary>
+    /// Represents the State where the Creatures reproduce
+    /// </summary>
     public class StateReproduce : State
     {
         public StateReproduce()

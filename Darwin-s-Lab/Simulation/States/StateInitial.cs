@@ -7,6 +7,9 @@ using System.Windows.Media;
 
 namespace Darwin_s_Lab.Simulation
 {
+    /// <summary>
+    /// Represents the initial State, where the population is created
+    /// </summary>
     public class StateInitial : State
     {
         public StateInitial()
