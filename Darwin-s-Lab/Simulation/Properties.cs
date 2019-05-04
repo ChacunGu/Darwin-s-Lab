@@ -44,5 +44,7 @@ namespace Darwin_s_Lab.Simulation
         };
 
         public static int MapSize = 1000;
+
+        public static int MaximumNumberCreatures = 500;
     }
 }
