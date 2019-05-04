@@ -85,6 +85,11 @@ namespace Darwin_s_Lab
             manager.Reset();
         }
 
+        private void BtnInfo_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         /// <summary>
         /// Update the interface
         /// </summary>
