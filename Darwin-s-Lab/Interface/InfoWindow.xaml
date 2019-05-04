@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Darwin_s_Lab.Interface"
         mc:Ignorable="d"
-        Title="InfoWindow" Height="445.916" Width="593.277" WindowStyle="None" Background="#FF17161D" AllowsTransparency="True">
-    <Grid Margin="5">
+        Title="InfoWindow" Height="445.916" Width="593.277" WindowStyle="None" Background="#FF17161D" AllowsTransparency="True" BorderBrush="#FF0051FF" BorderThickness="2">
+    <Grid Margin="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="100"/>
@@ -32,10 +32,10 @@
                 </TextBlock>
                 <Label FontSize="14" FontWeight="Bold" Foreground="White">Images source</Label>
                 <TextBlock TextWrapping="WrapWithOverflow"  Margin="5,0" Foreground="White" FontSize="14">
-            Sun : <Hyperlink>www.vectorstock.com</Hyperlink><LineBreak />
-            Moon : <Hyperlink>www.webweaver.nu</Hyperlink><LineBreak />
-            Background : <Hyperlink>www.pond5.com</Hyperlink><LineBreak />
-            Icons : <Hyperlink>www.flaticon.com</Hyperlink>
+            Sun : www.vectorstock.com<LineBreak />
+            Moon : www.webweaver.nu<LineBreak />
+            Background : www.pond5.com<LineBreak />
+            Icons : www.flaticon.com
                 </TextBlock>
                 <Label FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,30,0,0">Informations</Label>
 
