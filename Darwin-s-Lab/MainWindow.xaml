@@ -9,13 +9,13 @@
     <Window.Background>
         <ImageBrush ImageSource="/Darwin-s-Lab;component/Images/space.jpg" Stretch="UniformToFill" />
     </Window.Background>
-    
+
     <Grid x:Name="maingrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" MaxWidth="400px"/>
+            <ColumnDefinition Width="3*" MaxWidth="400px" MinWidth="250px"/>
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
         <Rectangle Fill="#7F000000" Margin="5,5,0,5" />
@@ -27,9 +27,12 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="37"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,2,0" Height="30" />
-                <Button x:Name="btnStopReset" Content="Stop" Click="BtnStop_Click" IsEnabled="False" Margin="2,0,0,0" Height="30" Grid.Column="1"/>
+                
+                <Button x:Name="btnStartPause" Content="Start" Click="BtnStartPause_Click" Margin="0,0,2,0" Height="35" FontSize="16" FontWeight="Bold" />
+                <Button x:Name="btnStopReset" Content="Stop" Click="BtnStop_Click" IsEnabled="False" Margin="2,0" Height="35" Grid.Column="1" FontSize="16" FontWeight="Bold"/>
+                <Button x:Name="btnInfo" Content="?" Click="BtnInfo_Click" Margin="2,0,0,0" Height="35" Grid.Column="2" FontSize="16" FontWeight="Bold"/>
             </Grid>
 
 
